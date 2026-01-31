@@ -1,0 +1,19 @@
+.navBar {
+  display: flex;
+  flex-flow: column;
+  gap: 1em;
+
+}
+
+.navBar a {
+  text-decoration: none;
+  font-size: 1.1em;
+  color: var(--grey);
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.navBar a:hover {
+  color: var(--cream);
+  text-transform: capitalize;
+}

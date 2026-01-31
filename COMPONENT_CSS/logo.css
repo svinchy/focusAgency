@@ -1,0 +1,20 @@
+.logo {
+  color: var(--cream);
+  width: fit-content;
+  line-height: .85em;
+  font-size: 4em;
+  font-weight: 700;
+  position: relative;
+
+}
+
+.logo::after {
+  content: '';
+  position: absolute;
+  border-radius: 100%;
+  bottom: -0.12em;
+  right: -0.12em;
+  width: .3em;
+  height: .3em;
+  background: var(--red);
+}

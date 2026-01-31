@@ -1,0 +1,114 @@
+/* FONTS */
+
+/* Exo 2 */
+@font-face {
+  font-family: 'Exo 2';
+  src: url('./Exo2-Thin.woff2') format('woff2'),
+       url('./Exo2-Thin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('./Exo2-ExtraLight.woff2') format('woff2'),
+       url('./Exo2-ExtraLight.woff') format('woff');
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('./Exo2-Light.woff2') format('woff2'),
+       url('./Exo2-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('./FONT/Exo2-Regular.woff2') format('woff2'),
+       url('./FONT/Exo2-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('./FONT/Exo2-Medium.woff2') format('woff2'),
+       url('./FONT/Exo2-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('./FONT/Exo2-SemiBold.woff2') format('woff2'),
+       url('./FONT/Exo2-SemiBold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('./FONT/Exo2-Bold.woff2') format('woff2'),
+       url('./FONT/Exo2-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('./FONT/Exo-ExtraBold.woff2') format('woff2'),
+       url('./FONT/Exo2-ExtraBold.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Exo 2';
+  src: url('./FONT/Exo2-Black.woff2') format('woff2'),
+       url('./FONT/Exo2-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+}
+
+
+/* Archy EDT */
+@font-face {
+  font-family: 'Archy EDT';
+  src: url('./FONT/archyedt-bold-webfont.woff2') format('woff2'),
+       url('./FONT/archyedt-bold-webfont.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archy EDT';
+  src: url('./FONT/archyedt-thin-webfont.woff2') format('woff2'),
+       url('./FONT/archyedt-thin-webfont.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+}
+
+
+
+
+
+:root {
+  /* color */
+  --black: rgba(0, 0, 0, 1);
+  --cream: rgba(255, 241, 227, 1);
+  --red: rgba(224, 77, 77, 1);
+  --grey: rgba(80, 78, 78, 1);
+
+  /* font */
+  --fontPrimary: 'Exo 2', sans-serif;
+  --fontSecondaryGeo: 'Archy EDT', sans-serif;
+
+}
+
+.themeDocument{
+  background: var(--black);
+  color: var(--cream);
+}

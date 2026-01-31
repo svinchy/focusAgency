@@ -1,0 +1,58 @@
+html, body {
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--fontPrimary);
+}
+
+body {
+  position: relative;
+}
+
+.corner {
+  position: fixed;
+  z-index: 5;
+  bottom: 1.5em;
+  left: 1.5em;
+}
+.corner2 {
+  left: initial;
+  bottom: initial;
+  top: 1.5em;
+  right: 1.5em;
+}
+
+.logo {
+  top: .5em;
+  left: .5em;
+  z-index: 5;
+}
+
+.navBar {
+  position: absolute;
+  top: 7em;
+  right: 7em;
+  z-index: 5;
+}
+
+.langButton {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  right: 0;
+}
+
+.chatButton {
+  position: absolute;
+  z-index: 5;
+  bottom: 1.5em;
+  right: 2em;
+}
+
+.bannerTitle {
+  position: absolute;
+
+  top: 30%;
+  left: 10em;
+}
+

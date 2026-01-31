@@ -1,0 +1,33 @@
+.langButton {
+  display: flex;
+  gap: 0.5em;
+  max-width: fit-content;
+  transform: rotate(90deg);
+
+}
+
+.langButton button {
+  border: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+
+
+.langButton button:first-child {
+  font-family: var(--fontSecondaryGeo);
+  font-size: 1em;
+  font-weight: 100;
+
+}
+
+
+.langButton button:last-child {
+  font-family: var(--fontPrimary);
+  font-weight: 600;
+  font-size: .9em;
+}
+

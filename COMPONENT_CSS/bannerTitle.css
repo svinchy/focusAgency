@@ -1,0 +1,18 @@
+.bannerTitle {
+  max-width: 16em;
+}
+
+.bannerTitle h4 {
+  font-size: 1.5em;
+  margin: 0;
+  font-weight: 100;
+  line-height: 1.2em;
+}
+
+.bannerTitle h1 {
+  font-size: 5em;
+  margin: 0 0 0 1.3em;
+  font-weight: 900;
+  white-space: wrap;
+  line-height: .8em;
+}
