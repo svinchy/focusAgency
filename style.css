@@ -1,13 +1,62 @@
-html, body {
+html {
   height: 100vh;
+  width: 100%;
   margin: 0;
   overflow: hidden;
-  font-family: var(--fontPrimary);
+  box-sizing: border-box;
+}
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
 body {
   position: relative;
+  width: 100%;
 }
+
+/* English default */
+
+
+/* English default */
+body[data-lang="en"] {
+  font-family: var(--font-en);
+}
+
+/* Georgian default */
+body[data-lang="ka"] {
+  font-family: var(--font-ka-body);
+}
+
+.lang-content {
+ /* transition: opacity 0.25s ease, letter-spacing 0.25s ease, line-height 0.25s ease; */
+ transition:
+    opacity 0.25s ease,       /* fade */
+    transform 0.25s ease,     /* subtle slide */
+    letter-spacing 0.25s ease,
+    line-height 0.25s ease;
+  opacity: 1;
+  transform: translateY(0);   /* normal position */
+}
+
+
+
+
+/* Georgian headings / points */
+/* body[data-lang="ka"] h1,
+body[data-lang="ka"] h2,
+body[data-lang="ka"] h3, */
+/* body[data-lang="ka"] .point {
+  font-family: var(--fontKaCap);
+} */
+
+/* English headings use same as body */
+/* body[data-lang="en"] h1,
+body[data-lang="en"] h2,
+body[data-lang="en"] h3,
+body[data-lang="en"] .point {
+  font-family: var(--fontEn);
+} */
 
 .corner {
   position: fixed;
@@ -36,7 +85,7 @@ body {
   z-index: 5;
 }
 
-.languageButton {
+.langButton {
   position: absolute;
   z-index: 5;
   top: 50%;
@@ -50,9 +99,4 @@ body {
   right: 2em;
 }
 
-.bannerTitle {
-  position: absolute;
-  top: 30%;
-  left: 10em;
-}
 

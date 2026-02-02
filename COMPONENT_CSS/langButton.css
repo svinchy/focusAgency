@@ -1,0 +1,53 @@
+.langButton {
+  display: flex;
+  gap: 0.5em;
+  max-width: fit-content;
+  transform: rotate(90deg);
+
+}
+
+.langButton button {
+  border: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-transform: uppercase;
+  color: var(--cream);
+  opacity: 0.5;
+  transition:
+    opacity 0.3s ease,             /* fade in/out */
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* smooth scale */
+
+}
+
+.langButton button:hover {
+  opacity:1;
+}
+
+.langButton button.active {
+  opacity: 1;
+  pointer-events: none;
+
+}
+
+.langButton button:first-child {
+  font-family: 'BPG Square Banner Caps 2013', sans-serif;
+  text-transform: uppercase;
+  font-size: 1em;
+}
+
+.langButton button.active:first-child {
+  transform: scale(1.15);
+}
+.langButton button.active:last-child {
+  transform: scale(1.15);
+}
+
+
+.langButton button:last-child {
+  font-family: var(--font-en);
+  font-weight: 600;
+  font-size: .9em;
+}
+

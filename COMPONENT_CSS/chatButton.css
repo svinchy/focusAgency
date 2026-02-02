@@ -1,6 +1,6 @@
 .chatButton {
   margin-top: 100px;
-  font-family: var(--fontPrimary);
+  font-family: var(--font-en);
   font-weight: 500;
   font-size: 1em;
   text-transform: capitalize;

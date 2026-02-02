@@ -4,7 +4,8 @@
   line-height: .85em;
   font-size: 4em;
   font-weight: 700;
-  position: relative;
+  position: absolute;
+  font-family: var(--font-en);
 
 }
 

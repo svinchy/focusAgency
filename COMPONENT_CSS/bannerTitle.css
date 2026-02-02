@@ -2,11 +2,19 @@
   max-width: 16em;
 }
 
+body[data-lang="ka"] .bannerTitle {
+  max-width: 18em;
+}
+
 .bannerTitle h4 {
   font-size: 1.5em;
   margin: 0;
   font-weight: 100;
   line-height: 1.2em;
+}
+
+body[data-lang="ka"] .bannerTitle h4 {
+  opacity: .7;
 }
 
 .bannerTitle h1 {
@@ -15,4 +23,7 @@
   font-weight: 900;
   white-space: wrap;
   line-height: .8em;
+   font-family: var(--font-en);
 }
+
+

@@ -3,24 +3,24 @@
 /* Exo 2 */
 @font-face {
   font-family: 'Exo 2';
-  src: url('./Exo2-Thin.woff2') format('woff2'),
-       url('./Exo2-Thin.woff') format('woff');
+  src: url('./FONT/Exo2-Thin.woff2') format('woff2'),
+       url('./FONT/Exo2-Thin.woff') format('woff');
   font-weight: 100;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Exo 2';
-  src: url('./Exo2-ExtraLight.woff2') format('woff2'),
-       url('./Exo2-ExtraLight.woff') format('woff');
+  src: url('./FONT/Exo2-ExtraLight.woff2') format('woff2'),
+       url('./FONT/Exo2-ExtraLight.woff') format('woff');
   font-weight: 200;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Exo 2';
-  src: url('./Exo2-Light.woff2') format('woff2'),
-       url('./Exo2-Light.woff') format('woff');
+  src: url('./FONT/Exo2-Light.woff2') format('woff2'),
+       url('./FONT/Exo2-Light.woff') format('woff');
   font-weight: 300;
   font-style: normal;
 }
@@ -74,22 +74,28 @@
 }
 
 
-/* Archy EDT */
+/* SquareBanner Caps */
 @font-face {
-  font-family: 'Archy EDT';
-  src: url('./FONT/archyedt-bold-webfont.woff2') format('woff2'),
-       url('./FONT/archyedt-bold-webfont.woff') format('woff');
-  font-weight: 700;
-  font-style: normal;
+  font-family: 'BPG Square Banner Caps 2013';
+  src: url('./FONT/bpg-square-banner-caps-2013-webfont.woff2') format('woff2'),
+       url('./FONT/bpg-square-banner-caps-2013-webfont.woff') format('woff'),
+       url('./FONT/bpg-square-banner-caps-2013-webfont.ttf');
+  font-weight: normal;
 }
 
+/* SquareBanner */
 @font-face {
-  font-family: 'Archy EDT';
-  src: url('./FONT/archyedt-thin-webfont.woff2') format('woff2'),
-       url('./FONT/archyedt-thin-webfont.woff') format('woff');
-  font-weight: 100;
-  font-style: normal;
+  font-family: 'BPG Square Banner 2013';
+  src: url('./FONT/bpg-square-banner-2013-webfont.woff2') format('woff2'),
+       url('./FONT/bpg-square-banner-2013-webfont.woff') format('woff'),
+       url('./FONT/bpg-square-banner-2013-webfont.ttf');
+  font-weight: normal;
 }
+
+
+
+
+
 
 
 
@@ -103,8 +109,9 @@
   --grey: rgba(80, 78, 78, 1);
 
   /* font */
-  --fontPrimary: 'Exo 2', sans-serif;
-  --fontSecondaryGeo: 'Archy EDT', sans-serif;
+   --font-en: 'Exo 2', sans-serif;
+  --font-ka-body: 'BPG Square Banner 2013', sans-serif;
+  --font-ka-cap: 'BPG Square Banner Cap 2013', sans-serif;
 
 }
 

@@ -14,12 +14,13 @@
   <link rel="stylesheet" href="COMPONENT_CSS/logo.css">
   <link rel="stylesheet" href="COMPONENT_CSS/navBar.css">
   <link rel="stylesheet" href="COMPONENT_CSS/bannerTitle.css">
-  <link rel="stylesheet" href="COMPONENT_CSS/languageButton.css">
+  <link rel="stylesheet" href="COMPONENT_CSS/langButton.css">
   <link rel="stylesheet" href="COMPONENT_CSS/chatButton.css">
   <link rel="stylesheet" href="COMPONENT_CSS/corner.css">
   <link rel="stylesheet" href="COMPONENT_CSS/globe.css">
 
   <link rel="stylesheet" href="SECTION_CSS/banner.css">
+  <link rel="stylesheet" href="SECTION_CSS/service.css">
 
 
   <title>Document</title>
@@ -27,38 +28,40 @@
 
 <body class="themeDocument">
 
-  <div class="logo"> F </div>
+  <div class="lang-content">
+
+    <div class="logo"> F </div>
 
 
-  <div class="globe">
-    <img src="./IMAGE/globe.png" alt="">
-    <div class="overlay"></div>
+    <div class="corner"></div>
+    <div class="corner corner2"></div>
+
+    <!-- LANGUAGE SWITCHER -->
+
+    <nav class="navBar">
+    <a href=""></a>
+    <a href=""></a>
+    <a href=""></a>
+    </nav>
+
+
+
+    <section class="banner">
+      <hgroup class="bannerTitle">
+        <h4 data-banner="subtitle"></h4>
+        <h1 data-banner="title" class=".force-en-font"></h1>
+      </hgroup>
+
+        <img src="./IMAGE/globe.png" alt="">
+      <div class="overlay"></div>
+    </section>
+
   </div>
-
-  <div class="corner"></div>
-  <div class="corner corner2"></div>
-
-  <!-- LANGUAGE SWITCHER -->
-  <div class="languageButton">
+  <div class="langButton">
     <button data-lang="ka">ქარ</button>
     <button data-lang="en">ENG</button>
   </div>
-
   <button class="chatButton">chat</button>
-
-
-  <nav class="navBar">
-    <a data-nav="service"></a>
-    <a data-nav="about"></a>
-    <a data-nav="contact"></a>
-  </nav>
-
-<hgroup class="bannerTitle">
-    <h4 data-banner="subtitle"></h4>
-    <h1 data-banner="title"></h1>
-  </hgroup>
-
-
 
   <!-- MAIN SCRIPT -->
   <script type="module" src="script.js"></script>
