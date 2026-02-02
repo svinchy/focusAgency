@@ -5,9 +5,12 @@
   position: relative;
   background-color: transparent;
   overflow: hidden;
+ /* background: url('../IMAGE/stars.jpg') no-repeat center;
+  background-size: cover;
+  background-attachment: fixed; */
 }
 
-.banner::before {
+/* .banner::before {
   content: '';
   position: absolute;
   width: 100%;
@@ -17,9 +20,9 @@
   bottom: 0;
   right: 0;
   pointer-events: none;
-}
+} */
 
-.banner::after {
+/* .banner::after {
   content: '';
   position: absolute;
   width: 100%;
@@ -27,27 +30,12 @@
   background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
   z-index: 1;
   pointer-events: none;
-}
+} */
 
-.banner .overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(224, 77, 77, .1);
-  z-index: 2;
-  pointer-events: none;
-  top: 0;
-  left: 0;
-}
 
-.banner img {
-  width: 60em;
-  height: 60em;
-  object-fit: cover;
-  position: absolute;
-  bottom: -10em;
-  right: -10em;
-}
+
+
+
 
 .banner .bannerTitle {
   position: absolute;

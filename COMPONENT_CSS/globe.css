@@ -1,46 +1,18 @@
+@keyframes rotateGlobe {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
 .globe {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: none;
-}
-
-.globe::before {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  background: linear-gradient(to left, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
-  bottom: 0;
-  right: 0;
-  pointer-events: none;
-}
-.globe::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
-  z-index: 3;
-  pointer-events: none;
-}
-.globe .overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(224, 77, 77, .1);
-  z-index: 4;
-  pointer-events: none;
-
-}
-.globe img {
   width: 60em;
   height: 60em;
+  display: block;
+  z-index: 1;
   object-fit: cover;
-  position: absolute;
+  position: fixed;
   bottom: -10em;
   right: -10em;
+  animation: rotateGlobe 60s linear infinite, scaleGlobe 20s ease-in-out infinite alternate;
+  transform-origin: center center;
 }

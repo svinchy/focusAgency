@@ -1,5 +1,3 @@
-
-
 import { render } from "./render.js"
 
 // JS/languageSwitcher.js
@@ -11,11 +9,16 @@ export function setLanguage(lang) {
   localStorage.setItem("lang", lang);
 }
 
-// initialize UI toggle inside same file
+
+
+
+
+// JS/languageSwitcher.js
 export function initLanguageToggle() {
   const buttons = document.querySelectorAll(".langButton button");
   const currentLang = getLanguage();
 
+  // set initial active state
   buttons.forEach(btn => {
     btn.classList.toggle("active", btn.dataset.lang === currentLang);
   });
@@ -23,12 +26,17 @@ export function initLanguageToggle() {
   buttons.forEach(button => {
     button.addEventListener("click", () => {
       const selectedLang = button.dataset.lang;
+
+      // only run render when language button is clicked
       setLanguage(selectedLang);
-      render(); // make sure render() is imported
+      render();  // updates text & fonts
+
+      // toggle active state
       buttons.forEach(btn => {
         btn.classList.toggle("active", btn.dataset.lang === selectedLang);
       });
     });
   });
 }
+
 

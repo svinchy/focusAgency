@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="COMPONENT_CSS/corner.css">
   <link rel="stylesheet" href="COMPONENT_CSS/globe.css">
 
+  <link rel="stylesheet" href="SECTION_CSS/langContent.css">
   <link rel="stylesheet" href="SECTION_CSS/banner.css">
   <link rel="stylesheet" href="SECTION_CSS/service.css">
 
@@ -28,40 +29,41 @@
 
 <body class="themeDocument">
 
+  <div class="logo"> F </div>
+  <div class="corner"></div>
+  <div class="corner corner2"></div>
+
+  <div class="langButton">
+    <button data-lang="ka">ქარ</button>
+    <button data-lang="en">ENG</button>
+  </div>
+  <button class="chatButton">chat</button>
+
   <div class="lang-content">
-
-    <div class="logo"> F </div>
-
-
-    <div class="corner"></div>
-    <div class="corner corner2"></div>
-
+     <div class="overlay"></div>
+     <div class="overlay_2"></div>
+     <img src="./IMAGE/globe.png" alt="", class="globe">
     <!-- LANGUAGE SWITCHER -->
-
     <nav class="navBar">
     <a href=""></a>
     <a href=""></a>
     <a href=""></a>
     </nav>
 
-
-
     <section class="banner">
       <hgroup class="bannerTitle">
         <h4 data-banner="subtitle"></h4>
-        <h1 data-banner="title" class=".force-en-font"></h1>
+        <h1 data-banner="title"></h1>
       </hgroup>
+    </section>
 
-        <img src="./IMAGE/globe.png" alt="">
-      <div class="overlay"></div>
+    <section class="service">
+      <!-- <div class="overlay"></div> -->
     </section>
 
   </div>
-  <div class="langButton">
-    <button data-lang="ka">ქარ</button>
-    <button data-lang="en">ENG</button>
-  </div>
-  <button class="chatButton">chat</button>
+
+
 
   <!-- MAIN SCRIPT -->
   <script type="module" src="script.js"></script>

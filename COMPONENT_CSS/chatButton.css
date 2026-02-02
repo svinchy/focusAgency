@@ -13,6 +13,7 @@
   color: var(--cream);
   border: none;
   backdrop-filter: blur(10px);
+  position: fixed;
   /* border: 1px solid var(--grey); */
 
 }
