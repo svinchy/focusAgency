@@ -1,5 +1,8 @@
 import { render } from "./JS/render.js";
 import { initLanguageToggle } from "./JS/languageSwitcher.js";
+import { initServiceToggle } from "./JS/serviceToggle.js";
+import { initNavbar } from "./JS/navbar.js";
+
 
 // initial render
 render();
@@ -9,10 +12,8 @@ initLanguageToggle();
 
 
 // Make navbar clicks independent
-document.querySelectorAll(".navBar a").forEach(link => {
-  link.addEventListener("click", e => {
-    e.preventDefault(); // prevents page jump if href="#"
-    // do nothing else → render() is NOT called
-  });
-});
+initNavbar();
 
+
+//service toggle
+initServiceToggle();

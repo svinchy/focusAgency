@@ -1,20 +1,27 @@
 .langButton {
   display: flex;
-  gap: 0.5em;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
   max-width: fit-content;
-  transform: rotate(90deg);
-
 }
 
 .langButton button {
-  border: none;
-  border: none;
   background: transparent;
-  padding: 0;
+  /* padding: 0 !important; */
+  border-radius: 0;
   cursor: pointer;
   text-transform: uppercase;
   color: var(--cream);
+  width: 2.8em;
+  height: 2.8em;
   opacity: 0.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  transform: rotate(90deg);
+  padding: 0;
   transition:
     opacity 0.3s ease,             /* fade in/out */
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* smooth scale */
@@ -38,10 +45,10 @@
 }
 
 .langButton button.active:first-child {
-  transform: scale(1.15);
+  transform: rotate(90deg) scale(1.15);
 }
 .langButton button.active:last-child {
-  transform: scale(1.15);
+  transform: rotate(90deg) scale(1.15);
 }
 
 
@@ -50,4 +57,3 @@
   font-weight: 600;
   font-size: .9em;
 }
-

@@ -1,5 +1,6 @@
 import { content } from "./data.js";
 import { getLanguage } from "./languageSwitcher.js";
+import { refreshServiceContent } from "./serviceToggle.js";
 
 let previousLang = getLanguage(); // track the last rendered language
 
@@ -24,11 +25,19 @@ export function render() {
       el.textContent = content.navbar[lang][navKeys[i]];
     });
 
+
     // --- Update banner ---
     const bannerTitle = document.querySelector(".bannerTitle h1");
     const bannerSubtitle = document.querySelector(".bannerTitle h4");
     if (bannerTitle) bannerTitle.textContent = content.banner[lang].title;
     if (bannerSubtitle) bannerSubtitle.textContent = content.banner[lang].subtitle;
+
+    /* ---------- Services ---------- */
+  const servicesTitle = document.querySelector("[data-services='title']");
+  if (servicesTitle) {
+    servicesTitle.textContent = content.services[lang].title;
+  }
+  refreshServiceContent();
 
     // --- Update body data-lang for font switching ---
     document.body.dataset.lang = lang;

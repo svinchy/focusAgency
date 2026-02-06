@@ -15,4 +15,7 @@
   right: -10em;
   animation: rotateGlobe 60s linear infinite, scaleGlobe 20s ease-in-out infinite alternate;
   transform-origin: center center;
+  filter:
+    drop-shadow(0 35px 45px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 70px rgba(0, 0, 0, 0.45));
 }

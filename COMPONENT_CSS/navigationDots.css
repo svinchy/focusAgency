@@ -1,0 +1,31 @@
+.navigationDots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  align-items: center;
+  width: fit-content;
+
+}
+
+.navigationDots .dot {
+  width: .8em;
+  height: .8em;
+  border-radius: 100%;
+  border: none;
+  opacity: .8;
+  background: rgba(255, 241, 227, 0.35);
+  box-shadow: inset 0 0 0 0.12em rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out, background 0.25s ease-in-out;
+}
+
+.navigationDots .dot:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.navigationDots .dot.active {
+  background: #E44646;
+  box-shadow: 0 0 0 0.12em rgba(228, 70, 70, 0.35);
+  transform: scale(1);
+}

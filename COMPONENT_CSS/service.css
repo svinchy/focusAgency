@@ -1,0 +1,78 @@
+.service {
+ width: 25em;
+ height: 15em;
+ padding: 2.5em 2em 2em 2em;
+ border-radius: 2.5em;
+ background: rgba(255, 241, 227, .35);
+ color: var(--black);
+ backdrop-filter: blur(10px);
+ cursor: pointer;
+ transform-style: preserve-3d;
+
+}
+
+
+
+
+
+hgroup h3 {
+  font-size: 2.5em;
+  font-weight: 900;
+  max-width: 8em;
+  line-height: .9em;
+  text-transform: uppercase;
+}
+body[data-lang="ka"] hgroup h3 {
+  font-family: 'BPG Square Banner Caps 2013', sans-serif;
+}
+
+body[data-lang="ka"] hgroup p {
+   max-width: 13em;
+}
+
+hgroup p {
+  font-size: 1em;
+  max-width: 12em;
+  line-height: 1.2em;
+  padding-top: 2em;
+}
+
+.service-content {
+  list-style: none;
+  margin: 1.5em 0 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  max-width: 100%;
+}
+
+.service-content li {
+  font-size: 0.95em;
+  line-height: 1.2em;
+  padding: 0.6em 0.8em;
+  border-radius: 0.8em;
+  border: 0.08em solid rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.service button {
+  background: #E44646;
+  width: 3.5em;
+  height: 3.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  position: absolute;
+  bottom: .85em;
+  right: .85em;
+  overflow: hidden;
+}
+
+.service button img {
+  width: 1.5em;
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}

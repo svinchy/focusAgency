@@ -18,10 +18,13 @@
   <link rel="stylesheet" href="COMPONENT_CSS/chatButton.css">
   <link rel="stylesheet" href="COMPONENT_CSS/corner.css">
   <link rel="stylesheet" href="COMPONENT_CSS/globe.css">
+  <link rel="stylesheet" href="COMPONENT_CSS/service.css">
+  <link rel="stylesheet" href="COMPONENT_CSS/navigationDots.css">
 
   <link rel="stylesheet" href="SECTION_CSS/langContent.css">
   <link rel="stylesheet" href="SECTION_CSS/banner.css">
-  <link rel="stylesheet" href="SECTION_CSS/service.css">
+  <link rel="stylesheet" href="SECTION_CSS/services.css">
+  <link rel="stylesheet" href="SECTION_CSS/workFlow.css">
 
 
   <title>Document</title>
@@ -33,23 +36,33 @@
   <div class="corner"></div>
   <div class="corner corner2"></div>
 
+  <!-- LANGUAGE SWITCHER -->
   <div class="langButton">
     <button data-lang="ka">ქარ</button>
     <button data-lang="en">ENG</button>
   </div>
+
+
+  <!-- chat button -->
   <button class="chatButton">chat</button>
 
+
+  <!-- main content which language changable -->
   <div class="lang-content">
-     <div class="overlay"></div>
-     <div class="overlay_2"></div>
-     <img src="./IMAGE/globe.png" alt="", class="globe">
-    <!-- LANGUAGE SWITCHER -->
+    <div class="overlay"></div>
+    <div class="overlay_2"></div>
+    <img src="./IMAGE/globe.png" alt="", class="globe">
+
+
+  <!-- navbar -->
     <nav class="navBar">
-    <a href=""></a>
-    <a href=""></a>
-    <a href=""></a>
+      <a href=""></a>
+      <a href=""></a>
+      <a href=""></a>
     </nav>
 
+
+    <!-- banner -->
     <section class="banner">
       <hgroup class="bannerTitle">
         <h4 data-banner="subtitle"></h4>
@@ -57,8 +70,45 @@
       </hgroup>
     </section>
 
-    <section class="service">
-      <!-- <div class="overlay"></div> -->
+
+    <!-- service section -->
+    <section class="services">
+
+      <h2 data-services="title"></h2>
+
+     <!-- service contents -->
+      <div class="content">
+        <div class="images">
+          <div class="image image-social active"></div>
+          <div class="image image-analytics"></div>
+          <div class="image image-web"></div>
+          <div class="image image-video"></div>
+        </div>
+        <div class="service">
+          <hgroup>
+            <h3>social media marketing</h3>
+            <p>Content creation and advertising</p>
+          </hgroup>
+          <ul class="service-content"></ul>
+          <button>
+            <img class="icon-arrow" src="/IMAGE/arrow.png" alt="">
+            <img class="icon-close" src="/IMAGE/close.png" alt="">
+          </button>
+      </div>
+      </div>
+
+      <!-- navigation dots -->
+     <nav class="navigationDots" aria-label="Services navigation">
+      <button class="dot active" type="button" aria-label="Service 1"></button>
+      <button class="dot" type="button" aria-label="Service 2"></button>
+      <button class="dot" type="button" aria-label="Service 3"></button>
+      <button class="dot" type="button" aria-label="Service 4"></button>
+     </nav>
+
+    </section>
+
+    <section class="workFlow">
+
     </section>
 
   </div>
