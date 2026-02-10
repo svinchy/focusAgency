@@ -1,0 +1,167 @@
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+body::before {
+  background: linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+body::after {
+  background: linear-gradient(to left, #000 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+body.intro-overlay::before,
+body.intro-overlay::after {
+  opacity: 1;
+}
+
+body.intro-fade::before,
+body.intro-fade::after {
+  opacity: 0;
+}
+
+body.intro-active .logo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1600;
+  color: transparent;
+  transition: none !important;
+}
+
+body.intro-active .logo::after {
+  animation: logoDotPulse 1s ease-in-out infinite;
+}
+
+body.intro-reveal .logo {
+  color: var(--cream);
+  animation: logoPulseStrong 0.9s ease-out 1 both;
+}
+
+body.intro-corners-move .logo {
+  animation: logoMove 2.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.intro-active .corner,
+body.intro-active .corner2 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  z-index: 1600;
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 0.6s;
+  transition-timing-function: ease;
+}
+
+body.intro-corners .corner,
+body.intro-corners .corner2 {
+  opacity: 1;
+}
+
+body.intro-corners .corner {
+  transform: translate(-50%, -50%) translate(-2em, 2em);
+  animation: cornerPulseStrongLeft 0.9s ease-out 1 both;
+}
+
+body.intro-corners .corner2 {
+  transform: translate(-50%, -50%) translate(2em, -2em) rotate(180deg);
+  animation: cornerPulseStrongRight 0.9s ease-out 1 both;
+}
+
+body.intro-corners-move .corner {
+  animation: cornerToBottomLeft 3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body.intro-corners-move .corner2 {
+  animation: cornerToTopRight 3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes logoDotPulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.5; }
+}
+
+@keyframes logoPulseStrong {
+  0% { transform: translate(-50%, -50%) scale(0.94); opacity: 0.6; }
+  60% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+@keyframes cornerPulseStrongLeft {
+  0% { opacity: 0.4; transform: translate(-50%, -50%) translate(-2em, 2em) scale(0.92); }
+  60% { opacity: 1; transform: translate(-50%, -50%) translate(-2em, 2em) scale(1.08); }
+  100% { opacity: 1; transform: translate(-50%, -50%) translate(-2em, 2em) scale(1); }
+}
+
+@keyframes cornerPulseStrongRight {
+  0% { opacity: 0.4; transform: translate(-50%, -50%) translate(2em, -2em) rotate(180deg) scale(0.92); }
+  60% { opacity: 1; transform: translate(-50%, -50%) translate(2em, -2em) rotate(180deg) scale(1.08); }
+  100% { opacity: 1; transform: translate(-50%, -50%) translate(2em, -2em) rotate(180deg) scale(1); }
+}
+
+@keyframes logoMove {
+  0% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  70% {
+    top: 0.3em;
+    left: 0.3em;
+    transform: translate(0, 0) scale(1.02);
+  }
+  100% {
+    top: 0.5em;
+    left: 0.5em;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes cornerToBottomLeft {
+  0% {
+    transform: translate(-50%, -50%) translate(-2em, 2em) rotate(0deg);
+  }
+  70% {
+    transform: translate(
+      calc(-50% - 50vw + 1.2em),
+      calc(-50% + 50vh - 1.2em)
+    ) rotate(0deg);
+  }
+  100% {
+    transform: translate(
+      calc(-50% - 50vw + 1.5em),
+      calc(-50% + 50vh - 1.5em)
+    ) rotate(0deg);
+  }
+}
+
+@keyframes cornerToTopRight {
+  0% {
+    transform: translate(-50%, -50%) translate(2em, -2em) rotate(180deg);
+  }
+  70% {
+    transform: translate(
+      calc(-50% + 50vw - 1.2em),
+      calc(-50% - 50vh + 1.2em)
+    ) rotate(180deg);
+  }
+  100% {
+    transform: translate(
+      calc(-50% + 50vw - 1.5em),
+      calc(-50% - 50vh + 1.5em)
+    ) rotate(180deg);
+  }
+}

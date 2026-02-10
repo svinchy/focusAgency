@@ -3,9 +3,11 @@
   width: fit-content;
   line-height: .85em;
   font-size: 4em;
-  font-weight: 700;
+  font-weight: 800;
   position: fixed;
   font-family: var(--font-en);
+  mix-blend-mode: difference;
+  z-index: 1000;
 
 }
 

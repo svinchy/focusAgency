@@ -11,6 +11,7 @@
   background-size: cover;
   background-attachment: fixed;
   position: relative;
+  animation: starsDrift 40s linear infinite;
 }
 
 .lang-content::before {
@@ -58,6 +59,7 @@
   pointer-events: none;
   top: 0;
   left: 0;
+  animation: starsTwinkle 6s ease-in-out infinite;
 
 }
 
@@ -71,4 +73,15 @@
   bottom: 0;
   right: 0;
   pointer-events: none;
+}
+
+@keyframes starsDrift {
+  0% { background-position: 50% 50%; }
+  50% { background-position: 52% 48%; }
+  100% { background-position: 50% 50%; }
+}
+
+@keyframes starsTwinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.6; }
 }

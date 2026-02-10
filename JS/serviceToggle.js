@@ -110,7 +110,7 @@ export function initServiceToggle() {
   if (servicesSection) {
     // Make section tall enough for scroll-driven steps.
     const itemsCount = content.services[getLanguage()].items.length;
-    servicesSection.style.minHeight = `${itemsCount * 100}vh`;
+    servicesSection.style.minHeight = `${itemsCount * 200}vh`;
   }
 
   // Scroll handler: updates dots/title/description and scrolls images.
@@ -177,6 +177,18 @@ export function initServiceToggle() {
   window.addEventListener("resize", onScroll);
   if (imagesWrap) {
     imagesWrap.addEventListener("scroll", handleImagesScroll, { passive: true });
+    imagesWrap.addEventListener(
+      "wheel",
+      (e) => {
+        e.preventDefault();
+        if (typeof window.__smoothScrollBy === "function") {
+          window.__smoothScrollBy(e.deltaY);
+        } else {
+          window.scrollBy({ top: e.deltaY, left: 0, behavior: "auto" });
+        }
+      },
+      { passive: false }
+    );
   }
 
   if (dots.length > 0) setActiveIndex(0);
