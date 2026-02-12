@@ -70,3 +70,36 @@ export function initTitleReveal() {
 
   titles.forEach((el) => io.observe(el));
 }
+
+// Lighten overlay after .steps section
+export function initOverlayAfterSteps() {
+  const langContent = document.querySelector(".lang-content");
+  const steps = document.querySelector(".steps");
+  if (!langContent || !steps) return;
+
+  const startOpacity = 1;
+  const endOpacity = 0.6;
+
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const stepsRect = steps.getBoundingClientRect();
+      const stepsTop = steps.offsetTop;
+      const stepsHeight = steps.offsetHeight;
+      const y = window.scrollY || window.pageYOffset;
+
+      // progress from steps top to steps bottom
+      const progressRaw = (y - stepsTop) / Math.max(1, stepsHeight);
+      const progress = Math.min(1, Math.max(0, progressRaw));
+      const value = startOpacity + (endOpacity - startOpacity) * progress;
+      langContent.style.setProperty("--overlayShade", value.toFixed(3));
+      ticking = false;
+    });
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  onScroll();
+}

@@ -113,6 +113,34 @@
   --font-ka-body: 'BPG Square Banner 2013', sans-serif;
   --font-ka-cap: 'BPG Square Banner Cap 2013', sans-serif;
 
+  /* spacing */
+  --space-xs: 0.5em;
+  --space-s: 1em;
+  --space-m: 2em;
+  --space-l: 3em;
+  --space-xl: 5em;
+  --space-2xl: 8em;
+
+  /* radius */
+  --radius-s: 0.8em;
+  --radius-m: 1.6em;
+  --radius-l: 2.6em;
+
+  /* motion */
+  --dur-fast: 0.2s;
+  --dur-med: 0.45s;
+  --dur-slow: 0.9s;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-io: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* type */
+  --lh-tight: 0.9em;
+  --lh-compact: 1.1em;
+  --lh-body: 1.4em;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.06em;
+
 }
 
 .themeDocument{

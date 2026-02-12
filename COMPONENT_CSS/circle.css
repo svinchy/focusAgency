@@ -1,0 +1,77 @@
+.circle {
+  width: 42em;
+  height: 42em;
+  border: .5px solid var(--cream);
+  position: absolute;
+  top: 50%;
+  left: 0;
+  border-radius: 100%;
+  transform: translate(-200px, -40%);
+}
+
+.circle .dot {
+  width: 1.2em;
+  height: 1.2em;
+  background: var(--cream);
+  position: absolute;
+  border-radius: 100%;
+}
+
+.circle .dot hgroup {
+  color: var(--cream);
+}
+
+.circle .dot hgroup h3 {
+  margin: 0;
+  font-size: 5em;
+  font-weight: 900;
+   /* -webkit-text-stroke: 2px #000;
+  -webkit-text-fill-color: transparent;  */
+}
+
+body[data-lang="ka"] .circle .dot hgroup h3 {
+  font-family: var(--font-en);
+}
+body[data-lang="ka"] .circle .dot hgroup p {
+  min-width: 12em;
+
+}
+
+.circle .dot hgroup p {
+  padding: 0;
+  font-size: 2em;
+  margin: 1.5em 0 0 2em;
+  letter-spacing: -0.03em;
+  min-width: 10em;
+  line-height: 1em;
+  font-weight: 100;
+}
+
+.circle .dot.dot1 {
+  right: 7em;
+  top: 4em;
+}
+
+.circle .dot.dot1 hgroup {
+  margin: -10em 0 0 5em;
+}
+
+
+
+.circle .dot.dot2 {
+  right: -0.5em;
+  top: 22em;
+}
+
+.circle .dot.dot2 hgroup {
+   margin: -10em 0 0 5em;
+
+}
+
+.circle .dot.dot3 {
+  right: 10em;
+  bottom: 2.2em;
+}
+.circle .dot.dot3 hgroup {
+   margin: -5em 0 0 12em;
+}

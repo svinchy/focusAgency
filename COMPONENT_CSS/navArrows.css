@@ -1,0 +1,30 @@
+.navArrows {
+  z-index: 100;
+  display: flex;
+  gap: .5em;
+
+}
+
+.navArrows button {
+  background-color: var(--red);
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+}
+.navArrows button:first-child img {
+  transform: rotate(180deg);
+}
+.navArrows button:first-child {
+  width: 2.5em;
+  height: 2.5em;
+}
+.navArrows button:last-child {
+  width: 3em;
+  height: 3em;
+}
+.navArrows button img {
+  width: 1.4em;
+}

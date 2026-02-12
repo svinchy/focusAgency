@@ -149,6 +149,25 @@ export const content = {
         "ვიდეოს ატვირთვა და SEO ოპტიმიზაცია YouTube-ზე"
       ]
     }
-  }
+  },
+
+  steps: {
+    en: {
+      title: "Flow to work",
+      items: [
+        { number: "01", title: "initial consultation" },
+        { number: "02", title: "strategy development and implementation." },
+        { number: "03", title: "review and final refinement"}
+      ]
+    },
+    ka: {
+      title: "სამუშაო პროცესი",
+      items: [
+        { number: "01", title: "საწყისი კონსულტაცია" },
+        { number: "02", title: "სტრატეგიის შემუშავება და დანერგვა." },
+        { number: "03", title: "შეფასება და საბოლოო დახვეწა" }
+      ]
+    }
+  },
 
 };

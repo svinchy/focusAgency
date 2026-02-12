@@ -1,0 +1,28 @@
+.socialLinks {
+  display: flex;
+  gap: 0em;
+  min-width: fit-content;
+  max-width: fit-content;
+
+}
+
+.socialLinks a {
+  display: flex;
+  min-width: 2em;
+  max-width: 2em;
+  min-height: 2em;
+  max-height: 2em;
+  justify-content: center;
+  align-items: center;
+
+}
+.socialLinks a img {
+  object-fit: contain;
+  width: fit-content;
+  display: block;
+  opacity: .7;
+}
+
+.socialLinks a img:hover {
+  opacity: 1;
+}

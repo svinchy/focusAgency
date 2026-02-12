@@ -1,0 +1,65 @@
+.teamMember {
+  min-width: 20em;
+  max-width: 20em;
+  height: 25em;
+  border: 1px solid rgba(255, 241, 227, 0);
+  position: relative;
+  border-radius: 2.2em;
+  overflow: hidden;
+}
+
+.teamMember::after {
+  content: '';
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.teamMember h6 {
+  font-size: 1.2em;
+  padding: 0 0 0 1.2em;
+  font-weight: 400;
+  max-width: fit-content;
+  color: rgba(255, 241, 227, .7);
+  position: absolute;
+  z-index: 3;
+  top: 1em;
+
+}
+
+.teamMember h5 {
+  font-size: 1.7em;
+  max-width: 2em;
+  line-height: 1em;
+  position: absolute;
+  bottom: 1.3em;
+  left: 1em;
+  z-index: 3;
+  font-weight: 900;
+}
+
+.teamMember img {
+   position: absolute;
+   bottom: 0;
+   width: 100%;
+   height: 90%;
+   object-fit: cover;
+   z-index: 1;
+   transform: scale(.9);
+   transition:
+    transform var(--dur-slow) var(--ease-soft);
+
+}
+
+.teamMember .socialLinks {
+  position: absolute;
+  z-index: 3;
+  top: 1.2em;
+  right: 1.5em;
+}
+

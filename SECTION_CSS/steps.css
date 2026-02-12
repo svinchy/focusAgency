@@ -1,0 +1,31 @@
+.steps {
+  position: relative;
+  min-height: 100em;
+  padding: 9em 0 8em 0;
+
+}
+
+.steps h2 {
+  position: absolute;
+  right: 3em;
+  top: 1em;
+  font-size: 5em;
+  z-index: 2;
+  font-weight: 900;
+  max-width: 4.6em;
+  text-transform: lowercase;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: black;
+  transform: translateY(var(--steps-title-y, 0em));
+  will-change: transform;
+  color: var(--cream);
+
+}
+
+.steps .circle {
+  transform: translate(-240px, -35%) rotate(var(--steps-rot, 0deg));
+  transform-origin: 50% 50%;
+  will-change: transform;
+  z-index: 2;
+}

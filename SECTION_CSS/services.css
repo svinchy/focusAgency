@@ -1,36 +1,44 @@
 .services {
   width: 80%;
-  padding: 5em 0 20em 0;
+  max-width: 92em;
+  padding: 8em 0 22em 0;
   position: relative;
    margin: 0 auto;
-
 }
+
+
 
 
 /* services title */
 .services h2 {
   font-weight: 900;
-  line-height: 1em;
-  padding: 2em 0 2em 0;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  padding: 2.2em 0 2em 0;
   /* color: transparent;
   -webkit-text-stroke: 2px var(--cream); */
   opacity: 0;
-  transform: translateY(0.6em);
-  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+  transform: translateY(0.8em);
+  filter: blur(6px);
+  transition:
+    opacity var(--dur-med) var(--ease-io),
+    transform var(--dur-med) var(--ease-io),
+    filter var(--dur-med) var(--ease-io);
 }
 
 .services h2.is-visible {
   opacity: 1;
   transform: translateY(0);
+  filter: blur(0);
 }
 
 body[data-lang="en"] .services h2 {
-  font-size: 8.3em;
-  max-width: 6em;
+  font-size: 9em;
+  max-width: 5em;
 }
 body[data-lang="ka"] .services h2 {
-  font-size: 6em;
-   max-width: 8em;
+  font-size: 7.4em;
+   max-width: 7em;
 }
 
 
@@ -41,10 +49,15 @@ body[data-lang="ka"] .services h2 {
   width: 100%;
   height: calc(100vh - 10em);
   position: sticky;
-  top: 5em;
+  top: 7em;
   z-index: 10;
-  border-radius: 3em;
+  border-radius: var(--radius-l);
   overflow: hidden;
+  border: 1px solid rgba(255, 241, 227, .15);
+  /* box-shadow: rgba(255, 241, 227, 0.16) 0px 1px 4px; */
+  /* box-shadow:
+   0 10px 30px rgba(0, 0, 0, 0.15),
+   inset 0 0 0 0.08em rgba(255, 255, 255, 0.1); */
 }
 .content::before {
   content: '';
@@ -112,10 +125,10 @@ body[data-lang="ka"] .services h2 {
   bottom: 1em;
   left: 1em;
   transition:
-  width 1s cubic-bezier(0.4, 0, 0.2, 1),
-  height 1s cubic-bezier(0.4, 0, 0.2, 1),
-  transform 0.9s ease-in-out,
-  box-shadow 0.9s ease-in-out;
+  width var(--dur-slow) var(--ease-io),
+  height var(--dur-slow) var(--ease-io),
+  transform var(--dur-slow) var(--ease-soft),
+  box-shadow var(--dur-slow) var(--ease-soft);
   will-change: transform;
 }
 
@@ -127,17 +140,32 @@ body[data-lang="ka"] .services h2 {
   rotateY(-6deg);
 }
 
+.content .service::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 120% at 20% 0%, rgba(255, 255, 255, 0.5), transparent 45%);
+  opacity: 0;
+  transition: opacity var(--dur-med) var(--ease-io);
+  pointer-events: none;
+}
+
+.content .service:hover::before {
+  opacity: 0.6;
+}
+
 .content .service button img {
   transition:
-  opacity 0.45s ease-in-out,
-  transform 0.45s ease-in-out;
+  opacity var(--dur-med) var(--ease-io),
+  transform var(--dur-med) var(--ease-io);
 }
 
 .content .service hgroup h3,
 .content .service hgroup p {
   transition:
-  opacity 0.35s ease-in-out,
-  transform 0.35s ease-in-out;
+  opacity var(--dur-med) var(--ease-io),
+  transform var(--dur-med) var(--ease-io);
 }
 
 .content .service hgroup .swap-out {
@@ -158,8 +186,8 @@ body[data-lang="ka"] .services h2 {
   opacity: 0;
   transform: translateY(0.6em);
   transition:
-  opacity 0.35s ease-in-out,
-  transform 0.35s ease-in-out;
+  opacity var(--dur-med) var(--ease-io),
+  transform var(--dur-med) var(--ease-io);
   pointer-events: none;
   min-width: calc(100% - 8em);
   max-width: calc(100% - 8em);
@@ -210,7 +238,7 @@ body[data-lang="ka"] .services h2 {
   height: calc(100% - 2em);
   /* transform: translate(0, 0); */
   box-sizing: border-box;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.2);
 }
 
 .content .service.active hgroup h3 {
@@ -227,7 +255,7 @@ body[data-lang="ka"] .services h2 {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
-  transition-delay: 0.7s;
+  transition-delay: 0.6s;
 }
 
 .content .service.active:hover {

@@ -1,6 +1,6 @@
 @keyframes rotateGlobe {
   0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.2); }
+  50% { transform: rotate(180deg) scale(1.05); }
   100% { transform: rotate(360deg) scale(1); }
 }
 
@@ -12,10 +12,28 @@
   object-fit: cover;
   position: fixed;
   bottom: -10em;
-  right: -10em;
-  animation: rotateGlobe 60s linear infinite, scaleGlobe 20s ease-in-out infinite alternate;
+  right: -5em;
+  animation: rotateGlobe 120s linear infinite, scaleGlobe 20s ease-in-out infinite alternate;
   transform-origin: center center;
+  transform-style: preserve-3d;
   filter:
     drop-shadow(0 35px 45px rgba(0, 0, 0, 0.55))
     drop-shadow(0 0 70px rgba(0, 0, 0, 0.45));
+}
+
+.globe2 {
+  width: 100%;
+  height: 100%;
+   display: block;
+  object-fit: cover;
+  position: fixed;
+  z-index: 2;
+  opacity: .35;
+  bottom: -15em;
+  display: none;
+  right: -5em;
+  transform: rotate(45deg);
+  /* animation: rotateGlobe 120s linear infinite, scaleGlobe 20s ease-in-out infinite alternate;
+  transform-origin: center center;
+  transform-style: preserve-3d; */
 }

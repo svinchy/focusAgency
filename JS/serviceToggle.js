@@ -126,11 +126,14 @@ export function initServiceToggle() {
     const topOffset = parseFloat(getComputedStyle(contentWrap).top) || 0;
     const sectionStart = sectionTop - topOffset;
     const sectionEnd = sectionTop + sectionHeight - viewportH - topOffset;
+    const contentRect = contentWrap.getBoundingClientRect();
+    const contentAtTop = contentRect.top <= topOffset + 2;
     const inSection = scrollY >= sectionStart && scrollY <= sectionEnd;
+    const showDots = inSection && contentAtTop;
     const dotsWrap = document.querySelector(".navigationDots");
-    if (dotsWrap) dotsWrap.classList.toggle("is-visible", inSection);
+    if (dotsWrap) dotsWrap.classList.toggle("is-visible", showDots);
 
-    const buffer = viewportH * 0.18; // delay start/end so it doesn't trigger too early
+    const buffer = viewportH * 0.25; // keep some breathing room
     const progressStart = sectionTop + buffer;
     const progressEnd = sectionTop + sectionHeight - viewportH - buffer;
     const denom = progressEnd - progressStart;

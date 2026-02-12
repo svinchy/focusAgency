@@ -39,6 +39,24 @@ export function render() {
   }
   refreshServiceContent();
 
+  /* ---------- Steps ---------- */
+  const stepsTitle = document.querySelector(".steps h2");
+  if (stepsTitle) {
+    stepsTitle.textContent = content.steps[lang].title;
+  }
+  const stepsItems = document.querySelectorAll(".steps .circle .dot");
+  if (stepsItems.length) {
+    const items = content.steps[lang].items;
+    stepsItems.forEach((itemEl, i) => {
+      const h3 = itemEl.querySelector("h3");
+      const p = itemEl.querySelector("p");
+      if (items[i]) {
+        if (h3) h3.textContent = items[i].number;
+        if (p) p.textContent = items[i].title;
+      }
+    });
+  }
+
     // --- Update body data-lang for font switching ---
     document.body.dataset.lang = lang;
 

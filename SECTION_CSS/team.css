@@ -1,0 +1,127 @@
+.team {
+  width: 80%;
+  background-color: transparent;
+  position: relative;
+  padding: 0 0 20em 0;
+  z-index: 10;
+  margin: 0 auto;
+}
+
+
+.team h2 {
+  font-size: 5em;
+  max-width: 2em;
+  line-height: .8em;
+  font-weight: 900;
+  position: relative;
+  z-index: 4;
+  padding: 0 0 3em 2em;
+}
+
+.team .contents {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9em;
+  height: 30em;
+  perspective: 2000px;
+  overflow: visible;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* teamMember behavior + animation (section-specific) */
+
+.team .teamMember {
+  transition:
+    transform var(--dur-slow) var(--ease-soft),
+    opacity var(--dur-slow) var(--ease-soft),
+    box-shadow var(--dur-med) var(--ease-io),
+    border-color var(--dur-med) var(--ease-io);
+  will-change: transform;
+  opacity: 0.55;
+  transform: scale(0.86) translateZ(-40px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.team .teamMember::after {
+  opacity: 0.85;
+  transition: opacity var(--dur-med) var(--ease-io);
+}
+
+.team .teamMember h6,
+.team .teamMember h5,
+.team .teamMember .socialLinks {
+  opacity: 0;
+  /* transform: translateY(0.4em); */
+  transition: opacity var(--dur-med) var(--ease-io), transform var(--dur-med) var(--ease-io);
+}
+
+
+.team .teamMember .socialLinks a {
+  transition: transform var(--dur-fast) var(--ease-io), background var(--dur-fast) var(--ease-io);
+}
+
+
+
+.team .teamMember.active {
+  opacity: 1;
+  transform: scale(1) translateZ(0);
+  border-color: rgba(255, 241, 227, 0.75);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+}
+
+.team .teamMember.active h5,
+.team .teamMember.active h6,
+.team .teamMember.active .socialLinks {
+  opacity: 1;
+  /* transform: translateY(0); */
+}
+
+.team .teamMember.active::after {
+  opacity: 1;
+  background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.team .teamMember.active img {
+  transform: scale(1);
+}
+
+
+
+.team .navArrows {
+  position: absolute;
+  right: 4em;
+  z-index: 5;
+  display: flex;
+  gap: 1em;
+}
+
+.team .navArrows .arrow {
+  /* width: 3.2em;
+  height: 3.2em;
+  border-radius: 100%;
+  border: none;
+  background: rgba(224, 77, 77, 0.9);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 20px rgba(224, 77, 77, 0.35);
+  cursor: pointer; */
+  transition: transform var(--dur-fast) var(--ease-io);
+}
+
+.team .navArrows .arrow:hover {
+  transform: scale(1.08);
+}
+
+.team .navArrows .arrow img {
+  width: 1.4em;
+  height: 1.4em;
+}
+
+.team .navArrows .arrow.prev img {
+  transform: rotate(180deg);
+}

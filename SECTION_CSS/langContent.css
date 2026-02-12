@@ -7,7 +7,8 @@
   opacity: 1;
   min-height: 100vh;
   /* max-height: 100vh; */
-  background: url('../IMAGE/stars.jpg') no-repeat center;
+  /* background: url('../IMAGE/stars.jpg') no-repeat center; */
+  background: url('../IMAGE/stars5.jpeg') no-repeat center;
   background-size: cover;
   background-attachment: fixed;
   position: relative;
@@ -20,7 +21,7 @@
   width: 100%;
   height: 100%;
   z-index: 2;
-  background: linear-gradient(to left, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to left, rgba(0, 0, 0, var(--overlayShade, 1)) 0%, rgba(0, 0, 0, 0) 100%);
   top: 0;
   right: 0;
   pointer-events: none;
@@ -31,7 +32,7 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, var(--overlayShade, 1)) 0%, rgba(0, 0, 0, 0) 100%);
   z-index: 2;
   pointer-events: none;
   top: 0;
@@ -69,7 +70,7 @@
   width: 100%;
   height: 100%;
   z-index: 2;
-  background: linear-gradient(to left, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to left, rgba(0, 0, 0, var(--overlayShade, 1)) 0%, rgba(0, 0, 0, 0) 100%);
   bottom: 0;
   right: 0;
   pointer-events: none;

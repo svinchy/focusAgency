@@ -16,8 +16,12 @@ body {
   position: relative;
   width: 100%;
   min-height: 100vh;
-
+  line-height: var(--lh-body);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
 
 /* English default */
 
@@ -115,4 +119,13 @@ body.intro-active .logo {
   z-index: 5;
   bottom: 2.2em;
   right: 2.2em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01s !important;
+    scroll-behavior: auto !important;
+  }
 }
