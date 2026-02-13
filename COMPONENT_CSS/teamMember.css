@@ -2,7 +2,7 @@
   min-width: 20em;
   max-width: 20em;
   height: 25em;
-  border: 1px solid rgba(255, 241, 227, 0);
+  border: 1px solid rgba(255, 241, 227, .5);
   position: relative;
   border-radius: 2.2em;
   overflow: hidden;
@@ -33,11 +33,11 @@
 }
 
 .teamMember h5 {
-  font-size: 1.7em;
+  font-size: 2.2em;
   max-width: 2em;
   line-height: 1em;
   position: absolute;
-  bottom: 1.3em;
+  bottom: 1em;
   left: 1em;
   z-index: 3;
   font-weight: 900;
@@ -53,7 +53,6 @@
    transform: scale(.9);
    transition:
     transform var(--dur-slow) var(--ease-soft);
-
 }
 
 .teamMember .socialLinks {

@@ -23,6 +23,7 @@ body {
 }
 
 
+
 /* English default */
 
 
@@ -57,7 +58,7 @@ body[data-lang="en"] .point {
   font-family: var(--fontEn);
 } */
 
-.corner {
+body .corner {
   position: fixed;
   z-index: 5;
   bottom: 1.5em;
@@ -71,7 +72,7 @@ body[data-lang="en"] .point {
     transform 1.2s ease;
 }
 
-.corner2 {
+body .corner2 {
   left: initial;
   bottom: initial;
   top: 1.5em;

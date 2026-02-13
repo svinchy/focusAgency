@@ -61,8 +61,6 @@ body[data-lang="ka"] .service hgroup p {
   padding: 0.7em 0.95em;
   border-radius: var(--radius-s);
   border: 0.08em solid rgba(255, 241, 227, 0.3);
-  /* background: rgba(0, 0, 0, 0.72);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); */
   opacity: 0;
   transform: translateY(0.6em) scale(0.98);
   transition:

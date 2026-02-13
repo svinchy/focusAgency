@@ -1,10 +1,26 @@
 .testimonial {
-  width: 100%;
-  max-width: 92em;
+  max-width: fit-content;
   margin: 0 auto;
   height: 1000px;
   padding: 10em 0 18em 0;
   /* background: var(--cream); */
   position: relative;
   z-index: 100;
+}
+
+.testimonial .title {
+  margin-left: 5em;
+}
+.testimonial .title img {
+  height: 10em;
+  margin-left: 5em;
+  margin-bottom: 2em;
+}
+
+.testimonial .title h3 {
+  font-size: 5em;
+  font-weight: 900;
+  text-transform: capitalize;
+  max-width: 2em;
+  line-height: 1em;
 }

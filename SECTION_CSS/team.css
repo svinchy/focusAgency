@@ -9,13 +9,29 @@
 
 
 .team h2 {
-  font-size: 5em;
+  font-size: 5.5em;
   max-width: 2em;
   line-height: .8em;
   font-weight: 900;
   position: relative;
   z-index: 4;
   padding: 0 0 3em 2em;
+  color: rgba(255, 241, 227, .5);
+}
+
+.team .reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(1.2em);
+  transition: opacity 0.7s var(--ease-io), transform 0.7s var(--ease-io);
+}
+
+.team .reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.team .contents.reveal-on-scroll {
+  transition-delay: 0.1s;
 }
 
 .team .contents {
@@ -26,18 +42,19 @@
   justify-content: center;
   gap: 0.9em;
   height: 30em;
-  perspective: 2000px;
+  perspective: 1200px;
   overflow: visible;
   width: 100%;
   box-sizing: border-box;
 }
 
 
+
+
 /* teamMember behavior + animation (section-specific) */
 
 .team .teamMember {
   transition:
-    transform var(--dur-slow) var(--ease-soft),
     opacity var(--dur-slow) var(--ease-soft),
     box-shadow var(--dur-med) var(--ease-io),
     border-color var(--dur-med) var(--ease-io);
@@ -98,30 +115,33 @@
   z-index: 5;
   display: flex;
   gap: 1em;
+  margin-top: 3em;
 }
 
-.team .navArrows .arrow {
-  /* width: 3.2em;
-  height: 3.2em;
-  border-radius: 100%;
-  border: none;
-  background: rgba(224, 77, 77, 0.9);
-  display: grid;
-  place-items: center;
-  box-shadow: 0 10px 20px rgba(224, 77, 77, 0.35);
-  cursor: pointer; */
-  transition: transform var(--dur-fast) var(--ease-io);
+.team .more {
+  border: 3px solid red;
+  color: rgba(255, 241, 227, 1);
+  padding: 1.2em 2em;
+  border-radius: 5em;
+  border: 1px solid rgba(255, 241, 227, .5);
+  margin-top: 13em;
+  margin-left: 3em;
+  font-size: 1em;
+  cursor: pointer;
+   font-weight: 700;
+ transition:
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.5s ease,
+    border-radius 0.5s ease,
+    border 0.5s ease,
+    opacity 0.5s ease;
 }
 
-.team .navArrows .arrow:hover {
-  transform: scale(1.08);
-}
+.team .more:hover {
+  opacity: 1;
+  background: rgba(224, 77, 77, 1);
+  transform: scale(1.05);
+  border: 1px solid rgba(255, 241, 227, 0);
 
-.team .navArrows .arrow img {
-  width: 1.4em;
-  height: 1.4em;
-}
-
-.team .navArrows .arrow.prev img {
-  transform: rotate(180deg);
 }

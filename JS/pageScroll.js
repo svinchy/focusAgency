@@ -71,14 +71,36 @@ export function initTitleReveal() {
   titles.forEach((el) => io.observe(el));
 }
 
+// Generic reveal on scroll
+export function initRevealOnScroll() {
+  const items = document.querySelectorAll(".reveal-on-scroll");
+  if (!items.length) return;
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+        }
+      });
+    },
+    { threshold: 0.25 }
+  );
+
+  items.forEach((el) => io.observe(el));
+}
+
 // Lighten overlay after .steps section
 export function initOverlayAfterSteps() {
   const langContent = document.querySelector(".lang-content");
   const steps = document.querySelector(".steps");
+  const team = document.querySelector(".team");
+  const testimonial = document.querySelector(".testimonial");
   if (!langContent || !steps) return;
 
   const startOpacity = 1;
   const endOpacity = 0.6;
+  const darkSectionOpacity = 0.9;
 
   let ticking = false;
   const onScroll = () => {
@@ -93,7 +115,27 @@ export function initOverlayAfterSteps() {
       // progress from steps top to steps bottom
       const progressRaw = (y - stepsTop) / Math.max(1, stepsHeight);
       const progress = Math.min(1, Math.max(0, progressRaw));
-      const value = startOpacity + (endOpacity - startOpacity) * progress;
+      let value = startOpacity + (endOpacity - startOpacity) * progress;
+
+      const smoothClamp = (sectionEl) => {
+        if (!sectionEl) return 0;
+        const top = sectionEl.offsetTop;
+        const height = sectionEl.offsetHeight;
+        const start = top - viewportH * 0.25;
+        const end = top + height + viewportH * 0.25;
+        const raw = (y - start) / Math.max(1, end - start);
+        const t = Math.min(1, Math.max(0, raw));
+        return t * (1 - t) * 4; // smooth bump 0->1->0
+      };
+
+      const teamBump = smoothClamp(team);
+      const testBump = smoothClamp(testimonial);
+      const bump = Math.max(teamBump, testBump);
+      if (bump > 0) {
+        const target = darkSectionOpacity;
+        value = value + (target - value) * bump;
+      }
+
       langContent.style.setProperty("--overlayShade", value.toFixed(3));
       ticking = false;
     });

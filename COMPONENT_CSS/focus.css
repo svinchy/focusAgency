@@ -1,0 +1,10 @@
+.focus {
+  border: 1px solid red;
+  width: 25em;
+  height: 20em;
+  position: relative;
+}
+
+.focus .corner {
+  position: absolute;
+}

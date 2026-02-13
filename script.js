@@ -2,7 +2,7 @@ import { render } from "./JS/render.js";
 import { initLanguageToggle } from "./JS/languageSwitcher.js";
 import { initServiceToggle } from "./JS/serviceToggle.js";
 import { initNavbar } from "./JS/navbar.js";
-import { initSmoothScroll, initTitleReveal, initOverlayAfterSteps } from "./JS/pageScroll.js";
+import { initSmoothScroll, initTitleReveal, initOverlayAfterSteps, initRevealOnScroll } from "./JS/pageScroll.js";
 import { initBannerScroll } from "./JS/bannerScroll.js";
 import { initIntroAnimation } from "./JS/introAnimation.js";
 import { initStepsRotation } from "./JS/stepsRotate.js";
@@ -28,6 +28,7 @@ initServiceToggle();
 initSmoothScroll();
 
 initTitleReveal();
+initRevealOnScroll();
 
 initBannerScroll();
 
