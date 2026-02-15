@@ -21,7 +21,9 @@ body[data-lang="ka"] .bannerTitle {
 }
 
 body[data-lang="ka"] .bannerTitle h4 {
-  opacity: .7;
+  opacity: .5 !important;
+  font-size: 1.3em;
+  max-width: 14em;
 }
 
 .bannerTitle h1 {

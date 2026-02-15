@@ -49,7 +49,7 @@ export function initIntroAnimation() {
       if (e.animationName !== "cornerToBottomLeft") return;
       corner.style.top = "50%";
       corner.style.left = "50%";
-      corner.style.transform = "translate(calc(-50% - 50vw + 1.5em), calc(-50% + 50vh - 1.5em)) rotate(0deg)";
+      corner.style.transform = "translate(calc(-50% - 50vw + 2.5em), calc(-50% + 50vh - 2.5em)) rotate(0deg)";
       corner.style.animation = "none";
     }, { once: true });
   }
@@ -59,7 +59,7 @@ export function initIntroAnimation() {
       if (e.animationName !== "cornerToTopRight") return;
       corner2.style.top = "50%";
       corner2.style.left = "50%";
-      corner2.style.transform = "translate(calc(-50% + 50vw - 1.5em), calc(-50% - 50vh + 1.5em)) rotate(180deg)";
+      corner2.style.transform = "translate(calc(-50% + 50vw - 2.5em), calc(-50% - 50vh + 2.5em)) rotate(180deg)";
       corner2.style.animation = "none";
     }, { once: true });
   }

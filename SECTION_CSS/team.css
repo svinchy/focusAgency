@@ -19,6 +19,10 @@
   color: rgba(255, 241, 227, .5);
 }
 
+body[data-lang="ka"] .team h2 {
+   line-height: 1em;
+
+}
 .team .reveal-on-scroll {
   opacity: 0;
   transform: translateY(1.2em);

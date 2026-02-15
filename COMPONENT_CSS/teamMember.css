@@ -4,7 +4,7 @@
   height: 25em;
   border: 1px solid rgba(255, 241, 227, .5);
   position: relative;
-  border-radius: 2.2em;
+  border-radius: 2em;
   overflow: hidden;
 }
 
@@ -21,15 +21,19 @@
 }
 
 .teamMember h6 {
-  font-size: 1.2em;
-  padding: 0 0 0 1.2em;
+  font-size: 1em;
+  padding: 0 0 0 1.35em;
   font-weight: 400;
   max-width: fit-content;
   color: rgba(255, 241, 227, .7);
   position: absolute;
   z-index: 3;
   top: 1em;
-
+  text-transform: uppercase;
+}
+body[data-lang="ka"] .teamMember h6 {
+  font-family: 'BPG Square Banner Caps 2013', sans-serif;
+  padding: 0.25em 0 0 1.35em;
 }
 
 .teamMember h5 {

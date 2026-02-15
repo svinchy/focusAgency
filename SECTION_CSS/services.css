@@ -37,8 +37,9 @@ body[data-lang="en"] .services h2 {
   max-width: 5em;
 }
 body[data-lang="ka"] .services h2 {
-  font-size: 7.4em;
+  font-size: 7em;
    max-width: 7em;
+   line-height: 1em;
 }
 
 

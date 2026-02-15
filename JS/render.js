@@ -57,6 +57,71 @@ export function render() {
     });
   }
 
+  /* ---------- Team ---------- */
+  const teamTitle = document.querySelector(".team h2");
+  if (teamTitle) {
+    teamTitle.textContent = content.team[lang].title;
+  }
+
+  const moreButton = document.querySelector(".team .more");
+  if (moreButton) {
+    moreButton.textContent = content.team[lang].more;
+  }
+
+  const teamMembers = document.querySelectorAll(".team .teamMember");
+  if (teamMembers.length) {
+    const members = content.team[lang].members;
+    teamMembers.forEach((memberEl, i) => {
+      const roleEl = memberEl.querySelector("h6");
+      const nameEl = memberEl.querySelector("h5");
+      const imageEl = memberEl.querySelector("img");
+      if (!members[i]) return;
+      if (roleEl) roleEl.textContent = members[i].role;
+      if (nameEl) nameEl.textContent = members[i].name;
+      if (imageEl && members[i].image) imageEl.src = members[i].image;
+    });
+  }
+
+  /* ---------- Testimonial ---------- */
+  const testimonialTitle = document.querySelector(".testimonial .title h3");
+  if (testimonialTitle) {
+    testimonialTitle.textContent = content.testimonial[lang].title;
+  }
+
+  const testimonialMessages = content.testimonial[lang].messages;
+  const messagesRoot = document.querySelector(".testimonial .messages");
+  if (messagesRoot && testimonialMessages?.length) {
+    const allParagraphs = Array.from(messagesRoot.querySelectorAll("p"));
+
+    // If carousel already initialized, every item has data-real-index (including clones).
+    const hasRealIndex = allParagraphs.some((p) => p.dataset.realIndex !== undefined);
+
+    if (hasRealIndex) {
+      allParagraphs.forEach((p, i) => {
+        const idxRaw = p.dataset.realIndex;
+        const idx = Number.isFinite(Number(idxRaw)) ? Number(idxRaw) : i;
+        const source = testimonialMessages[idx % testimonialMessages.length];
+        p.textContent = source.text;
+        p.dataset.author = source.author;
+      });
+    } else {
+      // Before carousel init, map directly by DOM order.
+      allParagraphs.forEach((p, i) => {
+        const source = testimonialMessages[i % testimonialMessages.length];
+        p.textContent = source.text;
+        p.dataset.author = source.author;
+      });
+    }
+
+    const currentActive = messagesRoot.querySelector("p.active");
+    const focusAuthor = document.querySelector(".testimonial .focus h5");
+    if (focusAuthor && currentActive?.dataset.author) {
+      focusAuthor.textContent = currentActive.dataset.author;
+    } else if (focusAuthor) {
+      focusAuthor.textContent = testimonialMessages[0].author;
+    }
+  }
+
     // --- Update body data-lang for font switching ---
     document.body.dataset.lang = lang;
 

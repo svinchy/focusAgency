@@ -61,8 +61,8 @@ body[data-lang="en"] .point {
 body .corner {
   position: fixed;
   z-index: 5;
-  bottom: 1.5em;
-  left: 1.5em;
+  bottom: 2.5em;
+  left: 2.5em;
   transition:
     opacity 1.6s ease,
     top 1.2s ease,
@@ -75,8 +75,8 @@ body .corner {
 body .corner2 {
   left: initial;
   bottom: initial;
-  top: 1.5em;
-  right: 1.5em;
+  top: 2.5em;
+  right: 2.5em;
   transition:
     opacity 1.6s ease,
     top 1.2s ease,
@@ -104,7 +104,7 @@ body.intro-active .logo {
 .navBar {
   position: absolute;
   top: 7em;
-  right: 7em;
+  right: 8em;
   z-index: 5;
 }
 

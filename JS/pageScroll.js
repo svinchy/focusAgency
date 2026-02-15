@@ -90,6 +90,35 @@ export function initRevealOnScroll() {
   items.forEach((el) => io.observe(el));
 }
 
+// Testimonial title reveal + quote shake trigger
+export function initTestimonialIntro() {
+  const section = document.querySelector(".testimonial");
+  if (!section) return;
+  let scrollStopTimer = null;
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        section.classList.toggle("is-active", entry.isIntersecting);
+      });
+    },
+    { threshold: 0.25 }
+  );
+
+  io.observe(section);
+
+  const onScroll = () => {
+    if (!section.classList.contains("is-active")) return;
+    section.classList.add("is-scrolling");
+    if (scrollStopTimer) window.clearTimeout(scrollStopTimer);
+    scrollStopTimer = window.setTimeout(() => {
+      section.classList.remove("is-scrolling");
+    }, 140);
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
+
 // Lighten overlay after .steps section
 export function initOverlayAfterSteps() {
   const langContent = document.querySelector(".lang-content");
@@ -100,17 +129,18 @@ export function initOverlayAfterSteps() {
 
   const startOpacity = 1;
   const endOpacity = 0.6;
-  const darkSectionOpacity = 0.9;
+  const darkTeamOpacity = 0.9;
+  const darkTestimonialOpacity = 0.96;
 
   let ticking = false;
   const onScroll = () => {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(() => {
-      const stepsRect = steps.getBoundingClientRect();
       const stepsTop = steps.offsetTop;
       const stepsHeight = steps.offsetHeight;
       const y = window.scrollY || window.pageYOffset;
+      const viewportH = window.innerHeight;
 
       // progress from steps top to steps bottom
       const progressRaw = (y - stepsTop) / Math.max(1, stepsHeight);
@@ -129,11 +159,13 @@ export function initOverlayAfterSteps() {
       };
 
       const teamBump = smoothClamp(team);
+      if (teamBump > 0) {
+        value = value + (darkTeamOpacity - value) * teamBump;
+      }
+
       const testBump = smoothClamp(testimonial);
-      const bump = Math.max(teamBump, testBump);
-      if (bump > 0) {
-        const target = darkSectionOpacity;
-        value = value + (target - value) * bump;
+      if (testBump > 0) {
+        value = value + (darkTestimonialOpacity - value) * testBump;
       }
 
       langContent.style.setProperty("--overlayShade", value.toFixed(3));

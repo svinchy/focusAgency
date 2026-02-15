@@ -4,10 +4,12 @@ export const content = {
     en: { service: "service", about: "we are", contact: "contact" },
     ka: { service: "სერვისი", about: "ჩვენ ვართ", contact: "კონტაქტი" }
   },
+
   banner: {
     en: { subtitle: "Increase your sales and brand awareness with our team", title: "Focus Agency" },
     ka: { subtitle: "გაზარდეთ თქვენი გაყიდვები და ბრენდის ცნობადობა ჩვენი გუნდით", title: "Focus Agency" }
   },
+
   services: {
     en: {
       title: "We offer full digital services",
@@ -21,8 +23,8 @@ export const content = {
     ka: {
       title: "ჩვენ გთავაზობთ სრულ ციფრულ მომსახურებას",
       items: [
-        { title: "სოც მედიის მარკეტინგი", description: "კონტენტის შექმნა და რეკლამა" },
-        { title: "გუგლის ანალიტიკა", description: "სრული Google სერვისების მომსახურება" },
+        { title: "სოც მედია მარკეტინგი", description: "კონტენტის შექმნა და რეკლამა" },
+        { title: "გუგლ ანალიტიკა", description: "სრული Google სერვისების მომსახურება" },
         { title: "ვებ დეველოპმენტი", description: "საიტების აწყობა და მართვა" },
         { title: "ვიდეო პროდაქშენი", description: "სრული ფოტო/ვიდეო მომსახურება" }
       ]
@@ -166,6 +168,56 @@ export const content = {
         { number: "01", title: "საწყისი კონსულტაცია" },
         { number: "02", title: "სტრატეგიის შემუშავება და დანერგვა." },
         { number: "03", title: "შეფასება და საბოლოო დახვეწა" }
+      ]
+    }
+  },
+
+  team: {
+    en: {
+      title: "Our Team",
+      more: "know us better",
+      members: [
+        { role: "Founder", name: "Giorgi", image: "./IMAGE/choni2.png" },
+        { role: "Project Manager", name: "Liza", image: "./IMAGE/liza2.png" },
+        { role: "Graphic Designer", name: "Mariami", image: "./IMAGE/mariami2.png" },
+        { role: "Videograph", name: "Luka", image: "./IMAGE/luka2.png" }
+      ]
+    },
+    ka: {
+      title: "ჩვენი გუნდი",
+      more: "გაგვიცანით უკეთ",
+      members: [
+        { role: "დამფუძნებელი", name: "გიორგი", image: "./IMAGE/choni2.png" },
+        { role: "პროექტ მენეჯერი", name: "ლიზა", image: "./IMAGE/liza2.png" },
+        { role: "გრაფიკული დიზაინერი", name: "მარიამი", image: "./IMAGE/mariami2.png" },
+        { role: "ვიდეოგრაფი", name: "ლუკა", image: "./IMAGE/luka2.png" }
+      ]
+    }
+  },
+
+  testimonial: {
+    en: {
+      title: "people talks",
+      messages: [
+        { author: "James Harisson", text: "I had an excellent experience everything was done accurately and on time" },
+        { author: "Nina Carter", text: "The team was responsive and execution quality was consistently high." },
+        { author: "Robert Allen", text: "Strong communication and fast delivery through the whole process." },
+        { author: "Maria Brown", text: "They understood the brief quickly and improved our results month by month." },
+        { author: "David Smith", text: "Everything was clear, on schedule, and aligned with our business goals." },
+        { author: "Sophia Miller", text: "Creative ideas with practical implementation and measurable impact." },
+        { author: "Alex Johnson", text: "Professional workflow, transparent updates, and great final output." }
+      ]
+    },
+    ka: {
+      title: "ჩვენზე ამბობენ",
+      messages: [
+        { author: "ჯეიმს ჰარისონი", text: "ძალიან კარგი გამოცდილება მივიღე ყველაფერი ზუსტად და დროულად შესრულდა." },
+        { author: "ნინა კარტერი", text: "გუნდი ოპერატიული იყო და შესრულების ხარისხი სტაბილურად მაღალი დარჩა." },
+        { author: "რობერტ ალენი", text: "კომუნიკაცია ძლიერი იყო და მიწოდება მთელი პროცესის განმავლობაში სწრაფად ხდებოდა." },
+        { author: "მარია ბრაუნი", text: "ბრიფი სწრაფად გაიგეს და შედეგები თვიდან თვემდე მნიშვნელოვნად გააუმჯობესეს." },
+        { author: "დავით სმითი", text: "ყველაფერი იყო გასაგები, ვადებში და სრულად მიბმული ბიზნეს მიზნებზე." },
+        { author: "სოფია მილერი", text: "კრეატიული იდეები პრაქტიკულ შესრულებასთან და გაზომვად შედეგებთან ერთად." },
+        { author: "ალექს ჯონსონი", text: "პროფესიული სამუშაო პროცესი, გამჭვირვალე განახლებები და ძლიერი საბოლოო შედეგი." }
       ]
     }
   },
