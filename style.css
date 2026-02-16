@@ -1,9 +1,11 @@
 html {
   height: 100vh;
   width: 100%;
+  max-width: 100%;
   margin: 0;
   overflow-y: scroll;
    overflow-x: hidden;
+
   /* overflow: hidden; */
   box-sizing: border-box;
 }
@@ -20,6 +22,8 @@ body {
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  font-size: 16px;
+  --corner-final-offset: 2.5em;
 }
 
 
@@ -61,8 +65,8 @@ body[data-lang="en"] .point {
 body .corner {
   position: fixed;
   z-index: 5;
-  bottom: 2.5em;
-  left: 2.5em;
+  bottom: var(--corner-final-offset);
+  left: var(--corner-final-offset);
   transition:
     opacity 1.6s ease,
     top 1.2s ease,
@@ -75,8 +79,8 @@ body .corner {
 body .corner2 {
   left: initial;
   bottom: initial;
-  top: 2.5em;
-  right: 2.5em;
+  top: var(--corner-final-offset);
+  right: var(--corner-final-offset);
   transition:
     opacity 1.6s ease,
     top 1.2s ease,
@@ -128,5 +132,96 @@ body.intro-active .logo {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01s !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  body {
+    --corner-final-offset: 2.9em;
+  }
+
+  .navBar {
+    top: 7.5em;
+    right: 6em;
+  }
+
+  .langButton {
+    top: 20em;
+    right: 1.6em;
+  }
+
+  .chatButton {
+    right: 1.4em;
+    bottom: 1.4em;
+  }
+}
+
+@media (max-width: 1920px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+
+@media (max-width: 1680px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .navBar {
+    top: 6em;
+    right: 3em;
+  }
+
+  .langButton {
+    top: 19em;
+    right: 1.2em;
+  }
+
+  .chatButton {
+    right: 1.2em;
+    bottom: 1.4em;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    --corner-final-offset: 1.4em;
+  }
+
+  body .corner {
+    bottom: 1.4em;
+    left: 1.4em;
+  }
+
+  body .corner2 {
+    top: 1.4em;
+    right: 1.4em;
+  }
+
+  .logo {
+    font-size: 3.2em;
+    top: 0.45em;
+    left: 0.45em;
+  }
+
+  .navBar {
+    top: 4.8em;
+    right: 0.8em;
+  }
+
+  .langButton {
+    top: 13.5em;
+    right: 0.4em;
+  }
+
+  .chatButton {
+    width: 3.3em;
+    height: 3.3em;
+    font-size: 0.8em;
+    right: 0.8em;
+    bottom: 0.8em;
   }
 }

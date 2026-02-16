@@ -1,19 +1,217 @@
 footer {
   width: 100%;
-  height: 3000px;
   z-index: 10;
   position: relative;
+  padding-left: 7em;
+  min-height: fit-content;
+  padding-bottom: 30em;
+  --footerGlow: 0;
 }
 
 footer h2 {
-  font-size: 5em;
-  z-index: -1;
+  font-size: 6em;
   font-weight: 900;
   color: rgba(255, 241, 227, 0.5);
   text-align: center;
   max-width: 3em;
-  line-height: 1em;
-  right: 2em;
-  position: absolute;
+  line-height: .8em;
+  margin: 0 4em 2em auto;
+  text-transform: capitalize;
+  /* text-shadow: 0 0 calc(1.2em * var(--footerGlow)) rgba(255, 106, 106, 0.28); */
+  transition: text-shadow 0.25s ease;
+  transform: translateX(var(--swim-x, 0em)) translateY(var(--swim-y, 0em)) rotate(var(--swim-r, 0deg));
+  will-change: transform;
+}
 
+footer form {
+  margin-bottom: 5em;
+}
+
+.contact {
+  margin-left: 1em;
+}
+.contact h5 {
+  color: rgba(255, 241, 227, .5);
+  margin-bottom: .5em;
+  font-weight: 300;
+  font-size: 1.1em;
+}
+
+
+.contact p {
+  font-size: 1.2em;
+  color: rgba(255, 241, 227, .85);
+  margin-bottom: 2em;
+
+}
+
+footer .contact nav {
+  display: flex;
+  gap: 1em;
+  margin-top: 1em;
+}
+footer .contact nav a img {
+  height: 2em;
+}
+
+.address {
+  position: relative;
+  max-width: fit-content;
+  padding: 10em;
+  margin-left: auto;
+  margin-right: 7em;
+
+}
+
+
+.address hgroup h5 {
+  color: rgba(255, 241, 227, .5);
+  margin-bottom: 1em;
+  font-weight: 300;
+  font-size: 1.1em;
+}
+.address hgroup p {
+  font-size: 1.2em;
+  color: rgba(255, 241, 227, .85);
+  max-width: 17em;
+}
+
+.address hgroup p span {
+  display: block;
+  margin-top: .2em;
+}
+
+.address img {
+  min-width: 25em;
+  height: 15em;
+  border-radius: 2em;
+  position: absolute;
+  box-sizing: content-box;
+  border: 1px solid rgba(255, 241, 227, .1);
+  padding: 1em;
+  will-change: transform, filter;
+  /* filter:
+    brightness(calc(.92 + var(--footerGlow) * .16))
+    drop-shadow(0 0 calc(1em * var(--footerGlow)) rgba(255, 120, 120, .30));
+  transition: filter .24s ease; */
+}
+
+.address img:nth-of-type(1) {
+  top: -10em;
+  left: -10em;
+}
+
+.address img:nth-of-type(2) {
+  margin-top: 3em;
+  margin-left: -5em;
+  /* top: 10em;
+  right: 10em; */
+}
+
+footer > p {
+  max-width: 30em;
+  position: absolute;
+  bottom: 12em;
+  font-weight: 300;
+  color: rgba(255, 241, 227, .75);
+}
+
+footer > p .wave-char {
+  display: inline-block;
+  opacity: 0.25;
+  transition: opacity .25s ease;
+}
+
+footer.is-wave-active > p .wave-char {
+  animation: footerTextWave 2.4s linear infinite;
+  animation-delay: calc(var(--char-index) * 0.035s);
+}
+
+@keyframes footerTextWave {
+  0% { opacity: 0.22; }
+  35% { opacity: 1; }
+  100% { opacity: 0.22; }
+}
+
+@media (max-width: 1200px) {
+  footer {
+    padding-left: 3.5em;
+    padding-bottom: 16em;
+  }
+
+  footer h2 {
+    font-size: 4.6em;
+    margin-right: 2.2em;
+  }
+
+  .address {
+    margin-right: 2em;
+    padding: 8em;
+  }
+
+  .address img {
+    min-width: 20em;
+    height: 12em;
+  }
+}
+
+@media (max-width: 768px) {
+  footer {
+    padding: 3em 1.4em 5em 1.4em;
+  }
+
+  footer h2 {
+    font-size: 2.8em;
+    max-width: 100%;
+    margin: 0 0 1.2em 0;
+    text-align: left;
+  }
+
+  footer form {
+    margin-bottom: 2.5em;
+    max-width: 100%;
+  }
+
+  .contact {
+    margin-left: 0;
+  }
+
+  .address {
+    margin: 2em 0 0 0;
+    padding: 0;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+
+  .address hgroup p {
+    max-width: 100%;
+  }
+
+  .address img {
+    position: relative;
+    min-width: 100%;
+    width: 100%;
+    height: 10.8em;
+    padding: 0.5em;
+    left: auto;
+    top: auto;
+    margin: 0;
+  }
+
+  .address img:nth-of-type(1),
+  .address img:nth-of-type(2) {
+    top: auto;
+    left: auto;
+    margin: 0;
+  }
+
+  footer > p {
+    position: relative;
+    bottom: auto;
+    margin-top: 2.2em;
+    max-width: 100%;
+    font-size: 0.95em;
+  }
 }

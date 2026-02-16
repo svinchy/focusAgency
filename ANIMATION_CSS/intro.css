@@ -136,14 +136,14 @@ body.intro-corners-move .corner2 {
   }
   70% {
     transform: translate(
-      calc(-50% - 50vw + 2.2em),
-      calc(-50% + 50vh - 2.2em)
+      calc(-50% - 50vw + (var(--corner-final-offset, 2.5em) - 0.3em)),
+      calc(-50% + 50vh - (var(--corner-final-offset, 2.5em) - 0.3em))
     ) rotate(0deg);
   }
   100% {
     transform: translate(
-      calc(-50% - 50vw + 2.5em),
-      calc(-50% + 50vh - 2.5em)
+      calc(-50% - 50vw + var(--corner-final-offset, 2.5em)),
+      calc(-50% + 50vh - var(--corner-final-offset, 2.5em))
     ) rotate(0deg);
   }
 }
@@ -154,14 +154,14 @@ body.intro-corners-move .corner2 {
   }
   70% {
     transform: translate(
-      calc(-50% + 50vw - 2.2em),
-      calc(-50% - 50vh + 2.2em)
+      calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
+      calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
     ) rotate(180deg);
   }
   100% {
     transform: translate(
-      calc(-50% + 50vw - 2.5em),
-      calc(-50% - 50vh + 2.5em)
+      calc(-50% + 50vw - var(--corner-final-offset, 2.5em)),
+      calc(-50% - 50vh + var(--corner-final-offset, 2.5em))
     ) rotate(180deg);
   }
 }

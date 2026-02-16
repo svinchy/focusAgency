@@ -29,3 +29,14 @@
   box-shadow: 0 0 0 0.12em rgba(228, 70, 70, 0.35);
   transform: scale(1);
 }
+
+@media (max-width: 768px) {
+  .navigationDots {
+    gap: 0.6em;
+  }
+
+  .navigationDots .dot {
+    width: 0.1200px;
+    height: 0.1200px;
+  }
+}

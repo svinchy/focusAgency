@@ -1,6 +1,7 @@
 import { content } from "./data.js";
 import { getLanguage } from "./languageSwitcher.js";
 import { refreshServiceContent } from "./serviceToggle.js";
+import { applyBannerTitleWave } from "./bannerScroll.js";
 
 let previousLang = getLanguage(); // track the last rendered language
 
@@ -31,6 +32,7 @@ export function render() {
     const bannerSubtitle = document.querySelector(".bannerTitle h4");
     if (bannerTitle) bannerTitle.textContent = content.banner[lang].title;
     if (bannerSubtitle) bannerSubtitle.textContent = content.banner[lang].subtitle;
+    applyBannerTitleWave();
 
     /* ---------- Services ---------- */
   const servicesTitle = document.querySelector("[data-services='title']");

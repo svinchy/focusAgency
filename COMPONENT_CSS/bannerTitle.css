@@ -35,3 +35,56 @@ body[data-lang="ka"] .bannerTitle h4 {
   letter-spacing: -0.03em;
    font-family: var(--font-en);
 }
+
+@media (min-width: 1920px) {
+  .bannerTitle h4 {
+    font-size: 1.7em;
+    max-width: 12.5em;
+  }
+
+  .bannerTitle h1 {
+    font-size: 8.7em;
+  }
+}
+
+@media (max-width: 1366px) {
+  .bannerTitle h4 {
+    font-size: 1.3em;
+    padding-bottom: 1.5em;
+  }
+
+  .bannerTitle h1 {
+    font-size: 6.7em;
+    margin-left: 0.5em;
+  }
+}
+
+@media (max-width: 1024px) {
+  .bannerTitle h4 {
+    font-size: 1.25em;
+    padding-bottom: 1.2em;
+  }
+
+  .bannerTitle h1 {
+    font-size: 6em;
+    margin-left: 0.2em;
+  }
+}
+
+@media (max-width: 768px) {
+  .bannerTitle {
+    max-width: 19em;
+  }
+
+  .bannerTitle h4 {
+    font-size: 1em;
+    max-width: 16em;
+    padding-bottom: 1em;
+  }
+
+  .bannerTitle h1 {
+    font-size: 4em;
+    margin-left: 0;
+    line-height: 0.86em;
+  }
+}

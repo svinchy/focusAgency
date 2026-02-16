@@ -1,5 +1,5 @@
 .team {
-  width: 80%;
+  width: 100%;
   background-color: transparent;
   position: relative;
   padding: 0 0 20em 0;
@@ -25,13 +25,13 @@ body[data-lang="ka"] .team h2 {
 }
 .team .reveal-on-scroll {
   opacity: 0;
-  transform: translateY(1.2em);
+  transform: translateX(var(--swim-x, 0em)) translateY(calc(1.2em + var(--team-parallax-y, 0em) + var(--swim-y, 0em))) rotate(var(--swim-r, 0deg));
   transition: opacity 0.7s var(--ease-io), transform 0.7s var(--ease-io);
 }
 
 .team .reveal-on-scroll.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(var(--swim-x, 0em)) translateY(calc(var(--team-parallax-y, 0em) + var(--swim-y, 0em))) rotate(var(--swim-r, 0deg));
 }
 
 .team .contents.reveal-on-scroll {
@@ -49,6 +49,7 @@ body[data-lang="ka"] .team h2 {
   perspective: 1200px;
   overflow: visible;
   width: 100%;
+  padding: 0 0.4em;
   box-sizing: border-box;
 }
 
@@ -58,6 +59,9 @@ body[data-lang="ka"] .team h2 {
 /* teamMember behavior + animation (section-specific) */
 
 .team .teamMember {
+  position: absolute;
+  left: 50%;
+  top: 50%;
   transition:
     opacity var(--dur-slow) var(--ease-soft),
     box-shadow var(--dur-med) var(--ease-io),

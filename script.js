@@ -2,7 +2,7 @@ import { render } from "./JS/render.js";
 import { initLanguageToggle } from "./JS/languageSwitcher.js";
 import { initServiceToggle } from "./JS/serviceToggle.js";
 import { initNavbar } from "./JS/navbar.js";
-import { initSmoothScroll, initTitleReveal, initOverlayAfterSteps, initRevealOnScroll, initTestimonialIntro } from "./JS/pageScroll.js";
+import { initSmoothScroll, initTitleReveal, initOverlayAfterSteps, initRevealOnScroll, initTestimonialIntro, initFooterParallaxGlow, initFooterTextWave, initHeadingSwimOnScroll } from "./JS/pageScroll.js";
 import { initBannerScroll } from "./JS/bannerScroll.js";
 import { initIntroAnimation } from "./JS/introAnimation.js";
 import { initStepsRotation } from "./JS/stepsRotate.js";
@@ -42,3 +42,6 @@ initOverlayAfterSteps();
 
 initTeamCarousel();
 initTestimonialCarousel();
+initFooterParallaxGlow();
+initFooterTextWave();
+initHeadingSwimOnScroll();

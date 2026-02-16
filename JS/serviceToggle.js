@@ -87,7 +87,25 @@ export function initServiceToggle() {
   const contentWrap = document.querySelector(".content");
   const servicesSection = document.querySelector(".services");
   const imagesWrap = document.querySelector(".content .images");
+  const dotsWrap = document.querySelector(".navigationDots");
   let scrollTicking = false; // rAF throttle
+
+  const updateDotsPosition = () => {
+    if (!contentWrap || !dotsWrap) return;
+    const contentRect = contentWrap.getBoundingClientRect();
+    const dotsRect = dotsWrap.getBoundingClientRect();
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const gap = 1.5 * rootFontSize;
+    const viewportW = window.innerWidth || document.documentElement.clientWidth;
+
+    let left = contentRect.right + gap;
+    const minLeft = rootFontSize * 0.5;
+    const maxLeft = viewportW - dotsRect.width - rootFontSize * 0.5;
+    left = Math.max(minLeft, Math.min(maxLeft, left));
+
+    dotsWrap.style.left = `${left}px`;
+    dotsWrap.style.right = "auto";
+  };
 
   if (service) {
     // Toggle active state on service card click.
@@ -116,6 +134,7 @@ export function initServiceToggle() {
   // Scroll handler: updates dots/title/description and scrolls images.
   const handleScroll = () => {
     if (!service || !contentWrap || !servicesSection) return;
+    updateDotsPosition();
     if (service.classList.contains("active")) return;
 
     const sectionTop = servicesSection.offsetTop;
@@ -130,7 +149,6 @@ export function initServiceToggle() {
     const contentAtTop = contentRect.top <= topOffset + 2;
     const inSection = scrollY >= sectionStart && scrollY <= sectionEnd;
     const showDots = inSection && contentAtTop;
-    const dotsWrap = document.querySelector(".navigationDots");
     if (dotsWrap) dotsWrap.classList.toggle("is-visible", showDots);
 
     const buffer = viewportH * 0.25; // keep some breathing room
@@ -195,5 +213,6 @@ export function initServiceToggle() {
   }
 
   if (dots.length > 0) setActiveIndex(0);
+  updateDotsPosition();
   onScroll();
 }

@@ -5,6 +5,8 @@
     letter-spacing 0.25s ease,
     line-height 0.25s ease;
   opacity: 1;
+  width: 100vw;
+  min-width: 100vw;
   min-height: 100vh;
   /* max-height: 100vh; */
   background: url('../IMAGE/stars5.jpeg') no-repeat center;
@@ -13,6 +15,7 @@
   background-attachment: fixed;
   position: relative;
   animation: starsDrift 40s linear infinite;
+  overflow-x: clip;
 }
 
 .lang-content::before {
@@ -74,6 +77,12 @@
   bottom: 0;
   right: 0;
   pointer-events: none;
+}
+
+@media (max-width: 1366px) {
+  .lang-content {
+    animation-duration: 55s;
+  }
 }
 
 @keyframes starsDrift {

@@ -21,6 +21,22 @@ body.intro-complete .bannerTitle h4 {
   filter: blur(0);
 }
 
+:is(.bannerTitle, .titleBanner) h1 .wave-char {
+  display: inline-block;
+  opacity: 0.25;
+  transition: opacity .25s ease;
+}
+
+:is(.bannerTitle, .titleBanner) h1 .wave-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+:is(.bannerTitle, .titleBanner).is-wave-active h1 .wave-char {
+  animation: bannerTitleWave 2.4s linear infinite;
+  animation-delay: calc(var(--char-index) * 0.035s);
+}
+
 @keyframes bannerTitleIn {
   0% {
     opacity: 0;
@@ -44,5 +60,17 @@ body.intro-complete .bannerTitle h4 {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
+  }
+}
+
+@keyframes bannerTitleWave {
+  0% {
+    opacity: 0.22;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.22;
   }
 }

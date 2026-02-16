@@ -141,6 +141,28 @@
   --tracking-tight: -0.02em;
   --tracking-wide: 0.06em;
 
+  /* breakpoints (reference tokens) */
+
+  /* desktop */
+  --screenXL: 1920px;
+  --screenL: 1680px;
+  --screenM: 1440px;
+  --screenS: 1366px;
+  --screenXS: 1280px;
+  /* tablet */
+  --tabletS: 768px;
+  --tabletM: 834px;
+  --tabletL: 1024px;
+  --tabletXL: 1112px;
+  --tabletMax: 1194px;
+  /* mobile */
+  --mobileXS: 320px;
+  --mobileS: 360px;
+  --mobileM: 375px;
+  --mobileL: 390px;
+  --mobileXL: 414px;
+  --mobileMax: 480px;
+
 }
 
 .themeDocument{

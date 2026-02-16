@@ -37,3 +37,31 @@
   transform-origin: center center;
   transform-style: preserve-3d; */
 }
+
+@media (max-width: 1366px) {
+  .globe {
+    width: 52em;
+    height: 52em;
+    right: -7em;
+    bottom: -8em;
+  }
+}
+
+@media (max-width: 1024px) {
+  .globe {
+    width: 768px;
+    height: 768px;
+    right: -8em;
+    bottom: -8em;
+  }
+}
+
+@media (max-width: 768px) {
+  .globe {
+    width: 34em;
+    height: 34em;
+    right: -9em;
+    bottom: -5em;
+    opacity: 0.85;
+  }
+}

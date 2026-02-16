@@ -29,3 +29,46 @@
   z-index: 3;
   max-width: 28em;
 }
+
+@media (min-width: 1920px) {
+  .banner .bannerTitle {
+    top: 14.5em;
+    left: 12em;
+    max-width: 31em;
+  }
+}
+
+@media (max-width: 1680px) {
+  .banner .bannerTitle {
+    left: 11.5em;
+  }
+}
+
+@media (max-width: 1366px) {
+  .banner .bannerTitle {
+    top: 10.6em;
+    left: 7.8em;
+    max-width: 24em;
+  }
+}
+
+@media (max-width: 1024px) {
+  .banner .bannerTitle {
+    top: 11em;
+    left: 5.5em;
+    max-width: 23em;
+  }
+}
+
+@media (max-width: 768px) {
+  .banner {
+    min-height: 44em;
+    height: 100vh;
+  }
+
+  .banner .bannerTitle {
+    top: 9.5em;
+    left: 1.8em;
+    max-width: 19.5em;
+  }
+}
