@@ -1,10 +1,11 @@
 import { render } from "./render.js"
 
-// JS/languageSwitcher.js
+// Read persisted language or fall back to English.
 export function getLanguage() {
   return localStorage.getItem("lang") || "en";
 }
 
+// Persist selected language.
 export function setLanguage(lang) {
   localStorage.setItem("lang", lang);
 }
@@ -13,8 +14,10 @@ export function setLanguage(lang) {
 
 
 
-// JS/languageSwitcher.js
-export function initLanguageToggle() {
+// 1) Read saved language.
+// 2) Mark active language button.
+// 3) Save language + render content when user switches.
+export function languageSwitcher() {
   const buttons = document.querySelectorAll(".langButton button");
   const currentLang = getLanguage();
 
@@ -38,5 +41,3 @@ export function initLanguageToggle() {
     });
   });
 }
-
-

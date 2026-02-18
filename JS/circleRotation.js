@@ -1,4 +1,7 @@
-export function initStepsRotation() {
+// 1) Read steps section elements.
+// 2) Convert scroll progress into rotation/title targets.
+// 3) Smoothly animate CSS variables with rAF.
+export function circleRotation() {
   const section = document.querySelector(".steps");
   const circle = document.querySelector(".steps .circle");
   const title = document.querySelector(".steps h2");
@@ -10,6 +13,7 @@ export function initStepsRotation() {
   let titleTarget = 0;
   const ease = 0.05; // slower, smoother
 
+  // Derive rotation/title targets from section scroll progress.
   const calcTarget = () => {
     const titleRect = title.getBoundingClientRect();
     const start = titleRect.top;
@@ -29,6 +33,7 @@ export function initStepsRotation() {
     titleTarget = -progress * 1.2; // em units for scroll swim
   };
 
+  // Interpolate toward targets for smooth motion.
   const animate = () => {
     current += (target - current) * ease;
     titleCurrent += (titleTarget - titleCurrent) * ease;
@@ -37,6 +42,7 @@ export function initStepsRotation() {
     requestAnimationFrame(animate);
   };
 
+  // Recompute targets on page scroll.
   const onScroll = () => {
     calcTarget();
   };

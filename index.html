@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,6 +28,7 @@
   <link rel="stylesheet" href="COMPONENT_CSS/navArrows.css">
   <link rel="stylesheet" href="COMPONENT_CSS/focus.css">
   <link rel="stylesheet" href="COMPONENT_CSS/form.css">
+  <link rel="stylesheet" href="COMPONENT_CSS/menuButton.css">
 
   <link rel="stylesheet" href="SECTION_CSS/langContent.css">
   <link rel="stylesheet" href="SECTION_CSS/banner.css">
@@ -62,17 +64,20 @@
 
   <!-- main content which language changable -->
   <div class="lang-content">
+    <div class="starsBg" aria-hidden="true"></div>
     <div class="overlay"></div>
     <div class="overlay_2"></div>
-    <img src="./IMAGE/globe.png" alt="", class="globe">
-    <img src="./IMAGE/globe3.png" alt="", class="globe2">
+    <img src="./IMAGE/globe.png" alt="" , class="globe">
+    <img src="./IMAGE/globe3.png" alt="" , class="globe2">
 
 
-  <!-- navbar -->
+    <button class="menuButton"><div></div><div></div></button>
+
+    <!-- navbar -->
     <nav class="navBar">
-      <a href=""></a>
-      <a href=""></a>
-      <a href=""></a>
+      <a href="#services"></a>
+      <a href="#about"></a>
+      <a href="#contact"></a>
     </nav>
 
 
@@ -90,8 +95,8 @@
 
       <h2 class="section-title" data-services="title"></h2>
 
-     <!-- service contents -->
-      <div class="content">
+      <!-- service contents -->
+      <div class="content" id="services">
         <div class="images">
           <div class="image image-social active"></div>
           <div class="image image-analytics"></div>
@@ -108,19 +113,19 @@
             <img class="icon-arrow" src="/IMAGE/arrow.png" alt="">
             <img class="icon-close" src="/IMAGE/close.png" alt="">
           </button>
-      </div>
+        </div>
       </div>
 
       <!-- navigation dots -->
-     <nav class="navigationDots" aria-label="Services navigation">
-      <button class="dot active" type="button" aria-label="Service 1"></button>
-      <button class="dot" type="button" aria-label="Service 2"></button>
-      <button class="dot" type="button" aria-label="Service 3"></button>
-      <button class="dot" type="button" aria-label="Service 4"></button>
-     </nav>
+      <nav class="navigationDots" aria-label="Services navigation">
+        <button class="dot active" type="button" aria-label="Service 1"></button>
+        <button class="dot" type="button" aria-label="Service 2"></button>
+        <button class="dot" type="button" aria-label="Service 3"></button>
+        <button class="dot" type="button" aria-label="Service 4"></button>
+      </nav>
     </section>
 
-     <!-- steps section -->
+    <!-- steps section -->
     <section class="steps">
       <h2>Flow to Work</h2>
       <div class="circle">
@@ -131,13 +136,13 @@
           </hgroup>
         </div>
         <div class="dot dot2">
-           <hgroup>
+          <hgroup>
             <h3>02</h3>
             <p>Strategy development and implementation</p>
           </hgroup>
         </div>
         <div class="dot dot3">
-           <hgroup>
+          <hgroup>
             <h3>03</h3>
             <p>Review and final refinement</p>
           </hgroup>
@@ -147,8 +152,8 @@
 
     <!-- team section -->
     <section class="team">
-       <h2 class="reveal-on-scroll">Our Team</h2>
-       <div class="contents reveal-on-scroll">
+      <h2 class="reveal-on-scroll">Our Team</h2>
+      <div class="contents reveal-on-scroll" id="about">
         <div class="teamMember active">
           <h6>Founder</h6>
           <h5>Giorgi</h5>
@@ -201,7 +206,8 @@
             </a>
           </nav>
         </div>
-          <div class="teamMember">
+
+        <!-- <div class="teamMember">
           <h6>Project Manager</h6>
           <h5>Liza</h5>
           <img src="./IMAGE/liza2.png" alt="">
@@ -214,7 +220,7 @@
             </a>
           </nav>
         </div>
-          <div class="teamMember">
+        <div class="teamMember">
           <h6>Project Manager</h6>
           <h5>Liza</h5>
           <img src="./IMAGE/liza2.png" alt="">
@@ -226,21 +232,21 @@
               <img src="./IMAGE/linkedin.png" alt="">
             </a>
           </nav>
-        </div>
-       </div>
-       <div class="navArrows">
+        </div> -->
+      </div>
+      <div class="navArrows">
         <button class="arrow prev" type="button" aria-label="Previous team member">
           <img src="./IMAGE/arrow.png" alt="">
         </button>
-         <button class="arrow next" type="button" aria-label="Next team member">
+        <button class="arrow next" type="button" aria-label="Next team member">
           <img src="./IMAGE/arrow.png" alt="">
         </button>
-       </div>
-       <button class="more">know us better</button>
+      </div>
+      <button class="more">know us better</button>
     </section>
 
 
-     <!-- testimonial section -->
+    <!-- testimonial section -->
     <section class="testimonial">
 
       <div class="title">
@@ -252,7 +258,8 @@
         <div class="messages">
           <p data-author="James Harisson">I had an excellent experience everything was done accurately and on time</p>
           <p data-author="Nina Carter">The team was responsive and execution quality was consistently high.</p>
-          <p data-author="Robert Allen" class="active">Strong communication and fast delivery through the whole process.</p>
+          <p data-author="Robert Allen" class="active">Strong communication and fast delivery through the whole process.
+          </p>
           <p data-author="Maria Brown">They understood the brief quickly and improved our results month by month.</p>
           <p data-author="David Smith">Everything was clear, on schedule, and aligned with our business goals.</p>
           <p data-author="Sophia Miller">Creative ideas with practical implementation and measurable impact.</p>
@@ -269,15 +276,15 @@
 
     </section>
 
-     <!-- footer section -->
+    <!-- footer section -->
     <footer>
       <h2>focus agency</h2>
-      <form method="post">
-         <legend>have a question?</legend>
+      <form method="post" id="contact">
+        <legend>have a question?</legend>
         <input id="name" name="name" type="text" autocomplete="name" class="name" placeholder="name" />
         <input id="email" name="email" type="email" autocomplete="email" class="mail" placeholder="email" required />
         <textarea id="message" name="message" rows="6" placeholder="shoot a message" required></textarea>
-        <button type="submit"> <img src="./IMAGE/send.png" alt=""></button>
+        <button type="submit">send</button>
       </form>
 
       <div class="contact">
@@ -307,9 +314,11 @@
         <img src="./IMAGE/street2.png" alt="">
       </div>
 
-       <p>
-          Our agency was founded with one main purpose — to support growth and success of businesses. Every client is unique to us, which is why we always listen carefully to your needs and create strategies that deliver real results.
-        </p>
+      <p>
+        Our agency was founded with one main purpose — to support growth and success of businesses. Every client is
+        unique to us, which is why we always listen carefully to your needs and create strategies that deliver real
+        results.
+      </p>
 
 
 
@@ -322,4 +331,5 @@
   <!-- MAIN SCRIPT -->
   <script type="module" src="script.js"></script>
 </body>
+
 </html>

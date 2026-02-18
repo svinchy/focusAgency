@@ -1,4 +1,4 @@
-import { content } from "./data.js";
+import { content } from "../data.js";
 import { getLanguage } from "./languageSwitcher.js";
 
 let activeIndex = 0; // current service index (0..n)
@@ -11,6 +11,7 @@ const serviceKeys = [
 
 // Render current service title/description and (optionally) its detail list.
 
+// Render the currently selected item text/details.
 const renderService = (index, { updateContent = true } = {}) => {
   const service = document.querySelector(".service");
   if (!service) return;
@@ -53,6 +54,7 @@ const renderService = (index, { updateContent = true } = {}) => {
 };
 
 // Update active index, UI text, dots, and optionally scroll images to the index.
+// Apply active index state, then sync dots and image panel.
 const setActiveIndex = (index, { scrollImage = true } = {}) => {
   activeIndex = index;
   const service = document.querySelector(".service");
@@ -80,7 +82,10 @@ export function refreshServiceContent() {
   renderService(activeIndex);
 }
 
-export function initServiceToggle() {
+// 1) Bind service/dot interactions.
+// 2) Sync active content with page/image scroll.
+// 3) Keep dots position/visibility updated.
+export function scrollSwitcher() {
   // DOM refs
   const service = document.querySelector(".service");
   const dots = document.querySelectorAll(".navigationDots .dot");
@@ -90,6 +95,7 @@ export function initServiceToggle() {
   const dotsWrap = document.querySelector(".navigationDots");
   let scrollTicking = false; // rAF throttle
 
+  // Keep dots aligned next to the content container.
   const updateDotsPosition = () => {
     if (!contentWrap || !dotsWrap) return;
     const contentRect = contentWrap.getBoundingClientRect();
@@ -132,6 +138,7 @@ export function initServiceToggle() {
   }
 
   // Scroll handler: updates dots/title/description and scrolls images.
+  // Map page scroll to active index and image progress.
   const handleScroll = () => {
     if (!service || !contentWrap || !servicesSection) return;
     updateDotsPosition();
@@ -171,6 +178,7 @@ export function initServiceToggle() {
   };
 
   // Sync service index when user scrolls inside image container.
+  // Map inner image-scroll progress back to active index.
   const handleImagesScroll = () => {
     if (!service || !imagesWrap) return;
     if (service.classList.contains("active")) return;
@@ -185,6 +193,7 @@ export function initServiceToggle() {
   };
 
   // rAF throttle for scroll events
+  // Throttle scroll work to one animation frame.
   const onScroll = () => {
     if (scrollTicking) return;
     scrollTicking = true;

@@ -65,20 +65,28 @@ textarea:focus {
 
 form button {
   width: fit-content;
-  width: 3.2em;
-  height: 3.2em;
+  /* width: 3.2em;
+  height: 3.2em; */
+  padding: .75em 1.5em;
   border: none;
-  background: rgba(224, 77, 77, .5);
+  background: rgba(224, 77, 77, .75);
   color: #fff;
-  font-size: 1em;
-  border-radius: 100%;
+  font-size: 1.1em;
+  border-radius: 3em;
+  /* text-transform: uppercase; */
   border: none;
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
-  bottom: 1em;
-  right: 1em;
+  bottom: .75em;
+  right: .75em;
+  transition: background 0.5s ease, transform 0.5s ease;
+}
+
+form button:hover {
+  background: rgba(224, 77, 77, 1);
+  transform: scale(1.05);
 }
 
 form button:focus {
@@ -89,24 +97,4 @@ form button img {
   height: 1.1200px;
   display: block;
   margin-top: .25em;
-}
-
-@media (max-width: 768px) {
-  form {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  input.name,
-  input.mail,
-  textarea {
-    min-width: 100%;
-    max-width: 100%;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  textarea {
-    min-height: 9em;
-  }
 }

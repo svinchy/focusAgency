@@ -1,4 +1,7 @@
-export function initBannerScroll() {
+// 1) Attach banner scroll translation.
+// 2) Throttle updates with rAF.
+// 3) Enable wave-ready state class.
+export function bannerAnimations() {
   const banner = document.querySelector(".bannerTitle, .titleBanner");
   if (!banner) return;
 
@@ -6,6 +9,7 @@ export function initBannerScroll() {
   banner.style.transition = "transform 0.2s ease-out";
 
   let ticking = false;
+  // Update banner position using current scroll offset.
   const onScroll = () => {
     if (ticking) return;
     ticking = true;
@@ -23,6 +27,7 @@ export function initBannerScroll() {
   banner.classList.add("is-wave-active");
 }
 
+// Build per-character spans so the banner title can animate as a wave.
 export function applyBannerTitleWave() {
   const title = document.querySelector(".bannerTitle h1, .titleBanner h1");
   if (!title) return;

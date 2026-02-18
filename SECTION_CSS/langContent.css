@@ -14,8 +14,14 @@
   background-size: cover;
   background-attachment: fixed;
   position: relative;
+  isolation: isolate;
   animation: starsDrift 40s linear infinite;
   overflow-x: clip;
+  z-index: 0;
+}
+
+.lang-content .starsBg {
+  display: none;
 }
 
 .lang-content::before {
@@ -82,6 +88,25 @@
 @media (max-width: 1366px) {
   .lang-content {
     animation-duration: 55s;
+  }
+}
+
+@media (max-width: 1194px) {
+  .lang-content {
+    background: none;
+    background-attachment: scroll;
+  }
+
+  .lang-content .starsBg {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: url('../IMAGE/stars5.jpeg') no-repeat center;
+    background-size: cover;
+    animation: starsDrift 55s linear infinite;
+    transform: translateZ(0);
   }
 }
 

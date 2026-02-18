@@ -45,18 +45,7 @@
   transform: scale(1.05) translateX(0.25em);
 }
 
-/*
-.navArrows button:first-child:hover {
-  transform: scale(1.05) translateX(0.25em);
-}
-.navArrows button:last-child:hover {
-  transform: scale(1.05) translateX(-0.25em);
-} */
 
-/*
-.navArrows button:first-child:hover img {
-  transform: scale(1.05) translateX(-0.25em);
-} */
 
 
 .navArrows button img {

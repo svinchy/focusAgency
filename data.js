@@ -1,4 +1,4 @@
-// JS/data.js
+// data.js
 export const content = {
   navbar: {
     en: { service: "service", about: "we are", contact: "contact" },

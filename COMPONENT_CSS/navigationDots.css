@@ -30,13 +30,3 @@
   transform: scale(1);
 }
 
-@media (max-width: 768px) {
-  .navigationDots {
-    gap: 0.6em;
-  }
-
-  .navigationDots .dot {
-    width: 0.1200px;
-    height: 0.1200px;
-  }
-}

@@ -21,14 +21,6 @@ body[data-lang="ka"] .navBar {
   opacity: 0.5;
   border-radius: 3em;
   background: rgba(224, 77, 77, 0);
-  /* transition:
-    transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55),
-    padding 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55),
-    background 0.3s ease,
-    font-weight 0.3s ease,
-    border-radius 0.3s ease,
-    opacity 0.3s ease; */
-
     transition:
     transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
     padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
@@ -54,25 +46,70 @@ body[data-lang="ka"] .navBar a {
   /* font-size: 1.2em; */
 }
 
-@media (max-width: 1024px) {
-  .navBar a {
-    font-size: 1em;
-    padding: 0.25em 0.8em;
-  }
-}
-
-@media (max-width: 768px) {
+@media (max-width: 1194px) {
   .navBar {
-    gap: 0.35em;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    min-height: 100%;
+    min-width: 100%;
+    z-index: 15;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 0;
+    padding: 2em;
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      background 0.45s var(--ease-io),
+      backdrop-filter 0.45s var(--ease-io),
+      opacity 0.35s var(--ease-io);
+  }
+
+  .navBar.is-open {
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(8px);
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .navBar a {
-    font-size: 0.82em;
-    padding: 0.2em 0.7em;
+    font-size: 4em;
+    font-weight: 900;
+    opacity: 0.5;
+    padding: 0.3em 1em;
+    background: rgba(224, 77, 77, 0);
+    transform: translateX(1.8em);
+    transition:
+      transform 0.45s var(--ease-io),
+      opacity 0.35s var(--ease-io);
+    pointer-events: none;
   }
+  body[data-lang="ka"] .navBar a {
+    font-size: 3.7em;
+  }
+
+  .navBar.is-open a {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .navBar.is-open a:nth-of-type(1) { transition-delay: 0.06s; }
+  .navBar.is-open a:nth-of-type(2) { transition-delay: 0.12s; }
+  .navBar.is-open a:nth-of-type(3) { transition-delay: 0.18s; }
 
   .navBar a:hover {
-    padding: 0.6em 0.9em;
-    transform: scale(1.08);
+    opacity: 1;
+    background: rgba(224, 77, 77, 0);
+    font-weight: 900;
+    padding: 0.3em 1em;
+    transform: translateX(0);
+    text-transform: inherit;
   }
+
 }

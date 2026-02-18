@@ -1,4 +1,7 @@
-export const initTestimonialCarousel = () => {
+// 1) Build/measure loop track.
+// 2) Run continuous vertical carousel motion.
+// 3) Sync focus pulse + author text with active item peaks.
+export const infiniteCarousel = () => {
   const section = document.querySelector(".testimonial");
   const list = document.querySelector(".testimonial .messages");
   const focus = document.querySelector(".testimonial .focus");
@@ -44,6 +47,7 @@ export const initTestimonialCarousel = () => {
   let prevActiveT = 0;
   const speedPxPerSec = 36;
 
+  // Measure one full cycle height for seamless wrap.
   const measure = () => {
     // Exact wrap point: offsetTop of the first item in the second cycle.
     const secondCycleFirst = allItems[originalItems.length];
@@ -55,12 +59,14 @@ export const initTestimonialCarousel = () => {
     if (cycleHeight > 0) pos = pos % cycleHeight;
   };
 
+  // Locate focus center relative to the scrolling list viewport.
   const getFocusOffsetInList = () => {
     const listRect = list.getBoundingClientRect();
     const focusRect = focus.getBoundingClientRect();
     return focusRect.top - listRect.top + focusRect.height / 2;
   };
 
+  // Pick active real item nearest the focus center.
   const setActiveByCenter = () => {
     if (!cycleHeight) return;
     const focusOffset = getFocusOffsetInList();
@@ -85,6 +91,7 @@ export const initTestimonialCarousel = () => {
     activeRealIndex = nextIndex;
   };
 
+  // Trigger focus-card pulse effect.
   const triggerFocusPulse = () => {
     focus.classList.remove("is-pulse");
     void focus.offsetWidth;
@@ -95,6 +102,7 @@ export const initTestimonialCarousel = () => {
     }, 520);
   };
 
+  // Update focus author text for the active message.
   const syncAuthorWithActive = () => {
     if (!authorEl || activeRealIndex < 0) return;
     const author = originalItems[activeRealIndex].dataset.author || `Client ${activeRealIndex + 1}`;
@@ -108,6 +116,7 @@ export const initTestimonialCarousel = () => {
     }, 520);
   };
 
+  // Apply opacity/scale falloff based on distance from focus.
   const updateItemVisuals = () => {
     const focusOffset = getFocusOffsetInList();
     const falloff = list.clientHeight * 0.38;
@@ -158,6 +167,7 @@ export const initTestimonialCarousel = () => {
     prevActiveT = activeT;
   };
 
+  // Advance loop position and redraw each frame.
   const frame = (ts) => {
     if (!running) return;
     if (!lastTs) lastTs = ts;
@@ -174,6 +184,7 @@ export const initTestimonialCarousel = () => {
     rafId = requestAnimationFrame(frame);
   };
 
+  // Start animation loop.
   const start = () => {
     if (running) return;
     running = true;
@@ -181,12 +192,14 @@ export const initTestimonialCarousel = () => {
     rafId = requestAnimationFrame(frame);
   };
 
+  // Stop animation loop.
   const stop = () => {
     running = false;
     if (rafId) cancelAnimationFrame(rafId);
     rafId = null;
   };
 
+  // Recalculate geometry after viewport changes.
   const onResize = () => {
     measure();
   };

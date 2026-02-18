@@ -1,4 +1,7 @@
-export function initIntroAnimation() {
+// 1) Guard for reduced motion.
+// 2) Apply intro classes by timeline.
+// 3) Lock final visual positions on animation end.
+export function loadingIntro() {
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (prefersReduced) return;
 
@@ -33,6 +36,12 @@ export function initIntroAnimation() {
     body.classList.add("intro-fade");
   }, fadeStart);
 
+  // Fallback: always mark intro as finished after full timeline.
+  const introEnd = moveStart + moveDuration + 120;
+  window.setTimeout(() => {
+    body.classList.add("intro-finished");
+  }, introEnd);
+
   // lock final positions on animation end
   if (logo) {
     logo.addEventListener("animationend", (e) => {
@@ -61,6 +70,7 @@ export function initIntroAnimation() {
       corner2.style.left = "50%";
       corner2.style.transform = "translate(calc(-50% + 50vw - var(--corner-final-offset, 2.5em)), calc(-50% - 50vh + var(--corner-final-offset, 2.5em))) rotate(180deg)";
       corner2.style.animation = "none";
+      body.classList.add("intro-finished");
     }, { once: true });
   }
 }

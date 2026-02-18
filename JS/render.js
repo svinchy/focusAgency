@@ -1,10 +1,13 @@
-import { content } from "./data.js";
+import { content } from "../data.js";
 import { getLanguage } from "./languageSwitcher.js";
-import { refreshServiceContent } from "./serviceToggle.js";
-import { applyBannerTitleWave } from "./bannerScroll.js";
+import { refreshServiceContent } from "./scrollSwitcher.js";
+import { applyBannerTitleWave } from "./bannerAnimations.js";
 
 let previousLang = getLanguage(); // track the last rendered language
 
+// 1) Read current language and transition state.
+// 2) Update each section's localized DOM content.
+// 3) Commit language UI state after rendering.
 export function render() {
   const lang = getLanguage();
   const container = document.querySelector(".lang-content");
