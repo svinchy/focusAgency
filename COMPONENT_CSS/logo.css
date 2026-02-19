@@ -7,8 +7,7 @@
   position: fixed;
   font-family: var(--font-en);
   mix-blend-mode: difference;
-  z-index: 1000;
-
+  z-index: 15;
 }
 
 .logo::after {

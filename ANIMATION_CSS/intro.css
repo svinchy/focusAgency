@@ -119,14 +119,36 @@ body.intro-corners-move .corner2 {
     transform: translate(-50%, -50%) scale(1);
   }
   70% {
-    top: 0.3em;
-    left: 0.3em;
+    top: 0.5em;
+    left: 0.5em;
     transform: translate(0, 0) scale(1.02);
   }
   100% {
     top: 0.5em;
     left: 0.5em;
     transform: translate(0, 0) scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  @keyframes logoMove {
+    0% {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    70% {
+      top: 0.3em;
+      left: 0.3em;
+      transform: translate(0, 0) scale(1.04);
+      font-size: 3.2em;
+    }
+    100% {
+      top: 0.3em;
+      left: 0.3em;
+      transform: translate(0, 0) scale(1);
+      font-size: 3.2em;
+    }
   }
 }
 
@@ -140,10 +162,10 @@ body.intro-corners-move .corner2 {
       calc(-50% + 50vh - (var(--corner-final-offset, 2.5em) - 0.3em))
     ) rotate(0deg);
   }
-  100% {
+   100% {
     transform: translate(
-      calc(-50% - 50vw + var(--corner-final-offset, 2.5em)),
-      calc(-50% + 50vh - var(--corner-final-offset, 2.5em))
+      calc(-50% - 50vw + (var(--corner-final-offset, 2.5em) - 0.3em)),
+      calc(-50% + 50vh - (var(--corner-final-offset, 2.5em) - 0.3em))
     ) rotate(0deg);
   }
 }
@@ -158,10 +180,33 @@ body.intro-corners-move .corner2 {
       calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
     ) rotate(180deg);
   }
-  100% {
+   100% {
     transform: translate(
-      calc(-50% + 50vw - var(--corner-final-offset, 2.5em)),
-      calc(-50% - 50vh + var(--corner-final-offset, 2.5em))
+      calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
+      calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
     ) rotate(180deg);
   }
+}
+
+@media (max-width: 768px) {
+
+@keyframes cornerToTopRight {
+  0% {
+    transform: translate(-50%, -50%) translate(2em, -2em) rotate(180deg);
+  }
+  70% {
+    transform: translate(
+      calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
+      calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
+    ) rotate(180deg);
+  }
+   100% {
+    transform: translate(
+      calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
+      calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
+
+    ) rotate(180deg);
+     opacity: 0;
+  }
+}
 }

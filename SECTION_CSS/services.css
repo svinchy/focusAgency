@@ -312,3 +312,59 @@ body[data-lang="ka"] .services h2 {
     height: calc(100vh - 15em);
   }
 }
+
+@media (max-width: 1366px) {
+  .services h2 {
+    padding: 2em 0 1.8em 0;
+  }
+
+  body[data-lang="en"] .services h2 {
+    font-size: clamp(6.8em, 7.8vw, 9em);
+  }
+
+  body[data-lang="ka"] .services h2 {
+    font-size: clamp(5.4em, 6.2vw, 7em);
+  }
+}
+
+@media (max-width: 1024px) {
+  .services h2 {
+    padding: 1.7em 0 1.45em 0;
+  }
+
+  body[data-lang="en"] .services h2 {
+    font-size: clamp(5.4em, 8.6vw, 7.4em);
+  }
+
+  body[data-lang="ka"] .services h2 {
+    font-size: clamp(4.4em, 6.9vw, 5.9em);
+  }
+}
+
+@media (max-width: 768px) {
+  .services h2 {
+    padding: 1.4em 0 1.2em 0;
+  }
+
+  body[data-lang="en"] .services h2 {
+    font-size: clamp(4.3em, 10.1vw, 6.1em);
+  }
+
+  body[data-lang="ka"] .services h2 {
+    font-size: clamp(3.5em, 8.1vw, 5em);
+  }
+}
+
+@media (max-width: 480px) {
+  .services h2 {
+    padding: 1.2em 0 1em 0;
+  }
+
+  body[data-lang="en"] .services h2 {
+    font-size: clamp(3.5em, 11.8vw, 5.2em);
+  }
+
+  body[data-lang="ka"] .services h2 {
+    font-size: clamp(2.9em, 9.4vw, 4.2em);
+  }
+}

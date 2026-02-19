@@ -4,14 +4,26 @@
 export function navbarToggle() {
   const navBar = document.querySelector(".navBar");
   const menuButton = document.querySelector(".menuButton");
+  const langContent = document.querySelector(".lang-content");
 
   if (!navBar || !menuButton) return;
+
+  // Apply mobile navbar animation mode by breakpoint.
+  const applyAnimationMode = () => {
+    if ((window.innerWidth || 0) <= 1194) {
+      navBar.classList.add("animation-two");
+    } else {
+      navBar.classList.remove("animation-two");
+    }
+  };
+  applyAnimationMode();
 
   // Reset mobile menu visual/open state.
   const closeMenu = () => {
     navBar.classList.remove("is-open");
     menuButton.classList.remove("is-active");
     menuButton.setAttribute("aria-expanded", "false");
+    if (langContent) langContent.style.zIndex = "";
   };
 
   // Toggle mobile menu and synchronize ARIA state.
@@ -19,6 +31,7 @@ export function navbarToggle() {
     const isOpen = navBar.classList.toggle("is-open");
     menuButton.classList.toggle("is-active", isOpen);
     menuButton.setAttribute("aria-expanded", String(isOpen));
+    if (langContent) langContent.style.zIndex = isOpen ? "15" : "";
   };
 
   menuButton.setAttribute("type", "button");
@@ -43,6 +56,7 @@ export function navbarToggle() {
   });
 
   window.addEventListener("resize", () => {
+    applyAnimationMode();
     if ((window.innerWidth || 0) > 1194) closeMenu();
   });
 }

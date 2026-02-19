@@ -1,14 +1,11 @@
 .chatButton {
   font-family: var(--font-en);
   font-weight: 500;
-  font-size: .9em;
-  width: 3.8em;
-  height: 3.8em;
-  text-transform: capitalize;
+  width: 3.6em;
+  height: 3.6em;
   display: flex;
   align-items: center;
   cursor: pointer;
-  text-transform: uppercase;
   background: rgba(255, 241, 227, .2);
   border-radius: 100%;
   color: var(--cream);
@@ -16,5 +13,23 @@
   backdrop-filter: blur(10px);
   position: fixed;
 }
+.chatButton span {
+  display: block;
+  margin: auto;
+  text-transform: uppercase;
+  font-size: .9em;
+}
 
+@media (max-width: 768px) {
+  .chatButton {
+    width: 2.9em;
+    height: 2.9em;
+    bottom: 1.2em;
+    right: 1.2em;
+  }
+
+  .chatButton span {
+    font-size: .8em;
+  }
+}
 

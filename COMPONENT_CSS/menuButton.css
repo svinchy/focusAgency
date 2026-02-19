@@ -6,7 +6,7 @@
   height: 3em;
   display: none;
   flex-flow: column;
-  gap: .32em;
+  gap: .35em;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -17,30 +17,49 @@
   top: 2em;
   right: 2em;
 }
+
+@media (max-width: 768px) {
+  .menuButton {
+    width: 2.5em;
+    height: 2.5em;
+    top: 1.2em;
+    right: 1.2em;
+  }
+  .menuButton div {
+    width: .8em;
+  }
+}
+
 .menuButton div {
-  height: .2em;
-  width: 1.7em;
+  height: .15em;
   background-color: rgba(255, 241, 227, 1);
   border-radius: 2em;
   transform-origin: center center;
-  transition: transform 0.35s var(--ease-io), opacity 0.35s var(--ease-io);
+  transition: transform 0.35s var(--ease-io), opacity 0.35s var(--ease-io), width 0.35s var(--ease-io), align-self 0.35s var(--ease-io);
 }
 
 .menuButton div:first-child {
-  width: 1.7em;
+  width: 1.5em;
+  align-self: flex-end;
 }
+
 .menuButton div:last-child {
-  width: 1.3em;
+  width: 1em;
+  align-self: flex-end;
+}
+
+
+.menuButton.is-active div:first-child {
+  transform: translateY(.26em) rotate(45deg) scale(.85);
   align-self: center;
 }
 
-.menuButton.is-active div:first-child {
-  transform: translateY(.26em) rotate(45deg);
+.menuButton.is-active div:last-child {
+  transform: translateY(-.26em) rotate(-45deg) scale(.85);
+   align-self: center;
+   width: 1.5em;
 }
 
-.menuButton.is-active div:last-child {
-  transform: translateY(-.26em) rotate(-45deg);
-}
 
 .menuButton.is-active {
   border-radius: 100%;

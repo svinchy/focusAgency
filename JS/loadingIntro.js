@@ -12,6 +12,18 @@ export function loadingIntro() {
   const corner = document.querySelector(".corner");
   const corner2 = document.querySelector(".corner2");
 
+  const applyFinalLogoPosition = () => {
+    if (!logo) return;
+    const isMobile = (window.innerWidth || 0) <= 768;
+    logo.style.setProperty("top", isMobile ? "0.3em" : "0.5em", "important");
+    logo.style.setProperty("left", isMobile ? "0.3em" : "0.5em", "important");
+    if (isMobile) {
+      logo.style.setProperty("font-size", "3.2em", "important");
+    } else {
+      logo.style.removeProperty("font-size");
+    }
+  };
+
   // 1) red dot pulses immediately
   // 2) F appears after one pulse (1s)
   window.setTimeout(() => {
@@ -40,18 +52,24 @@ export function loadingIntro() {
   const introEnd = moveStart + moveDuration + 120;
   window.setTimeout(() => {
     body.classList.add("intro-finished");
+    applyFinalLogoPosition();
   }, introEnd);
 
   // lock final positions on animation end
   if (logo) {
     logo.addEventListener("animationend", (e) => {
       if (e.animationName !== "logoMove") return;
-      logo.style.top = "0.5em";
-      logo.style.left = "0.5em";
+      applyFinalLogoPosition();
       logo.style.transform = "translate(0, 0)";
       logo.style.animation = "none";
     }, { once: true });
   }
+
+  window.addEventListener("resize", () => {
+    if (body.classList.contains("intro-finished")) {
+      applyFinalLogoPosition();
+    }
+  });
 
   if (corner) {
     corner.addEventListener("animationend", (e) => {

@@ -17,7 +17,6 @@
   isolation: isolate;
   animation: starsDrift 40s linear infinite;
   overflow-x: clip;
-  z-index: 0;
 }
 
 .lang-content .starsBg {
@@ -91,7 +90,7 @@
   }
 }
 
-@media (max-width: 1194px) {
+@media (max-width: 1366px) {
   .lang-content {
     background: none;
     background-attachment: scroll;
