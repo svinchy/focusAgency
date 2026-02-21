@@ -222,4 +222,55 @@ export const content = {
     }
   },
 
+  contact: {
+    en: {
+      brand: "focus agency",
+      form: {
+        legend: "have a question?",
+        namePlaceholder: "name",
+        emailPlaceholder: "email",
+        messagePlaceholder: "shoot a message",
+        submit: "send"
+      },
+      details: {
+        phoneLabel: "call us any time",
+        phone: "+995 595 893 399",
+        emailLabel: "connect with us by email",
+        email: "gamarjoba@focusagency.ge",
+        socialLabel: "Follow us"
+      },
+      address: {
+        title: "you're welcome to visit us",
+        line1: "Tbilisi, Saburtalo",
+        line2: "Alexandre Khazbegi street N24 g"
+      },
+      paragraph:
+        "Our agency was founded with one main purpose - to support growth and success of businesses. Every client is unique to us, which is why we always listen carefully to your needs and create strategies that deliver real results."
+    },
+    ka: {
+      brand: "Focus Agency",
+      form: {
+        legend: "გაქვს შეკითხვა?",
+        namePlaceholder: "სახელი",
+        emailPlaceholder: "ელ-ფოსტა",
+        messagePlaceholder: "მოგვწერე",
+        submit: "გამოაგზავნეთ"
+      },
+      details: {
+        phoneLabel: "დაგვირეკე ნებისმიერ დროს",
+        phone: "+995 595 893 399",
+        emailLabel: "დაგვიკავშირდი ელ-ფოსტაზე",
+        email: "gamarjoba@focusagency.ge",
+        socialLabel: "გამოგვყევი"
+      },
+      address: {
+        title: "სიამოვნებით გიმასპინძლებთ ოფისში",
+        line1: "თბილისი, საბურთალო",
+        line2: "ალექსანდრე ყაზბეგის ქუჩა N24 გ"
+      },
+      paragraph:
+        "ჩვენი სააგენტო ერთი მთავარი მიზნისთვის შეიქმნა - ხელი შევუწყოთ ბიზნესების ზრდასა და წარმატებას. თითოეული კლიენტი ჩვენთვის უნიკალურია, ამიტომ ყურადღებით ვისმენთ შენს საჭიროებებს და ვქმნით სტრატეგიებს, რომლებიც რეალურ შედეგს იძლევა."
+    }
+  },
+
 };

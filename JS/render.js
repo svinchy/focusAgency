@@ -2,6 +2,7 @@ import { content } from "../data.js";
 import { getLanguage } from "./languageSwitcher.js";
 import { refreshServiceContent } from "./scrollSwitcher.js";
 import { applyBannerTitleWave } from "./bannerAnimations.js";
+import { textWave } from "./textWave.js";
 
 let previousLang = getLanguage(); // track the last rendered language
 
@@ -124,6 +125,54 @@ export function render() {
       focusAuthor.textContent = currentActive.dataset.author;
     } else if (focusAuthor) {
       focusAuthor.textContent = testimonialMessages[0].author;
+    }
+  }
+
+  /* ---------- Footer / Contact ---------- */
+  const contactContent = content.contact?.[lang];
+  if (contactContent) {
+    const footerTitle = document.querySelector("footer h2");
+    if (footerTitle) {
+      footerTitle.textContent = contactContent.brand;
+    }
+
+    const formLegend = document.querySelector("footer form legend");
+    if (formLegend) {
+      formLegend.textContent = contactContent.form.legend;
+    }
+
+    const nameInput = document.querySelector("footer form #name");
+    const emailInput = document.querySelector("footer form #email");
+    const messageInput = document.querySelector("footer form #message");
+    const submitButton = document.querySelector("footer form button[type='submit']");
+
+    if (nameInput) nameInput.placeholder = contactContent.form.namePlaceholder;
+    if (emailInput) emailInput.placeholder = contactContent.form.emailPlaceholder;
+    if (messageInput) messageInput.placeholder = contactContent.form.messagePlaceholder;
+    if (submitButton) submitButton.textContent = contactContent.form.submit;
+
+    const contactLabels = document.querySelectorAll("footer .contact h5");
+    if (contactLabels[0]) contactLabels[0].textContent = contactContent.details.phoneLabel;
+    if (contactLabels[1]) contactLabels[1].textContent = contactContent.details.emailLabel;
+    if (contactLabels[2]) contactLabels[2].textContent = contactContent.details.socialLabel;
+
+    const contactValues = document.querySelectorAll("footer .contact p");
+    if (contactValues[0]) contactValues[0].textContent = contactContent.details.phone;
+    if (contactValues[1]) contactValues[1].textContent = contactContent.details.email;
+
+    const addressTitle = document.querySelector("footer .address hgroup h5");
+    if (addressTitle) {
+      addressTitle.textContent = contactContent.address.title;
+    }
+
+    const addressLines = document.querySelectorAll("footer .address hgroup p span");
+    if (addressLines[0]) addressLines[0].textContent = contactContent.address.line1;
+    if (addressLines[1]) addressLines[1].textContent = contactContent.address.line2;
+
+    const footerParagraph = document.querySelector("footer > p");
+    if (footerParagraph) {
+      footerParagraph.textContent = contactContent.paragraph;
+      textWave(contactContent.paragraph);
     }
   }
 

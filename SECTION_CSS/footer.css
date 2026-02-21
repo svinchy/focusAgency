@@ -22,7 +22,9 @@ footer h2 {
   transform: translateX(var(--swim-x, 0em)) translateY(var(--swim-y, 0em)) rotate(var(--swim-r, 0deg));
   will-change: transform;
 }
-
+body[data-lang="ka"] footer h2 {
+  font-family: var(--font-en);
+}
 footer form {
   margin-bottom: 5em;
 }
@@ -109,7 +111,7 @@ footer .contact nav a img {
 }
 
 footer > p {
-  max-width: 30em;
+  max-width: 28em;
   position: absolute;
   bottom: 12em;
   font-weight: 300;
@@ -120,6 +122,11 @@ footer > p .wave-char {
   display: inline-block;
   opacity: 0.25;
   transition: opacity .25s ease;
+}
+
+footer > p .wave-word {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 footer.is-wave-active > p .wave-char {
