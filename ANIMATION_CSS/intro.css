@@ -152,6 +152,30 @@ body.intro-corners-move .corner2 {
   }
 }
 
+
+@media (max-width: 480px) {
+  @keyframes logoMove {
+    0% {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    70% {
+      top: 0.2em;
+      left: 0.2em;
+      transform: translate(0, 0) scale(1.04);
+      font-size: 3.2em;
+    }
+    100% {
+      top: 0.2em;
+      left: 0.2em;
+      transform: translate(0, 0) scale(1);
+      font-size: 3.2em;
+    }
+  }
+}
+
+
 @keyframes cornerToBottomLeft {
   0% {
     transform: translate(-50%, -50%) translate(-2em, 2em) rotate(0deg);
@@ -169,6 +193,29 @@ body.intro-corners-move .corner2 {
     ) rotate(0deg);
   }
 }
+
+
+@media (max-width: 480px) {
+
+  @keyframes cornerToBottomLeft {
+  0% {
+    transform: translate(-50%, -50%) translate(-2em, 2em) rotate(0deg);
+  }
+  70% {
+    transform: translate(
+      calc(-50% - 50vw + (var(--corner-final-offset, 0.5em) - 0.3em)),
+      calc(-50% + 50vh - (var(--corner-final-offset, 2.5em) - 0.3em))
+    ) rotate(0deg);
+  }
+    100% {
+    transform: translate(
+      calc(-50% - 50vw + (var(--corner-final-offset, 0.5em) - 0.3em)),
+      calc(-50% + 50vh - (var(--corner-final-offset, 0.5em) - 0.3em))
+    ) rotate(0deg);
+  }
+  }
+}
+
 
 @keyframes cornerToTopRight {
   0% {

@@ -55,7 +55,7 @@ body[data-lang="ka"] .navBar a {
     left: 0;
     min-height: 100%;
     min-width: 100%;
-    z-index: 15;
+    z-index: 40;
     justify-content: flex-end;
     align-items: flex-end;
     gap: 0.1em;

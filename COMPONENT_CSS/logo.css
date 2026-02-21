@@ -10,6 +10,11 @@
   z-index: 15;
 }
 
+.logo span {
+  display: block;
+  line-height: .7em;
+}
+
 .logo::after {
   content: '';
   position: absolute;

@@ -8,6 +8,18 @@ export function navbarToggle() {
 
   if (!navBar || !menuButton) return;
 
+  // Lock page scrolling whenever mobile nav is open.
+  const applyPageScrollLock = () => {
+    const body = document.body;
+    const html = document.documentElement;
+    if (!body || !html) return;
+    const navLock = body.dataset.navScrollLock === "1";
+    const serviceLock = body.dataset.serviceScrollLock === "1";
+    const shouldLock = navLock || serviceLock;
+    body.classList.toggle("page-scroll-locked", shouldLock);
+    html.classList.toggle("page-scroll-locked", shouldLock);
+  };
+
   // Apply mobile navbar animation mode by breakpoint.
   const applyAnimationMode = () => {
     if ((window.innerWidth || 0) <= 1194) {
@@ -24,6 +36,8 @@ export function navbarToggle() {
     menuButton.classList.remove("is-active");
     menuButton.setAttribute("aria-expanded", "false");
     if (langContent) langContent.style.zIndex = "";
+    if (document.body) document.body.dataset.navScrollLock = "0";
+    applyPageScrollLock();
   };
 
   // Toggle mobile menu and synchronize ARIA state.
@@ -32,11 +46,20 @@ export function navbarToggle() {
     menuButton.classList.toggle("is-active", isOpen);
     menuButton.setAttribute("aria-expanded", String(isOpen));
     if (langContent) langContent.style.zIndex = isOpen ? "15" : "";
+    if (document.body) document.body.dataset.navScrollLock = isOpen ? "1" : "0";
+    applyPageScrollLock();
+    if (isOpen && typeof window.__stopSmoothScroll === "function") {
+      window.__stopSmoothScroll();
+    }
   };
 
   menuButton.setAttribute("type", "button");
   menuButton.setAttribute("aria-label", "Toggle navigation");
   menuButton.setAttribute("aria-expanded", "false");
+  if (document.body) {
+    document.body.dataset.navScrollLock = "0";
+    applyPageScrollLock();
+  }
 
   menuButton.addEventListener("click", (e) => {
     e.preventDefault();

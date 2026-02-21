@@ -32,13 +32,6 @@ body {
   }
 }
 
-@media (max-width: 1920px) {
-  body {
-    font-size: 18px;
-  }
-}
-
-
 @media (max-width: 1680px) {
   body {
     font-size: 16px;
@@ -94,6 +87,12 @@ body .corner {
     bottom 1.2s ease,
     transform 1.2s ease;
 }
+@media (max-width: 480px) {
+  body .corner {
+    bottom: 1em;
+    left: 1em;
+  }
+}
 
 body .corner2 {
   left: initial;
@@ -119,12 +118,21 @@ body.intro-active .logo {
 .logo {
   top: .5em;
   left: .5em;
+  padding-top: 0;
 }
 @media (max-width: 768px) {
   .logo {
     font-size: 3.2em;
     top: 0.3em;
     left: 0.3em;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 3.2em;
+    top: 0;
+    left: 0;
   }
 }
 
@@ -158,6 +166,10 @@ body.intro-active .logo {
   }
 }
 @media (max-width: 480px) {
+  body {
+    --corner-final-offset: 1.7em;
+  }
+
   .navBar {
     padding: 0 1em calc(3.2em + env(safe-area-inset-bottom, 0px)) 0;
   }

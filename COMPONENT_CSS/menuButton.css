@@ -29,6 +29,12 @@
     width: .8em;
   }
 }
+@media (max-width: 480px) {
+  .menuButton {
+    top: .85em;
+    right: .85em;
+  }
+}
 
 .menuButton div {
   height: .15em;

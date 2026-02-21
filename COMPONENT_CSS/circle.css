@@ -76,3 +76,263 @@ body[data-lang="ka"] .circle .dot hgroup p {
    margin: -5em 0 0 12em;
 }
 
+@media (max-width: 850px) {
+  .circle {
+    width: 34em;
+    height: 34em;
+  }
+
+  .circle .dot {
+    width: 1em;
+    height: 1em;
+  }
+
+  .circle .dot hgroup h3 {
+    font-size: 4em;
+  }
+
+  .circle .dot hgroup p {
+    font-size: 1.2em;
+    margin: 1.7em 0 0 2.4em;
+    min-width: 8.6em;
+  }
+
+  body[data-lang="ka"] .circle .dot hgroup p {
+    min-width: 10em;
+  }
+
+  .circle .dot.dot1 {
+    right: 5.8em;
+    top: 3.2em;
+  }
+
+  .circle .dot.dot1 hgroup {
+    margin: -8em 0 0 3.9em;
+  }
+
+  .circle .dot.dot2 {
+    right: -0.4em;
+    top: 17.8em;
+  }
+
+  .circle .dot.dot2 hgroup {
+    margin: -8em 0 0 3.9em;
+  }
+
+  .circle .dot.dot3 {
+    right: 8.2em;
+    bottom: 1.7em;
+  }
+
+  .circle .dot.dot3 hgroup {
+    margin: -4em 0 0 9.4em;
+  }
+}
+
+@media (max-width: 560px) {
+  .circle {
+    width: 28.5em;
+    height: 28.5em;
+  }
+
+  .circle .dot {
+    width: 0.9em;
+    height: 0.9em;
+  }
+
+  .circle .dot hgroup h3 {
+    font-size: 3.35em;
+  }
+
+  .circle .dot hgroup p {
+    font-size: 1.2em;
+    margin: 1.45em 0 0 2em;
+    min-width: 7.8em;
+    line-height: 1.1em;
+  }
+
+  body[data-lang="ka"] .circle .dot hgroup p {
+    min-width: 9.2em;
+  }
+
+  .circle .dot.dot1 {
+    right: 4.9em;
+    top: 2.7em;
+  }
+
+  .circle .dot.dot1 hgroup {
+    margin: -6.9em 0 0 3.2em;
+  }
+
+  .circle .dot.dot2 {
+    right: -0.25em;
+    top: 14.9em;
+  }
+
+  .circle .dot.dot2 hgroup {
+    margin: -6.85em 0 0 3.2em;
+  }
+
+  .circle .dot.dot3 {
+    right: 6.8em;
+    bottom: 1.3em;
+  }
+
+  .circle .dot.dot3 hgroup {
+    margin: -3.3em 0 0 7.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  .circle {
+    width: 25.8em;
+    height: 25.8em;
+  }
+
+  .circle .dot {
+    width: 0.82em;
+    height: 0.82em;
+  }
+
+  .circle .dot hgroup h3 {
+    font-size: 3.05em;
+  }
+
+  .circle .dot hgroup p {
+    font-size: 1.2em;
+    margin: 1.32em 0 0 1.55em;
+    min-width: 6.8em;
+  }
+
+  body[data-lang="ka"] .circle .dot hgroup p {
+    min-width: 8.4em;
+  }
+
+  .circle .dot.dot1 {
+    right: 4.2em;
+    top: 2.25em;
+  }
+
+  .circle .dot.dot1 hgroup {
+    margin: -6.2em 0 0 2.55em;
+  }
+
+  .circle .dot.dot2 {
+    right: -0.15em;
+    top: 13.4em;
+  }
+
+  .circle .dot.dot2 hgroup {
+    margin: -6.15em 0 0 2.55em;
+  }
+
+  .circle .dot.dot3 {
+    right: 6em;
+    bottom: 1.08em;
+  }
+
+  .circle .dot.dot3 hgroup {
+    margin: -2.95em 0 0 6.3em;
+  }
+}
+
+@media (max-width: 390px) {
+  .circle {
+    width: 22.8em;
+    height: 22.8em;
+  }
+
+  .circle .dot hgroup h3 {
+    font-size: 2.72em;
+  }
+
+  .circle .dot hgroup p {
+    font-size: 1.2em;
+    margin: 1.2em 0 0 1.25em;
+    min-width: 5.9em;
+  }
+
+  body[data-lang="ka"] .circle .dot hgroup p {
+    min-width: 7.5em;
+  }
+
+  .circle .dot.dot1 {
+    right: 3.68em;
+    top: 1.95em;
+  }
+
+  .circle .dot.dot1 hgroup {
+    margin: -5.55em 0 0 2.05em;
+  }
+
+  .circle .dot.dot2 {
+    right: -0.1em;
+    top: 11.85em;
+  }
+
+  .circle .dot.dot2 hgroup {
+    margin: -5.5em 0 0 2.05em;
+  }
+
+  .circle .dot.dot3 {
+    right: 5.28em;
+    bottom: 0.9em;
+  }
+
+  .circle .dot.dot3 hgroup {
+    margin: -2.58em 0 0 5.15em;
+  }
+}
+
+@media (max-width: 320px) {
+  .circle {
+    width: 20.4em;
+    height: 20.4em;
+  }
+
+  .circle .dot {
+    width: 0.75em;
+    height: 0.75em;
+  }
+
+  .circle .dot hgroup h3 {
+    font-size: 2.4em;
+  }
+
+  .circle .dot hgroup p {
+    font-size: 1.2em;
+    margin: 1.08em 0 0 0.95em;
+    min-width: 5.1em;
+  }
+
+  body[data-lang="ka"] .circle .dot hgroup p {
+    min-width: 6.7em;
+  }
+
+  .circle .dot.dot1 {
+    right: 3.25em;
+    top: 1.7em;
+  }
+
+  .circle .dot.dot1 hgroup {
+    margin: -4.95em 0 0 1.6em;
+  }
+
+  .circle .dot.dot2 {
+    right: -0.08em;
+    top: 10.6em;
+  }
+
+  .circle .dot.dot2 hgroup {
+    margin: -4.9em 0 0 1.6em;
+  }
+
+  .circle .dot.dot3 {
+    right: 4.7em;
+    bottom: 0.78em;
+  }
+
+  .circle .dot.dot3 hgroup {
+    margin: -2.22em 0 0 4.35em;
+  }
+}

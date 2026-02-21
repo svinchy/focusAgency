@@ -52,14 +52,14 @@ body[data-lang="ka"] .service hgroup p {
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6em;
+  gap: 1em;
   max-width: 100%;
+  padding-left: 0 !important;
 }
 
 .service-content li {
-  font-size: 0.95em;
-  line-height: var(--lh-compact);
-  padding: 0.7em 0.95em;
+  line-height: 1.1em;
+  padding: 1em 1.5em;
   border-radius: var(--radius-s);
   border: 0.08em solid rgba(255, 241, 227, 0.3);
   opacity: 0;
@@ -99,6 +99,7 @@ body[data-lang="ka"] .service hgroup p {
   bottom: .85em;
   right: .85em;
   overflow: hidden;
+  z-index: 10;
   box-shadow: 0 10px 20px rgba(224, 77, 77, 0.35);
 }
 
@@ -107,5 +108,148 @@ body[data-lang="ka"] .service hgroup p {
   position: absolute;
   inset: 0;
   margin: auto;
+}
+
+@media (max-width: 1366px) {
+  .service {
+    width: 23.5em;
+    height: 14.4em;
+    padding: 2.2em 1.8em 1.9em 1.8em;
+  }
+
+  .service hgroup h3 {
+    font-size: 2.2em;
+    max-width: 7.4em;
+  }
+
+  .service hgroup p {
+    font-size: 1.15em;
+    max-width: 12em;
+    padding-top: 1.6em;
+  }
+
+  .service-content li {
+    font-size: 1em;
+    padding: 1em 1.5em;
+  }
+}
+
+@media (max-width: 1024px) {
+  .service {
+    width: 21.5em;
+    height: 13.2em;
+    padding: 1.9em 1.5em 1.6em 1.5em;
+  }
+
+  .service hgroup h3 {
+    font-size: 1.9em;
+    max-width: 7em;
+  }
+
+  .service hgroup p {
+    font-size: 1.15em;
+    max-width: 12em;
+    padding-top: 1.6em;
+  }
+
+  .service-content {
+    margin-top: 1.2em;
+
+  }
+
+  .service-content li {
+    font-size: 1em;
+    padding: 1em 1.5em;
+  }
+
+  .service button {
+    width: 3.2em;
+    height: 3.2em;
+    bottom: 0.72em;
+    right: 0.72em;
+  }
+
+  .service button img {
+    width: 1.28em;
+  }
+}
+
+@media (max-width: 768px) {
+  .service {
+    width: 20em;
+    height: 12.6em;
+    padding: 1.6em 1.2em 1.4em 1.2em;
+  }
+
+  .service hgroup h3 {
+    font-size: 1.68em;
+    max-width: 8.2em;
+  }
+
+  .service hgroup p {
+    font-size: 1.15em;
+    max-width: 12em;
+    padding-top: 1.6em;
+  }
+
+  .service-content li {
+
+    padding: 1em 1.5em;
+  }
+
+  .service button {
+    width: 2.9em;
+    height: 2.9em;
+    bottom: 0.64em;
+    right: 0.64em;
+  }
+
+  .service button img {
+    width: 1.12em;
+  }
+}
+
+@media (max-width: 480px) {
+  .service {
+    height: 10em;
+    padding: 1.35em 1.05em 1.25em 1.05em;
+  }
+
+  .service hgroup h3 {
+    font-size: 1.45em;
+  }
+
+  .service hgroup p {
+    font-size: 1.15em;
+    max-width: 12em;
+    padding-top: 1.6em;
+  }
+
+  .service-content {
+    margin-top: 0.95em;
+  }
+
+  .service-content li {
+
+    padding: 0.42em 0.58em;
+    border-radius: 2.5em;
+  }
+
+  .service button {
+    width: 2.65em;
+    height: 2.65em;
+    bottom: 0.56em;
+    right: 0.56em;
+  }
+
+  .service button img {
+    width: 1.04em;
+  }
+}
+
+@media (max-width: 375px) {
+  .service hgroup p {
+    font-size: 1em;;
+  }
 }
 

@@ -11,10 +11,27 @@ export function pageSmoothScroll() {
   let scrollToRaf = null;
   const ease = 0.12;
 
+  const isPageScrollLocked = () => {
+    const body = document.body;
+    if (!body) return false;
+    return body.dataset.navScrollLock === "1" || body.dataset.serviceScrollLock === "1";
+  };
+
   // Keep target scroll within document bounds.
   const clampTarget = () => {
     const max = document.documentElement.scrollHeight - window.innerHeight;
     target = Math.max(0, Math.min(target, max));
+  };
+
+  // Immediately stop any in-flight smooth-scroll motion.
+  const stopSmoothScroll = () => {
+    if (scrollToRaf) {
+      cancelAnimationFrame(scrollToRaf);
+      scrollToRaf = null;
+    }
+    ticking = false;
+    current = window.scrollY || window.pageYOffset;
+    target = current;
   };
 
   // Animate current scroll toward target.
@@ -33,6 +50,30 @@ export function pageSmoothScroll() {
 
   // Intercept wheel input and feed smooth-scroll target.
   const onWheel = (e) => {
+    // Let nested service-content keep native wheel scrolling when it can scroll.
+    const nestedScroll = e.target instanceof Element ? e.target.closest(".service-content") : null;
+    if (nestedScroll) {
+      const canScroll = nestedScroll.scrollHeight > nestedScroll.clientHeight + 1;
+      if (canScroll) {
+        const atTop = nestedScroll.scrollTop <= 0;
+        const atBottom =
+          nestedScroll.scrollTop + nestedScroll.clientHeight >= nestedScroll.scrollHeight - 1;
+        const goingDown = e.deltaY > 0;
+        const goingUp = e.deltaY < 0;
+
+        // Allow native scrolling while there is room in the list.
+        if ((goingDown && !atBottom) || (goingUp && !atTop)) {
+          return;
+        }
+      }
+    }
+
+    if (isPageScrollLocked()) {
+      stopSmoothScroll();
+      e.preventDefault();
+      return;
+    }
+
     e.preventDefault();
     if (scrollToRaf) {
       cancelAnimationFrame(scrollToRaf);
@@ -58,6 +99,10 @@ export function pageSmoothScroll() {
 
   // Expose helper for inner scroll areas to forward wheel events.
   window.__smoothScrollBy = (deltaY) => {
+    if (isPageScrollLocked()) {
+      stopSmoothScroll();
+      return;
+    }
     if (scrollToRaf) {
       cancelAnimationFrame(scrollToRaf);
       scrollToRaf = null;
@@ -76,6 +121,10 @@ export function pageSmoothScroll() {
 
   // Expose helper for direct smooth scrolling to an absolute Y position.
   window.__smoothScrollTo = (top) => {
+    if (isPageScrollLocked()) {
+      stopSmoothScroll();
+      return;
+    }
     if (!Number.isFinite(top)) return;
     if (scrollToRaf) cancelAnimationFrame(scrollToRaf);
     ticking = false;
@@ -110,4 +159,7 @@ export function pageSmoothScroll() {
     clampTarget();
     scrollToRaf = requestAnimationFrame(frame);
   };
+
+  // Expose an explicit stopper for modules that lock page scroll.
+  window.__stopSmoothScroll = stopSmoothScroll;
 }

@@ -12,6 +12,8 @@
   border: none;
   backdrop-filter: blur(10px);
   position: fixed;
+  bottom: 1.2em;
+  right: 1.2em;
 }
 .chatButton span {
   display: block;
@@ -24,12 +26,19 @@
   .chatButton {
     width: 2.9em;
     height: 2.9em;
-    bottom: 1.2em;
-    right: 1.2em;
+    bottom: 1em;
+    right: 1em;
   }
 
   .chatButton span {
     font-size: .8em;
   }
+}
+@media (max-width: 480px) {
+  .chatButton {
+    bottom: .85em;
+    right: .85em;
+  }
+
 }
 

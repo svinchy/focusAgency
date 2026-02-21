@@ -22,6 +22,15 @@ export function loadingIntro() {
     } else {
       logo.style.removeProperty("font-size");
     }
+
+    const isMobileS = (window.innerWidth || 0) <= 480;
+    logo.style.setProperty("top", isMobileS ? "0.2em" : "0.5em", "important");
+    logo.style.setProperty("left", isMobileS ? "0.2em" : "0.5em", "important");
+    if (isMobileS) {
+      logo.style.setProperty("font-size", "3.2em", "important");
+    } else {
+      logo.style.removeProperty("font-size");
+    }
   };
 
   // 1) red dot pulses immediately
@@ -80,6 +89,7 @@ export function loadingIntro() {
       corner.style.animation = "none";
     }, { once: true });
   }
+
 
   if (corner2) {
     corner2.addEventListener("animationend", (e) => {

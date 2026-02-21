@@ -95,6 +95,18 @@ export function scrollSwitcher() {
   const dotsWrap = document.querySelector(".navigationDots");
   let scrollTicking = false; // rAF throttle
 
+  // Lock page scrolling whenever service card is active.
+  const applyPageScrollLock = () => {
+    const body = document.body;
+    const html = document.documentElement;
+    if (!body || !html) return;
+    const navLock = body.dataset.navScrollLock === "1";
+    const serviceLock = body.dataset.serviceScrollLock === "1";
+    const shouldLock = navLock || serviceLock;
+    body.classList.toggle("page-scroll-locked", shouldLock);
+    html.classList.toggle("page-scroll-locked", shouldLock);
+  };
+
   // Keep dots aligned next to the content container.
   const updateDotsPosition = () => {
     if (!contentWrap || !dotsWrap) return;
@@ -103,6 +115,22 @@ export function scrollSwitcher() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     const gap = 1.5 * rootFontSize;
     const viewportW = window.innerWidth || document.documentElement.clientWidth;
+    const viewportH = window.innerHeight || document.documentElement.clientHeight;
+
+    // Mobile layout: keep dots centered under the content block.
+    if (viewportW <= 560) {
+      const centerX = contentRect.left + contentRect.width / 2;
+      const topFromContent = contentRect.bottom + rootFontSize; // 1em gap
+      const maxTop = viewportH - dotsRect.height - rootFontSize * 0.4;
+      const top = Math.min(topFromContent, maxTop);
+
+      dotsWrap.style.left = `${centerX}px`;
+      dotsWrap.style.right = "auto";
+      dotsWrap.style.top = `${top}px`;
+      dotsWrap.style.bottom = "auto";
+      dotsWrap.style.transform = "translateX(-50%)";
+      return;
+    }
 
     let left = contentRect.right + gap;
     const minLeft = rootFontSize * 0.5;
@@ -111,13 +139,23 @@ export function scrollSwitcher() {
 
     dotsWrap.style.left = `${left}px`;
     dotsWrap.style.right = "auto";
+    dotsWrap.style.top = "50%";
+    dotsWrap.style.bottom = "auto";
+    dotsWrap.style.transform = "translateY(-50%)";
   };
 
   if (service) {
     // Toggle active state on service card click.
-    service.addEventListener("click", () => {
-      service.classList.toggle("active");
-      if (service.classList.contains("active")) {
+    service.addEventListener("click", (e) => {
+      // Keep list interactions/scroll from collapsing the card on touch devices.
+      if (e.target.closest(".service-content")) return;
+      const isActive = service.classList.toggle("active");
+      document.body.dataset.serviceScrollLock = isActive ? "1" : "0";
+      applyPageScrollLock();
+      if (isActive && typeof window.__stopSmoothScroll === "function") {
+        window.__stopSmoothScroll();
+      }
+      if (isActive) {
         renderService(activeIndex, { updateContent: true });
       }
     });
@@ -222,6 +260,10 @@ export function scrollSwitcher() {
   }
 
   if (dots.length > 0) setActiveIndex(0);
+  if (document.body) {
+    document.body.dataset.serviceScrollLock = "0";
+    applyPageScrollLock();
+  }
   updateDotsPosition();
   onScroll();
 }
