@@ -10,10 +10,6 @@ export function setLanguage(lang) {
   localStorage.setItem("lang", lang);
 }
 
-
-
-
-
 // 1) Read saved language.
 // 2) Mark active language button.
 // 3) Save language + render content when user switches.
@@ -41,3 +37,4 @@ export function languageSwitcher() {
     });
   });
 }
+

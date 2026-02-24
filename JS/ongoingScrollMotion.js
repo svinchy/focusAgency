@@ -99,3 +99,4 @@ export function ongoingScrollMotion() {
   window.addEventListener("resize", onScroll);
   onScroll();
 }
+

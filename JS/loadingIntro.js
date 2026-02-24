@@ -14,23 +14,11 @@ export function loadingIntro() {
 
   const applyFinalLogoPosition = () => {
     if (!logo) return;
-    const isMobile = (window.innerWidth || 0) <= 768;
-    logo.style.setProperty("top", isMobile ? "0.3em" : "0.5em", "important");
-    logo.style.setProperty("left", isMobile ? "0.3em" : "0.5em", "important");
-    if (isMobile) {
-      logo.style.setProperty("font-size", "3.2em", "important");
-    } else {
-      logo.style.removeProperty("font-size");
-    }
-
-    const isMobileS = (window.innerWidth || 0) <= 480;
-    logo.style.setProperty("top", isMobileS ? "0.2em" : "0.5em", "important");
-    logo.style.setProperty("left", isMobileS ? "0.2em" : "0.5em", "important");
-    if (isMobileS) {
-      logo.style.setProperty("font-size", "3.2em", "important");
-    } else {
-      logo.style.removeProperty("font-size");
-    }
+    const isMobile = window.matchMedia("(max-width: 560px)").matches;
+    const finalOffset = isMobile ? "0.2em" : "0.5em";
+    logo.style.setProperty("top", finalOffset, "important");
+    logo.style.setProperty("left", finalOffset, "important");
+    // logo.style.removeProperty("font-size");
   };
 
   // 1) red dot pulses immediately
@@ -90,7 +78,6 @@ export function loadingIntro() {
     }, { once: true });
   }
 
-
   if (corner2) {
     corner2.addEventListener("animationend", (e) => {
       if (e.animationName !== "cornerToTopRight") return;
@@ -102,3 +89,4 @@ export function loadingIntro() {
     }, { once: true });
   }
 }
+

@@ -1,9 +1,9 @@
 .lang-content {
- /* transition: opacity 0.25s ease, letter-spacing 0.25s ease, line-height 0.25s ease; */
- transition:
-    opacity 0.25s ease,       /* fade */
-    letter-spacing 0.25s ease,
-    line-height 0.25s ease;
+  /* transition: opacity 0.25s ease, letter-spacing 0.25s ease, line-height 0.25s ease; */
+  transition:
+  opacity 0.25s ease,       /* fade */
+  letter-spacing 0.25s ease,
+  line-height 0.25s ease;
   opacity: 1;
   width: 100vw;
   min-width: 100vw;
@@ -47,8 +47,6 @@
   right: 0;
 }
 
-
-
 .lang-content .overlay {
   position: absolute;
   width: 100%;
@@ -84,28 +82,26 @@
   pointer-events: none;
 }
 
-@media (max-width: 1366px) {
-  .lang-content {
-    animation-duration: 55s;
-  }
+.lang-content .globe {
+  position: fixed;
+  bottom: -10em;
+  right: -5em;
 }
 
 @media (max-width: 1366px) {
-  .lang-content {
-    background: none;
-    background-attachment: scroll;
+  .lang-content .globe {
+    width: 52em;
+    height: 52em;
+    right: -8em;
+    bottom: -11em;
   }
+}
 
-  .lang-content .starsBg {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background: url('../IMAGE/stars5.jpeg') no-repeat center;
-    background-size: cover;
-    animation: starsDrift 55s linear infinite;
-    transform: translateZ(0);
+@media (max-width: 1024px) {
+  .lang-content .globe {
+    right: -5em;
+    /* bottom: -9em; */
+    object-fit: contain;
   }
 }
 
@@ -119,3 +115,4 @@
   0%, 100% { opacity: 0.25; }
   50% { opacity: 0.6; }
 }
+

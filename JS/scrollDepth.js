@@ -32,3 +32,4 @@ export function scrollDepth() {
   window.addEventListener("resize", update);
   update();
 }
+

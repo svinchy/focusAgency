@@ -19,9 +19,10 @@
   content: '';
   position: absolute;
   border-radius: 100%;
-  bottom: -0.12em;
+  bottom: -0.15em;
   right: -0.12em;
   width: .3em;
   height: .3em;
   background: var(--red);
 }
+

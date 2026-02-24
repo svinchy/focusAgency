@@ -8,7 +8,6 @@
 
 .langButton button {
   background: transparent;
-  /* padding: 0 !important; */
   border-radius: 0;
   cursor: pointer;
   text-transform: uppercase;
@@ -23,8 +22,8 @@
   transform: rotate(90deg);
   padding: 0;
   transition:
-    opacity 0.3s ease,             /* fade in/out */
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* smooth scale */
+  opacity 0.3s ease,             /* fade in/out */
+  transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* smooth scale */
 
 }
 
@@ -52,9 +51,9 @@
   transform: rotate(90deg) scale(1.15);
 }
 
-
 .langButton button:last-child {
   font-family: var(--font-en);
   font-weight: 600;
   font-size: .9em;
 }
+

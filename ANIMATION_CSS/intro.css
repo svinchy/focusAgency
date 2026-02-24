@@ -90,7 +90,7 @@ body.intro-corners-move .corner2 {
 
 @keyframes logoDotPulse {
   0% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.12); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 1; }
   100% { transform: scale(1); opacity: 0.5; }
 }
 
@@ -129,31 +129,7 @@ body.intro-corners-move .corner2 {
     transform: translate(0, 0) scale(1);
   }
 }
-
-@media (max-width: 768px) {
-  @keyframes logoMove {
-    0% {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    70% {
-      top: 0.3em;
-      left: 0.3em;
-      transform: translate(0, 0) scale(1.04);
-      font-size: 3.2em;
-    }
-    100% {
-      top: 0.3em;
-      left: 0.3em;
-      transform: translate(0, 0) scale(1);
-      font-size: 3.2em;
-    }
-  }
-}
-
-
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   @keyframes logoMove {
     0% {
       top: 50%;
@@ -163,18 +139,16 @@ body.intro-corners-move .corner2 {
     70% {
       top: 0.2em;
       left: 0.2em;
-      transform: translate(0, 0) scale(1.04);
-      font-size: 3.2em;
+      transform: translate(0, 0) scale(1.02);
     }
     100% {
       top: 0.2em;
       left: 0.2em;
       transform: translate(0, 0) scale(1);
-      font-size: 3.2em;
+
     }
   }
 }
-
 
 @keyframes cornerToBottomLeft {
   0% {
@@ -182,78 +156,61 @@ body.intro-corners-move .corner2 {
   }
   70% {
     transform: translate(
-      calc(-50% - 50vw + (var(--corner-final-offset, 2.5em) - 0.3em)),
-      calc(-50% + 50vh - (var(--corner-final-offset, 2.5em) - 0.3em))
+    calc(-50% - 50vw + (var(--corner-final-offset, 2.5em) - 0.3em)),
+    calc(-50% + 50vh - (var(--corner-final-offset, 2.5em) - 0.3em))
     ) rotate(0deg);
   }
-   100% {
+  100% {
     transform: translate(
-      calc(-50% - 50vw + (var(--corner-final-offset, 2.5em) - 0.3em)),
-      calc(-50% + 50vh - (var(--corner-final-offset, 2.5em) - 0.3em))
+    calc(-50% - 50vw + (var(--corner-final-offset, 2.5em) - 0.3em)),
+    calc(-50% + 50vh - (var(--corner-final-offset, 2.5em) - 0.3em))
     ) rotate(0deg);
   }
 }
 
-
-@media (max-width: 480px) {
-
-  @keyframes cornerToBottomLeft {
+@keyframes cornerToTopRight {
   0% {
-    transform: translate(-50%, -50%) translate(-2em, 2em) rotate(0deg);
+    transform: translate(-50%, -50%) translate(2em, -2em) rotate(180deg);
   }
   70% {
     transform: translate(
-      calc(-50% - 50vw + (var(--corner-final-offset, 0.5em) - 0.3em)),
-      calc(-50% + 50vh - (var(--corner-final-offset, 2.5em) - 0.3em))
-    ) rotate(0deg);
+    calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
+    calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
+    ) rotate(180deg);
   }
+  100% {
+    transform: translate(
+    calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
+    calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
+    ) rotate(180deg);
+  }
+}
+
+@media (max-width: 1180px) {
+  body.intro-corners-move .corner2 {
+    animation:
+      cornerToTopRight 3s cubic-bezier(0.16, 1, 0.3, 1) both,
+      corner2FadeNearEnd 3s ease both;
+  }
+
+  @keyframes corner2FadeNearEnd {
+    0% {
+      opacity: 1;
+    }
+    70% {
+      opacity: 0;
+    }
+    88% {
+      opacity: 0;
+    }
     100% {
-    transform: translate(
-      calc(-50% - 50vw + (var(--corner-final-offset, 0.5em) - 0.3em)),
-      calc(-50% + 50vh - (var(--corner-final-offset, 0.5em) - 0.3em))
-    ) rotate(0deg);
+      opacity: 0;
+    }
   }
+
+  body.intro-finished .corner2 {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
-
-@keyframes cornerToTopRight {
-  0% {
-    transform: translate(-50%, -50%) translate(2em, -2em) rotate(180deg);
-  }
-  70% {
-    transform: translate(
-      calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
-      calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
-    ) rotate(180deg);
-  }
-   100% {
-    transform: translate(
-      calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
-      calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
-    ) rotate(180deg);
-  }
-}
-
-@media (max-width: 768px) {
-
-@keyframes cornerToTopRight {
-  0% {
-    transform: translate(-50%, -50%) translate(2em, -2em) rotate(180deg);
-  }
-  70% {
-    transform: translate(
-      calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
-      calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
-    ) rotate(180deg);
-  }
-   100% {
-    transform: translate(
-      calc(-50% + 50vw - (var(--corner-final-offset, 2.5em) - 0.3em)),
-      calc(-50% - 50vh + (var(--corner-final-offset, 2.5em) - 0.3em))
-
-    ) rotate(180deg);
-     opacity: 0;
-  }
-}
-}

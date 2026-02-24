@@ -30,7 +30,6 @@ export function render() {
       el.textContent = content.navbar[lang][navKeys[i]];
     });
 
-
     // --- Update banner ---
     const bannerTitle = document.querySelector(".bannerTitle h1");
     const bannerSubtitle = document.querySelector(".bannerTitle h4");
@@ -188,3 +187,4 @@ export function render() {
     previousLang = lang;
   }, applyTransition ? 150 : 0);
 }
+

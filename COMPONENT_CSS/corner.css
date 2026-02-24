@@ -4,27 +4,28 @@
 }
 
 .corner::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 2px;
-    height: 100%;
-    background: rgba(170, 170, 170, 0.7);
-    border-radius: 5px;
-  }
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: rgba(170, 170, 170, 0.7);
+  border-radius: 5px;
+}
 
-  .corner::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    border-radius: 5px;
-    background: rgba(170, 170, 170, 0.7);
-  }
+.corner::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 5px;
+  background: rgba(170, 170, 170, 0.7);
+}
 
-  .corner2 {
-    transform: rotate(180deg);
-  }
+.corner2 {
+  transform: rotate(180deg);
+}
+

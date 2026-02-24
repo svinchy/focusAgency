@@ -17,7 +17,6 @@ footer h2 {
   line-height: .8em;
   margin: 0 4em 2em auto;
   text-transform: capitalize;
-  /* text-shadow: 0 0 calc(1.2em * var(--footerGlow)) rgba(255, 106, 106, 0.28); */
   transition: text-shadow 0.25s ease;
   transform: translateX(var(--swim-x, 0em)) translateY(var(--swim-y, 0em)) rotate(var(--swim-r, 0deg));
   will-change: transform;
@@ -38,7 +37,6 @@ footer form {
   font-weight: 300;
   font-size: 1.1em;
 }
-
 
 .contact p {
   font-size: 1.2em;
@@ -64,7 +62,6 @@ footer .contact nav a img {
   margin-right: 7em;
 
 }
-
 
 .address hgroup h5 {
   color: rgba(255, 241, 227, .5);
@@ -92,10 +89,6 @@ footer .contact nav a img {
   border: 1px solid rgba(255, 241, 227, .1);
   padding: 1em;
   will-change: transform, filter;
-  /* filter:
-    brightness(calc(.92 + var(--footerGlow) * .16))
-    drop-shadow(0 0 calc(1em * var(--footerGlow)) rgba(255, 120, 120, .30));
-  transition: filter .24s ease; */
 }
 
 .address img:nth-of-type(1) {
@@ -106,8 +99,6 @@ footer .contact nav a img {
 .address img:nth-of-type(2) {
   margin-top: 3em;
   margin-left: -5em;
-  /* top: 10em;
-  right: 10em; */
 }
 
 footer > p {
@@ -139,3 +130,4 @@ footer.is-wave-active > p .wave-char {
   35% { opacity: 1; }
   100% { opacity: 0.22; }
 }
+

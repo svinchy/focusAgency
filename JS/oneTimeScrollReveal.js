@@ -29,3 +29,4 @@ export function oneTimeScrollReveal() {
     items.forEach((el) => itemsObserver.observe(el));
   }
 }
+

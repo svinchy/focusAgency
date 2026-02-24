@@ -163,3 +163,4 @@ export function pageSmoothScroll() {
   // Expose an explicit stopper for modules that lock page scroll.
   window.__stopSmoothScroll = stopSmoothScroll;
 }
+

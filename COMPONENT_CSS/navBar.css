@@ -12,8 +12,8 @@ body[data-lang="ka"] .navBar {
 
 .navBar a {
   text-decoration: none;
-   font-size: 1.3em;
-   line-height: .8em;
+  font-size: 1.1em;
+  line-height: .8em;
   color: var(--cream);
   cursor: pointer;
   font-weight: 400;
@@ -21,19 +21,19 @@ body[data-lang="ka"] .navBar {
   opacity: 0.5;
   border-radius: 3em;
   background: rgba(224, 77, 77, 0);
-    transition:
-    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    background 0.5s ease,
-    font-weight 0.5s ease,
-    border-radius 0.5s ease,
-    opacity 0.5s ease;
+  transition:
+  transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+  padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+  background 0.5s ease,
+  font-weight 0.5s ease,
+  border-radius 0.5s ease,
+  opacity 0.5s ease;
 }
 
 body[data-lang="ka"] .navBar a {
   font-family: 'BPG Square Banner Caps 2013', sans-serif;
   text-transform: uppercase;
-  font-size: 1.05em;
+  font-size: .9em;
 }
 
 .navBar a:hover {
@@ -46,163 +46,3 @@ body[data-lang="ka"] .navBar a {
   /* font-size: 1.2em; */
 }
 
-@media (max-width: 1194px) {
-  .navBar {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    min-height: 100%;
-    min-width: 100%;
-    z-index: 40;
-    justify-content: flex-end;
-    align-items: flex-end;
-    gap: 0.1em;
-    padding: 0 clamp(0.05em, 0.55vw, 0.16em) calc(4.2em + env(safe-area-inset-bottom, 0px)) 0;
-    background: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(0);
-    opacity: 0;
-    pointer-events: none;
-    isolation: isolate;
-    transition:
-      background 0.45s var(--ease-io),
-      backdrop-filter 0.45s var(--ease-io),
-      opacity 0.35s var(--ease-io);
-  }
-
-  .navBar::before,
-  .navBar::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.45s var(--ease-io);
-  }
-
-  .navBar::before {
-    z-index: 0;
-    background:
-      radial-gradient(72% 68% at 90% 52%, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.56) 44%, rgba(0, 0, 0, 0) 84%),
-      linear-gradient(to left, rgba(0, 0, 0, 0.84) 0%, rgba(0, 0, 0, 0.28) 48%, rgba(0, 0, 0, 0) 100%);
-  }
-
-  .navBar::after {
-    z-index: 0;
-    background:
-      linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.38) 40%, rgba(0, 0, 0, 0.08) 72%, rgba(0, 0, 0, 0) 100%);
-  }
-
-  .navBar.is-open {
-    background: rgba(0, 0, 0, 0.52);
-    backdrop-filter: blur(9px);
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .navBar.is-open::before,
-  .navBar.is-open::after {
-    opacity: 1;
-  }
-
-  .navBar a {
-    font-size: clamp(3.3em, 11.4vw, 6.4em);
-    line-height: 0.75em;
-    font-weight: 900;
-    opacity: 0.5;
-    padding: .22em 0.45em .22em 0.9em;
-    background: rgba(224, 77, 77, 0);
-    transform: translateX(1.8em);
-    transition:
-      transform 0.45s var(--ease-io),
-      opacity 0.35s var(--ease-io);
-    pointer-events: none;
-    position: relative;
-    z-index: 1;
-  }
-  body[data-lang="ka"] .navBar a {
-    font-size: clamp(2.8em, 9.4vw, 5em);
-  }
-
-  .navBar.is-open a {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .navBar.is-open a:nth-of-type(1) { transition-delay: 0.06s; }
-  .navBar.is-open a:nth-of-type(2) { transition-delay: 0.12s; }
-  .navBar.is-open a:nth-of-type(3) { transition-delay: 0.18s; }
-
-  .navBar a:hover {
-    opacity: 1;
-    background: rgba(224, 77, 77, 0);
-    font-weight: 900;
-    padding: 0.3em 0.45em 0.3em 1em;
-    transform: translateX(0);
-    text-transform: inherit;
-  }
-
-  /* Mobile menu animation mode: animation-two */
-  .navBar.animation-two {
-    transform: translateX(18%);
-    transition:
-      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-      background 0.45s var(--ease-io),
-      backdrop-filter 0.45s var(--ease-io),
-      opacity 0.35s var(--ease-io);
-  }
-
-  .navBar.animation-two.is-open {
-    transform: translateX(0);
-  }
-
-  .navBar.animation-two a {
-    transform: translateX(2.4em);
-    opacity: 0;
-    filter: blur(2px);
-    transition:
-      transform 0.45s var(--ease-io),
-      opacity 0.3s var(--ease-io),
-      filter 0.3s var(--ease-io);
-  }
-
-  .navBar.animation-two.is-open a {
-    transform: translateX(0);
-    filter: blur(0);
-    opacity: 1;
-  }
-
-  .navBar.animation-two.is-open a:nth-of-type(1) { transition-delay: 0.05s; }
-  .navBar.animation-two.is-open a:nth-of-type(2) { transition-delay: 0.11s; }
-  .navBar.animation-two.is-open a:nth-of-type(3) { transition-delay: 0.17s; }
-}
-
-@media (max-width: 834px) {
-  .navBar a {
-    font-size: clamp(3.6em, 12.8vw, 6.8em);
-  }
-
-  body[data-lang="ka"] .navBar a {
-    font-size: clamp(3em, 10.6vw, 5.4em);
-  }
-
-  .navBar {
-    padding-right: 0.06em;
-  }
-}
-
-@media (max-width: 480px) {
-  .navBar a {
-    font-size: clamp(3.9em, 14.8vw, 7.2em);
-  }
-
-  body[data-lang="ka"] .navBar a {
-    font-size: clamp(3.25em, 12.4vw, 5.9em);
-  }
-
-  .navBar {
-    padding-right: 0;
-  }
-}

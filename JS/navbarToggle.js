@@ -20,13 +20,9 @@ export function navbarToggle() {
     html.classList.toggle("page-scroll-locked", shouldLock);
   };
 
-  // Apply mobile navbar animation mode by breakpoint.
+  // Keep navbar animation mode enabled.
   const applyAnimationMode = () => {
-    if ((window.innerWidth || 0) <= 1194) {
-      navBar.classList.add("animation-two");
-    } else {
-      navBar.classList.remove("animation-two");
-    }
+    navBar.classList.add("animation-two");
   };
   applyAnimationMode();
 
@@ -80,6 +76,7 @@ export function navbarToggle() {
 
   window.addEventListener("resize", () => {
     applyAnimationMode();
-    if ((window.innerWidth || 0) > 1194) closeMenu();
+    closeMenu();
   });
 }
+

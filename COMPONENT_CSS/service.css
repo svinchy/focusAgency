@@ -1,24 +1,20 @@
 .service {
- width: 25em;
- height: 15em;
- padding: 2.5em 2em 2em 2em;
- border-radius: var(--radius-l);
- /* background: rgba(255, 241, 227, .3); */
- background:
-   linear-gradient(140deg, rgba(224, 77, 77, .15), rgba(0, 0, 0, 0.2));
- color: var(--white);
- backdrop-filter: blur(20px) saturate(1.1);
- cursor: pointer;
- transform-style: preserve-3d;
- box-shadow:
-   0 10px 30px rgba(0, 0, 0, 0.15),
-   inset 0 0 0 0.08em rgba(255, 255, 255, 0.1);
+  width: 25em;
+  height: 15em;
+  padding: 2.5em 2em 2em 2em;
+  border-radius: var(--radius-l);
+  /* background: rgba(255, 241, 227, .3); */
+  background:
+  linear-gradient(140deg, rgba(224, 77, 77, .15), rgba(0, 0, 0, 0.2));
+  color: var(--white);
+  backdrop-filter: blur(20px) saturate(1.1);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  box-shadow:
+  0 10px 30px rgba(0, 0, 0, 0.15),
+  inset 0 0 0 0.08em rgba(255, 255, 255, 0.1);
 
 }
-
-
-
-
 
 .service hgroup h3 {
   font-size: 2.5em;
@@ -35,7 +31,7 @@ body[data-lang="ka"] .service hgroup h3 {
 }
 
 body[data-lang="ka"] .service hgroup p {
-   max-width: 13em;
+  max-width: 13em;
 }
 
 .service hgroup p {
@@ -65,8 +61,8 @@ body[data-lang="ka"] .service hgroup p {
   opacity: 0;
   transform: translateY(0.6em) scale(0.98);
   transition:
-    opacity var(--dur-med) var(--ease-io),
-    transform var(--dur-med) var(--ease-io);
+  opacity var(--dur-med) var(--ease-io),
+  transform var(--dur-med) var(--ease-io);
 }
 
 .service.active .service-content li {
@@ -108,148 +104,5 @@ body[data-lang="ka"] .service hgroup p {
   position: absolute;
   inset: 0;
   margin: auto;
-}
-
-@media (max-width: 1366px) {
-  .service {
-    width: 23.5em;
-    height: 14.4em;
-    padding: 2.2em 1.8em 1.9em 1.8em;
-  }
-
-  .service hgroup h3 {
-    font-size: 2.2em;
-    max-width: 7.4em;
-  }
-
-  .service hgroup p {
-    font-size: 1.15em;
-    max-width: 12em;
-    padding-top: 1.6em;
-  }
-
-  .service-content li {
-    font-size: 1em;
-    padding: 1em 1.5em;
-  }
-}
-
-@media (max-width: 1024px) {
-  .service {
-    width: 21.5em;
-    height: 13.2em;
-    padding: 1.9em 1.5em 1.6em 1.5em;
-  }
-
-  .service hgroup h3 {
-    font-size: 1.9em;
-    max-width: 7em;
-  }
-
-  .service hgroup p {
-    font-size: 1.15em;
-    max-width: 12em;
-    padding-top: 1.6em;
-  }
-
-  .service-content {
-    margin-top: 1.2em;
-
-  }
-
-  .service-content li {
-    font-size: 1em;
-    padding: 1em 1.5em;
-  }
-
-  .service button {
-    width: 3.2em;
-    height: 3.2em;
-    bottom: 0.72em;
-    right: 0.72em;
-  }
-
-  .service button img {
-    width: 1.28em;
-  }
-}
-
-@media (max-width: 768px) {
-  .service {
-    width: 20em;
-    height: 12.6em;
-    padding: 1.6em 1.2em 1.4em 1.2em;
-  }
-
-  .service hgroup h3 {
-    font-size: 1.68em;
-    max-width: 8.2em;
-  }
-
-  .service hgroup p {
-    font-size: 1.15em;
-    max-width: 12em;
-    padding-top: 1.6em;
-  }
-
-  .service-content li {
-
-    padding: 1em 1.5em;
-  }
-
-  .service button {
-    width: 2.9em;
-    height: 2.9em;
-    bottom: 0.64em;
-    right: 0.64em;
-  }
-
-  .service button img {
-    width: 1.12em;
-  }
-}
-
-@media (max-width: 480px) {
-  .service {
-    height: 10em;
-    padding: 1.35em 1.05em 1.25em 1.05em;
-  }
-
-  .service hgroup h3 {
-    font-size: 1.45em;
-  }
-
-  .service hgroup p {
-    font-size: 1.15em;
-    max-width: 12em;
-    padding-top: 1.6em;
-  }
-
-  .service-content {
-    margin-top: 0.95em;
-  }
-
-  .service-content li {
-
-    padding: 0.42em 0.58em;
-    border-radius: 2.5em;
-  }
-
-  .service button {
-    width: 2.65em;
-    height: 2.65em;
-    bottom: 0.56em;
-    right: 0.56em;
-  }
-
-  .service button img {
-    width: 1.04em;
-  }
-}
-
-@media (max-width: 375px) {
-  .service hgroup p {
-    font-size: 1em;;
-  }
 }
 

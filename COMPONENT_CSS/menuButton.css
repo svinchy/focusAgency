@@ -1,10 +1,10 @@
 .menuButton {
+
   border: 1px solid rgba(255, 241, 227, 0.45);
   border-radius: .1em;
   background: transparent;
   width: 3em;
   height: 3em;
-  display: none;
   flex-flow: column;
   gap: .35em;
   align-items: center;
@@ -13,27 +13,6 @@
   padding: 0 .35em;
   transition: border-radius 0.25s var(--ease-io);
   z-index: 16;
-  position: fixed;
-  top: 2em;
-  right: 2em;
-}
-
-@media (max-width: 768px) {
-  .menuButton {
-    width: 2.5em;
-    height: 2.5em;
-    top: 1.2em;
-    right: 1.2em;
-  }
-  .menuButton div {
-    width: .8em;
-  }
-}
-@media (max-width: 480px) {
-  .menuButton {
-    top: .85em;
-    right: .85em;
-  }
 }
 
 .menuButton div {
@@ -54,7 +33,6 @@
   align-self: flex-end;
 }
 
-
 .menuButton.is-active div:first-child {
   transform: translateY(.26em) rotate(45deg) scale(.85);
   align-self: center;
@@ -62,17 +40,11 @@
 
 .menuButton.is-active div:last-child {
   transform: translateY(-.26em) rotate(-45deg) scale(.85);
-   align-self: center;
-   width: 1.5em;
+  align-self: center;
+  width: 1.5em;
 }
-
 
 .menuButton.is-active {
   border-radius: 100%;
 }
 
-@media (max-width: 1194px) {
-  .menuButton {
-    display: flex;
-  }
-}

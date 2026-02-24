@@ -30,13 +30,11 @@ window.scrollTo(0, 0);
 // Initialize language switch buttons and re-render on selection.
 languageSwitcher();
 
-
 // Initialize mobile navbar toggle and close behaviors.
 navbarToggle();
 
 // Initialize navbar link scrolling to mapped section anchors.
 navbarScrollLinks();
-
 
 // Initialize scroll-synced service/content switching.
 scrollSwitcher();
@@ -76,3 +74,4 @@ textWave();
 
 // Apply continuous heading swim motion during scrolling.
 ongoingScrollMotion();
+

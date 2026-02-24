@@ -24,38 +24,18 @@ export function depthCarousel() {
 
   // Compute per-card depth/position targets from active index + scroll strength.
   const computeTargets = () => {
-    const vw = window.innerWidth || document.documentElement.clientWidth || 0;
-    const getLayout = (width) => {
-      if (width <= 320) {
-        return { xStep: 7.6, yStep: 0.42, zStep: 44, rotStep: 6.5, scaleDrop: 0.085, shiftX: 0.2, farSpread: 0.68, minScale: 0.76, yScroll: 1.2, zScroll: 68 };
-      }
-      if (width <= 390) {
-        return { xStep: 8.2, yStep: 0.46, zStep: 46, rotStep: 7, scaleDrop: 0.088, shiftX: 0.25, farSpread: 0.7, minScale: 0.75, yScroll: 1.25, zScroll: 72 };
-      }
-      if (width <= 480) {
-        return { xStep: 8.8, yStep: 0.5, zStep: 48, rotStep: 7.5, scaleDrop: 0.09, shiftX: 0.3, farSpread: 0.72, minScale: 0.75, yScroll: 1.35, zScroll: 76 };
-      }
-      if (width <= 560) {
-        return { xStep: 9.6, yStep: 0.56, zStep: 52, rotStep: 8, scaleDrop: 0.093, shiftX: 0.35, farSpread: 0.76, minScale: 0.74, yScroll: 1.45, zScroll: 82 };
-      }
-      if (width <= 768) {
-        return { xStep: 10.8, yStep: 0.64, zStep: 56, rotStep: 8.8, scaleDrop: 0.096, shiftX: 0.45, farSpread: 0.8, minScale: 0.74, yScroll: 1.6, zScroll: 90 };
-      }
-      if (width <= 850) {
-        return { xStep: 11.8, yStep: 0.72, zStep: 60, rotStep: 9.5, scaleDrop: 0.1, shiftX: 0.55, farSpread: 0.84, minScale: 0.73, yScroll: 1.7, zScroll: 98 };
-      }
-      if (width <= 1024) {
-        return { xStep: 12.8, yStep: 0.82, zStep: 64, rotStep: 10.2, scaleDrop: 0.103, shiftX: 0.65, farSpread: 0.88, minScale: 0.73, yScroll: 1.78, zScroll: 104 };
-      }
-      if (width <= 1366) {
-        return { xStep: 14.2, yStep: 0.95, zStep: 70, rotStep: 11, scaleDrop: 0.106, shiftX: 0.8, farSpread: 0.95, minScale: 0.72, yScroll: 1.85, zScroll: 108 };
-      }
-      if (width <= 1920) {
-        return { xStep: 15.4, yStep: 1, zStep: 74, rotStep: 11.5, scaleDrop: 0.11, shiftX: 1.1, farSpread: 1.05, minScale: 0.7, yScroll: 2.2, zScroll: 120 };
-      }
-      return { xStep: 11.5, yStep: 1.2, zStep: 80, rotStep: 12, scaleDrop: 0.12, shiftX: 0, farSpread: 1, minScale: 0.7, yScroll: 2.4, zScroll: 128 };
+    const layout = {
+      xStep: 14.2,
+      yStep: 0.95,
+      zStep: 70,
+      rotStep: 11,
+      scaleDrop: 0.106,
+      shiftX: 0.8,
+      farSpread: 0.95,
+      minScale: 0.72,
+      yScroll: 1.85,
+      zScroll: 108
     };
-    const layout = getLayout(vw);
     const total = members.length;
 
     // Keep offsets circular so previous/next wraps naturally.
@@ -79,7 +59,7 @@ export function depthCarousel() {
       const scale = Math.max(layout.minScale, 1 - abs * layout.scaleDrop);
       const rot = sign * -layout.rotStep * Math.min(abs, 2);
       const z = -abs * layout.zStep + scrollStrength * -layout.zScroll * parallaxBase;
-      const minOpacity = vw <= 560 ? 0.36 : 0.25;
+      const minOpacity = 0.25;
       const opacity = abs === 0 ? 1 : Math.max(minOpacity, 0.62 - abs * 0.12);
 
       member.classList.toggle("active", i === activeIndex);
@@ -166,3 +146,4 @@ export function depthCarousel() {
 
   io.observe(teamSection);
 }
+

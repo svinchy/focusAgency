@@ -4,7 +4,7 @@
 @font-face {
   font-family: 'Exo 2';
   src: url('./FONT/Exo2-Thin.woff2') format('woff2'),
-       url('./FONT/Exo2-Thin.woff') format('woff');
+  url('./FONT/Exo2-Thin.woff') format('woff');
   font-weight: 100;
   font-style: normal;
 }
@@ -12,7 +12,7 @@
 @font-face {
   font-family: 'Exo 2';
   src: url('./FONT/Exo2-ExtraLight.woff2') format('woff2'),
-       url('./FONT/Exo2-ExtraLight.woff') format('woff');
+  url('./FONT/Exo2-ExtraLight.woff') format('woff');
   font-weight: 200;
   font-style: normal;
 }
@@ -20,7 +20,7 @@
 @font-face {
   font-family: 'Exo 2';
   src: url('./FONT/Exo2-Light.woff2') format('woff2'),
-       url('./FONT/Exo2-Light.woff') format('woff');
+  url('./FONT/Exo2-Light.woff') format('woff');
   font-weight: 300;
   font-style: normal;
 }
@@ -28,7 +28,7 @@
 @font-face {
   font-family: 'Exo 2';
   src: url('./FONT/Exo2-Regular.woff2') format('woff2'),
-       url('./FONT/Exo2-Regular.woff') format('woff');
+  url('./FONT/Exo2-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
 }
@@ -36,7 +36,7 @@
 @font-face {
   font-family: 'Exo 2';
   src: url('./FONT/Exo2-Medium.woff2') format('woff2'),
-       url('./FONT/Exo2-Medium.woff') format('woff');
+  url('./FONT/Exo2-Medium.woff') format('woff');
   font-weight: 500;
   font-style: normal;
 }
@@ -44,7 +44,7 @@
 @font-face {
   font-family: 'Exo 2';
   src: url('./FONT/Exo2-SemiBold.woff2') format('woff2'),
-       url('./FONT/Exo2-SemiBold.woff') format('woff');
+  url('./FONT/Exo2-SemiBold.woff') format('woff');
   font-weight: 600;
   font-style: normal;
 }
@@ -52,7 +52,7 @@
 @font-face {
   font-family: 'Exo 2';
   src: url('./FONT/Exo2-Bold.woff2') format('woff2'),
-       url('./FONT/Exo2-Bold.woff') format('woff');
+  url('./FONT/Exo2-Bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
 }
@@ -60,7 +60,7 @@
 @font-face {
   font-family: 'Exo 2';
   src: url('./FONT/Exo-ExtraBold.woff2') format('woff2'),
-       url('./FONT/Exo2-ExtraBold.woff') format('woff');
+  url('./FONT/Exo2-ExtraBold.woff') format('woff');
   font-weight: 800;
   font-style: normal;
 }
@@ -68,18 +68,17 @@
 @font-face {
   font-family: 'Exo 2';
   src: url('./FONT/Exo2-Black.woff2') format('woff2'),
-       url('./FONT/Exo2-Black.woff') format('woff');
+  url('./FONT/Exo2-Black.woff') format('woff');
   font-weight: 900;
   font-style: normal;
 }
-
 
 /* SquareBanner Caps */
 @font-face {
   font-family: 'BPG Square Banner Caps 2013';
   src: url('./FONT/bpg-square-banner-caps-2013-webfont.woff2') format('woff2'),
-       url('./FONT/bpg-square-banner-caps-2013-webfont.woff') format('woff'),
-       url('./FONT/bpg-square-banner-caps-2013-webfont.ttf');
+  url('./FONT/bpg-square-banner-caps-2013-webfont.woff') format('woff'),
+  url('./FONT/bpg-square-banner-caps-2013-webfont.ttf');
   font-weight: normal;
 }
 
@@ -87,19 +86,10 @@
 @font-face {
   font-family: 'BPG Square Banner 2013';
   src: url('./FONT/bpg-square-banner-2013-webfont.woff2') format('woff2'),
-       url('./FONT/bpg-square-banner-2013-webfont.woff') format('woff'),
-       url('./FONT/bpg-square-banner-2013-webfont.ttf');
+  url('./FONT/bpg-square-banner-2013-webfont.woff') format('woff'),
+  url('./FONT/bpg-square-banner-2013-webfont.ttf');
   font-weight: normal;
 }
-
-
-
-
-
-
-
-
-
 
 :root {
   /* color */
@@ -109,7 +99,7 @@
   --grey: rgba(80, 78, 78, 1);
 
   /* font */
-   --font-en: 'Exo 2', sans-serif;
+  --font-en: 'Exo 2', sans-serif;
   --font-ka-body: 'BPG Square Banner 2013', sans-serif;
   --font-ka-cap: 'BPG Square Banner Cap 2013', sans-serif;
 
@@ -143,25 +133,30 @@
 
   /* breakpoints (reference tokens) */
 
-  /* desktop */
-  --screenXL: 1920px;
-  --screenL: 1680px;
-  --screenM: 1440px;
-  --screenS: 1366px;
-  --screenXS: 1280px;
+  /* screen */
+  --screenL: 1920px;
+  --screenM: 1680px;
+  --screenS: 1440px;
   /* tablet */
-  --tabletS: 768px;
-  --tabletM: 834px;
-  --tabletL: 1024px;
-  --tabletXL: 1112px;
-  --tabletMax: 1194px;
+  --tabletL: 1366px;
+  --tabletM: 1180px;
+  --tabletS: 1024px;
+  --tabletXS: 860px;
+  --tabletXSS: 768px;
   /* mobile */
-  --mobileXS: 320px;
-  --mobileS: 360px;
-  --mobileM: 375px;
-  --mobileL: 390px;
-  --mobileXL: 414px;
-  --mobileMax: 480px;
+  --mobileL: 560px;
+  --mobileM: 480px;
+  --mobileS: 375px;
+  --mobileXS: 350px;
+  --mobileXSS: 320px;
+
+  /* height breakpoints  */
+  --heightXXL: 1400px;
+  --heightXL: 1200px;
+  --heightL: 900px;
+  --heightM: 768px;
+  --heightS: 650px;
+  --heightXS: 500px;
 
 }
 
@@ -169,3 +164,4 @@
   background: var(--black);
   color: var(--cream);
 }
+

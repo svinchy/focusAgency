@@ -21,7 +21,6 @@
   transform: translateX(var(--swim-x, 0em)) translateY(calc(var(--steps-title-y, 0em) + var(--swim-y, 0em))) rotate(var(--swim-r, 0deg));
   will-change: transform;
   color: var(--cream);
-
 }
 
 .steps .circle {
@@ -31,50 +30,91 @@
   z-index: 2;
 }
 
+@media (max-width: 1366px) {
+  .steps h2 {
+    right: 2em;
+  }
+}
+
+
 @media (max-width: 1024px) {
   .steps h2 {
-    font-size: 4.6em;
+    right: 1em;
+  }
+  .steps .circle {
+    transform: translate(-300px, -35%) rotate(var(--steps-rot, 0deg));
   }
 }
 
-@media (max-width: 850px) {
+
+@media (max-width: 860px) {
   .steps h2 {
-    font-size: 4.2em;
+    right: 1em;
+  }
+  .steps .circle {
+    transform: translate(-350px, -35%) rotate(var(--steps-rot, 0deg));
   }
 }
+
 
 @media (max-width: 768px) {
+  .steps {
+    min-height: 80em;
+  }
   .steps h2 {
-    font-size: 3.8em;
+    right: 1em;
+    font-size: 4em;
+  }
+  .steps .circle {
+    font-size: .87em;
+  }
+
+.steps .circle .dot.dot1 hgroup {
+  margin: -10em 0 0 -3em;
+}
+
+
+ .steps .circle .dot.dot2 hgroup {
+    margin: -10em 0 0 3em;
+  }
+
+  .steps .circle .dot.dot3 hgroup {
+    margin: -2em 0 0 8em;
   }
 }
 
 @media (max-width: 560px) {
-  .steps {
-    height: 70em;
-    min-height: 70em;
-  }
-
-  .steps h2 {
-    right: 0.5em;
-    font-size: 3.35em;
+  .steps .circle {
+    font-size: .8em;
   }
 }
 
 @media (max-width: 480px) {
+  .steps {
+    min-height: 72em;
+  }
   .steps h2 {
-    font-size: 3.1em;
+    font-size: 3.5em;
+    right: .5em;
+  }
+  .steps .circle {
+    transform: translate(-300px, -35%) rotate(var(--steps-rot, 0deg));
+    font-size: .7em;
+  }
+  .steps .circle .dot hgroup p {
+    margin: 2em 0 0 .5em;
   }
 }
-
 @media (max-width: 390px) {
-  .steps h2 {
-    font-size: 2.85em;
+  .steps .circle {
+    font-size: .65em;
   }
-}
 
-@media (max-width: 320px) {
-  .steps h2 {
-    font-size: 2.55em;
+}
+@media (max-width: 350px) {
+  .steps .circle {
+    transform: translate(-250px, -35%) rotate(var(--steps-rot, 0deg));
+    font-size: .63em;
   }
+
 }

@@ -62,3 +62,4 @@ export function textWave(nextText) {
     footerWaveObserver.observe(footer);
   }
 }
+

@@ -61,3 +61,4 @@ export function scrollParallax() {
   window.addEventListener("resize", onScroll);
   onScroll();
 }
+

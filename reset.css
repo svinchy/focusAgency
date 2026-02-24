@@ -1,6 +1,6 @@
 /* =========================
-   MODERN CSS RESET
-   ========================= */
+MODERN CSS RESET
+========================= */
 
 /* 1. Box sizing */
 *,
@@ -75,5 +75,6 @@ h4,
 h5,
 h6,
 p {
-  overflow-wrap: break-word;
+overflow-wrap: break-word;
 } */
+

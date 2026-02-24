@@ -62,7 +62,6 @@ textarea:focus {
   outline: none;
 }
 
-
 form button {
   width: fit-content;
   /* width: 3.2em;
@@ -98,3 +97,4 @@ form button img {
   display: block;
   margin-top: .25em;
 }
+
