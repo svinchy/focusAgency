@@ -161,6 +161,14 @@ body[data-lang="ka"] .services h2 {
   opacity: 1;
 }
 
+@media (max-width: 1366px) and (hover: none) and (pointer: coarse) {
+  .services .content .images .image {
+    background-attachment: scroll;
+    background-position: center;
+    background-size: cover;
+  }
+}
+
 .services .content .images .image-social {
   background-image: url('../IMAGE/media.png');
 }
@@ -523,6 +531,9 @@ body[data-lang="ka"] .services h2 {
 }
 
 @media (max-width: 560px) {
+  .services {
+    padding-bottom: 10em;
+  }
   .services .content {
     margin-top: 0.95em;
   }

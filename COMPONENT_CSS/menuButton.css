@@ -12,7 +12,7 @@
   cursor: pointer;
   padding: 0 .35em;
   transition: border-radius 0.25s var(--ease-io);
-  z-index: 16;
+  z-index: 40;
 }
 
 .menuButton div {
@@ -47,4 +47,3 @@
 .menuButton.is-active {
   border-radius: 100%;
 }
-

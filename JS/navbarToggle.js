@@ -4,7 +4,6 @@
 export function navbarToggle() {
   const navBar = document.querySelector(".navBar");
   const menuButton = document.querySelector(".menuButton");
-  const langContent = document.querySelector(".lang-content");
 
   if (!navBar || !menuButton) return;
 
@@ -31,7 +30,7 @@ export function navbarToggle() {
     navBar.classList.remove("is-open");
     menuButton.classList.remove("is-active");
     menuButton.setAttribute("aria-expanded", "false");
-    if (langContent) langContent.style.zIndex = "";
+    if (document.body) document.body.classList.remove("is-nav-open");
     if (document.body) document.body.dataset.navScrollLock = "0";
     applyPageScrollLock();
   };
@@ -41,7 +40,7 @@ export function navbarToggle() {
     const isOpen = navBar.classList.toggle("is-open");
     menuButton.classList.toggle("is-active", isOpen);
     menuButton.setAttribute("aria-expanded", String(isOpen));
-    if (langContent) langContent.style.zIndex = isOpen ? "15" : "";
+    if (document.body) document.body.classList.toggle("is-nav-open", isOpen);
     if (document.body) document.body.dataset.navScrollLock = isOpen ? "1" : "0";
     applyPageScrollLock();
     if (isOpen && typeof window.__stopSmoothScroll === "function") {
@@ -53,6 +52,7 @@ export function navbarToggle() {
   menuButton.setAttribute("aria-label", "Toggle navigation");
   menuButton.setAttribute("aria-expanded", "false");
   if (document.body) {
+    document.body.classList.remove("is-nav-open");
     document.body.dataset.navScrollLock = "0";
     applyPageScrollLock();
   }
@@ -79,4 +79,3 @@ export function navbarToggle() {
     closeMenu();
   });
 }
-

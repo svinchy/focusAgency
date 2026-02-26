@@ -155,7 +155,7 @@ export const content = {
 
   steps: {
     en: {
-      title: "Flow to work",
+      title: "Flow to Work",
       items: [
         { number: "01", title: "initial consultation" },
         { number: "02", title: "strategy development and implementation." },

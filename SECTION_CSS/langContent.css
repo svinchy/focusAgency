@@ -19,6 +19,16 @@
   overflow-x: clip;
 }
 
+@media (max-width: 1366px) and (hover: none) and (pointer: coarse) {
+  .lang-content {
+    background-attachment: scroll;
+    background-position: center top;
+    background-size: 100% auto;
+    background-repeat: repeat-y;
+    animation: none;
+  }
+}
+
 .lang-content .starsBg {
   display: none;
 }
@@ -115,4 +125,3 @@
   0%, 100% { opacity: 0.25; }
   50% { opacity: 0.6; }
 }
-

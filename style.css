@@ -154,7 +154,7 @@ body .navBar {
 }
 @media (max-width: 1180px) {
   body .navBar {
-    display: none;
+    display: flex;
   }
 }
 
@@ -164,6 +164,9 @@ body .langButton {
   top: 50vh;
   transform: translateY(-50%);
   right: 2em;
+  transition:
+  transform 0.3s var(--ease-io),
+  opacity 0.22s ease;
 }
 
 @media (max-width: 560px) {
@@ -176,6 +179,12 @@ body .langButton {
   body .langButton {
     right: .5em;
   }
+
+  body.is-nav-open .langButton,
+  body.is-nav-open .chatButton {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 body .chatButton {
@@ -183,6 +192,7 @@ body .chatButton {
   z-index: 5;
   bottom: 1.2em;
   right: 1.2em;
+  transition: opacity 0.22s ease;
 }
 @media (max-width: 560px) {
   body .chatButton {
@@ -197,4 +207,3 @@ body .chatButton {
     font-size: .8em;
   }
 }
-

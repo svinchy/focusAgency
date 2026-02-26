@@ -14,7 +14,6 @@
   font-weight: 900;
   max-width: 4.6em;
   text-align: right;
-  text-transform: lowercase;
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
   color: black;
@@ -63,7 +62,7 @@
   }
   .steps h2 {
     right: 1em;
-    font-size: 4em;
+    /* font-size: 4em; */
   }
   .steps .circle {
     font-size: .87em;
@@ -84,6 +83,10 @@
 }
 
 @media (max-width: 560px) {
+  .steps h2 {
+    font-size: 3.5em;
+
+  }
   .steps .circle {
     font-size: .8em;
   }
@@ -92,10 +95,6 @@
 @media (max-width: 480px) {
   .steps {
     min-height: 72em;
-  }
-  .steps h2 {
-    font-size: 3.5em;
-    right: .5em;
   }
   .steps .circle {
     transform: translate(-300px, -35%) rotate(var(--steps-rot, 0deg));
@@ -112,6 +111,9 @@
 
 }
 @media (max-width: 350px) {
+  .steps h2 {
+    font-size: 3.2em;
+  }
   .steps .circle {
     transform: translate(-250px, -35%) rotate(var(--steps-rot, 0deg));
     font-size: .63em;

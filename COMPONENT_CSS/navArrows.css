@@ -6,7 +6,7 @@
 
 .navArrows button {
   background: rgba(224, 77, 77, 0.95);
-  box-shadow: 0 10px 20px rgba(224, 77, 77, 0.35);
+  box-shadow: 0 5px 10px rgba(224, 77, 77, 0.35);
   transition: transform 1s ease;
   z-index: 100;
   backdrop-filter: blur(20px);

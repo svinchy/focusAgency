@@ -46,3 +46,108 @@ body[data-lang="ka"] .navBar a {
   /* font-size: 1.2em; */
 }
 
+@media (max-width: 1180px) {
+  body .navBar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    display: flex;
+    gap: 1em;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 0 4em 4em 0;
+    background: rgba(9, 4, 6, 0.82);
+    backdrop-filter: blur(10px);
+    z-index: 38;
+    transform: translateX(105%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      transform 0.38s var(--ease-io),
+      opacity 0.28s ease,
+      backdrop-filter 0.28s ease,
+      background 0.28s ease;
+  }
+
+  body .navBar.is-open {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    background: rgba(9, 4, 6, 0.92);
+    backdrop-filter: blur(16px);
+  }
+
+  body .navBar a {
+    width: fit-content;
+    font-size: 5em;
+    line-height: 1em;
+    font-weight: 900;
+    border-radius: 0em;
+    padding: 0;
+    opacity: 0;
+    transform: translateX(0.7em);
+    filter: blur(3px);
+    transition:
+      transform 0.42s var(--ease-io),
+      opacity 0.32s ease,
+      filter 0.32s ease;
+  }
+
+body[data-lang="ka"] .navBar a {
+   font-size: 3.5em;
+}
+
+  body .navBar.is-open a {
+    opacity: 0.95;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+
+  body .navBar.is-open a:nth-child(1) {
+    transition-delay: 0.08s;
+  }
+
+  body .navBar.is-open a:nth-child(2) {
+    transition-delay: 0.14s;
+  }
+
+  body .navBar.is-open a:nth-child(3) {
+    transition-delay: 0.2s;
+  }
+
+  body .navBar a:hover {
+    text-transform: none;
+    opacity: 1;
+    background: rgba(224, 77, 77, 0);
+    font-weight: 700;
+    padding: 0;
+    transform: translateX(-0.08em);
+  }
+}
+
+@media (max-width: 560px) {
+  body .navBar {
+    padding: 0 2.5em 2.5em 0;
+  }
+  body .navBar a {
+    font-size: 3em;
+  }
+
+  body[data-lang="ka"] .navBar a {
+    font-size: 2.7em;
+  }
+}
+
+@media (max-width: 375px) {
+  body .navBar a {
+    font-size: 3.5em;
+  }
+  body[data-lang="ka"] .navBar a {
+    font-size: 2.5em;
+  }
+
+}
