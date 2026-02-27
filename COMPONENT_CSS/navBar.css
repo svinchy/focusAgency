@@ -31,9 +31,23 @@ body[data-lang="ka"] .navBar {
 }
 
 body[data-lang="ka"] .navBar a {
-  font-family: 'BPG Square Banner Caps 2013', sans-serif;
+  font-family: var(--font-ka-cap);
   text-transform: uppercase;
   font-size: .9em;
+}
+
+body.is-safari[data-lang="ka"] .navBar a {
+  font-family: 'BPG Square Banner Caps 2013 Safari', var(--font-ka-cap), sans-serif !important;
+  font-style: normal;
+  font-weight: 400 !important;
+  text-transform: none !important;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.is-safari[data-lang="ka"] .navBar a:hover {
+  font-weight: 400 !important;
+  text-transform: none !important;
 }
 
 .navBar a:hover {

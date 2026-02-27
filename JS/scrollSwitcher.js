@@ -20,11 +20,23 @@ const renderService = (index, { updateContent = true } = {}) => {
   const list = service.querySelector(".service-content");
 
   const lang = getLanguage();
+  const forceSafariKaServiceTitle =
+    document.body.classList.contains("is-safari") && lang === "ka";
   const item = content.services[lang].items[index];
   const key = serviceKeys[index];
   const details = content.serviceContent[lang][key] || [];
 
   if (title) {
+    if (forceSafariKaServiceTitle) {
+      title.style.fontFamily = "'BPG Square Banner Caps 2013 Safari', 'BPG Square Banner Caps 2013', sans-serif";
+      title.style.fontWeight = "400";
+      title.style.textTransform = "none";
+    } else {
+      title.style.removeProperty("font-family");
+      title.style.removeProperty("font-weight");
+      title.style.removeProperty("text-transform");
+    }
+
     title.classList.add("swap-out");
     setTimeout(() => {
       title.textContent = item.title;
@@ -94,6 +106,57 @@ export function scrollSwitcher() {
   const imagesWrap = document.querySelector(".content .images");
   const dotsWrap = document.querySelector(".navigationDots");
   let scrollTicking = false; // rAF throttle
+  const isSafari = !!document.body?.classList.contains("is-safari");
+  let touchStartY = 0;
+
+  const isServiceScrollLocked = () => document.body?.dataset.serviceScrollLock === "1";
+
+  // Allow native scrolling only when touch/wheel happens inside service-content
+  // and that inner container can still scroll in the requested direction.
+  const canScrollInsideServiceContent = (target, deltaY) => {
+    if (!(target instanceof Element)) return false;
+    const nested = target.closest(".service-content");
+    if (!nested) return false;
+
+    const maxScroll = nested.scrollHeight - nested.clientHeight;
+    if (maxScroll <= 1) return false;
+
+    if (deltaY > 0) {
+      return nested.scrollTop + nested.clientHeight < nested.scrollHeight - 1;
+    }
+    if (deltaY < 0) {
+      return nested.scrollTop > 0;
+    }
+    return false;
+  };
+
+  const onDocumentWheelLock = (e) => {
+    if (!isSafari || !isServiceScrollLocked()) return;
+    if (canScrollInsideServiceContent(e.target, e.deltaY)) return;
+    e.preventDefault();
+  };
+
+  const onDocumentTouchStartLock = (e) => {
+    if (!isSafari || !isServiceScrollLocked()) return;
+    const touch = e.touches?.[0];
+    if (!touch) return;
+    touchStartY = touch.clientY;
+  };
+
+  const onDocumentTouchMoveLock = (e) => {
+    if (!isSafari || !isServiceScrollLocked()) return;
+    const touch = e.touches?.[0];
+    if (!touch) return;
+
+    const deltaY = touchStartY - touch.clientY;
+    if (canScrollInsideServiceContent(e.target, deltaY)) {
+      touchStartY = touch.clientY;
+      return;
+    }
+
+    e.preventDefault();
+    touchStartY = touch.clientY;
+  };
 
   // Lock page scrolling whenever service card is active.
   const applyPageScrollLock = () => {
@@ -243,6 +306,9 @@ export function scrollSwitcher() {
 
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
+  document.addEventListener("wheel", onDocumentWheelLock, { passive: false });
+  document.addEventListener("touchstart", onDocumentTouchStartLock, { passive: true });
+  document.addEventListener("touchmove", onDocumentTouchMoveLock, { passive: false });
   if (imagesWrap) {
     imagesWrap.addEventListener("scroll", handleImagesScroll, { passive: true });
     imagesWrap.addEventListener(

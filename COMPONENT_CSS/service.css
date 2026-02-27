@@ -9,7 +9,7 @@
   color: var(--white);
   backdrop-filter: blur(20px) saturate(1.1);
   cursor: pointer;
-  transform-style: preserve-3d;
+  /* transform-style: preserve-3d; */
   box-shadow:
   0 10px 30px rgba(0, 0, 0, 0.15),
   inset 0 0 0 0.08em rgba(255, 255, 255, 0.1);
@@ -26,8 +26,17 @@
   color: rgba(255, 241, 227, .75);
 }
 body[data-lang="ka"] .service hgroup h3 {
-  font-family: 'BPG Square Banner Caps 2013', sans-serif;
+  font-family: var(--font-ka-cap);
   line-height: 1em;
+}
+
+body.is-safari[data-lang="ka"] .service hgroup h3 {
+  font-family: 'BPG Square Banner Caps 2013 Safari', var(--font-ka-cap), sans-serif !important;
+  font-style: normal;
+  font-weight: 400 !important;
+  text-transform: none !important;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
 }
 
 body[data-lang="ka"] .service hgroup p {
@@ -105,4 +114,3 @@ body[data-lang="ka"] .service hgroup p {
   inset: 0;
   margin: auto;
 }
-

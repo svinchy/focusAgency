@@ -33,8 +33,17 @@
 }
 
 body[data-lang="ka"] .teamMember h6 {
-  font-family: 'BPG Square Banner Caps 2013', sans-serif;
+  font-family: var(--font-ka-cap);
   padding: 0.25em 0 0 1.35em;
+}
+
+body.is-safari[data-lang="ka"] .teamMember h6 {
+  font-family: 'BPG Square Banner Caps 2013 Safari', var(--font-ka-cap), sans-serif !important;
+  font-style: normal;
+  font-weight: 400 !important;
+  text-transform: none !important;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
 }
 
 .teamMember h5 {
@@ -66,4 +75,3 @@ body[data-lang="ka"] .teamMember h6 {
   top: 1.2em;
   right: 1.5em;
 }
-

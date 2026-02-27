@@ -37,14 +37,24 @@
 
 }
 
-.langButton button:first-child {
-  font-family: 'BPG Square Banner Caps 2013', sans-serif;
-  text-transform: uppercase;
+.langButton button[data-lang="ka"] {
+  font-family: var(--font-ka-cap);
+  font-style: normal;
+  font-weight: 400;
+  text-transform: none;
   font-size: 1em;
   margin-bottom: -0.5em;
 }
 
-.langButton button.active:first-child {
+body.is-safari .langButton button[data-lang="ka"] {
+  font-family: var(--font-ka-cap) !important;
+  font-style: normal;
+  font-weight: 400;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.langButton button.active[data-lang="ka"] {
   transform: rotate(90deg) scale(1.15);
 }
 .langButton button.active:last-child {
@@ -56,4 +66,3 @@
   font-weight: 600;
   font-size: .9em;
 }
-

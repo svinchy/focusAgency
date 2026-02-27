@@ -78,8 +78,19 @@
   font-family: 'BPG Square Banner Caps 2013';
   src: url('./FONT/bpg-square-banner-caps-2013-webfont.woff2') format('woff2'),
   url('./FONT/bpg-square-banner-caps-2013-webfont.woff') format('woff'),
-  url('./FONT/bpg-square-banner-caps-2013-webfont.ttf');
-  font-weight: normal;
+  url('./FONT/bpg-square-banner-caps-2013-webfont.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Safari fallback: force TTF source for KA caps */
+@font-face {
+  font-family: 'BPG Square Banner Caps 2013 Safari';
+  src: url('./FONT/bpg-square-banner-caps-2013-webfont.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* SquareBanner */
@@ -87,8 +98,10 @@
   font-family: 'BPG Square Banner 2013';
   src: url('./FONT/bpg-square-banner-2013-webfont.woff2') format('woff2'),
   url('./FONT/bpg-square-banner-2013-webfont.woff') format('woff'),
-  url('./FONT/bpg-square-banner-2013-webfont.ttf');
-  font-weight: normal;
+  url('./FONT/bpg-square-banner-2013-webfont.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 :root {
@@ -101,7 +114,7 @@
   /* font */
   --font-en: 'Exo 2', sans-serif;
   --font-ka-body: 'BPG Square Banner 2013', sans-serif;
-  --font-ka-cap: 'BPG Square Banner Cap 2013', sans-serif;
+  --font-ka-cap: 'BPG Square Banner Caps 2013', sans-serif;
 
   /* spacing */
   --space-xs: 0.5em;
@@ -164,4 +177,3 @@
   background: var(--black);
   color: var(--cream);
 }
-

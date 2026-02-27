@@ -21,6 +21,15 @@ if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
 }
 
+// Safari-specific CSS hook for targeted fallbacks.
+const ua = navigator.userAgent || "";
+const isSafari =
+  /Safari/i.test(ua) &&
+  !/Chrome|CriOS|Chromium|Edg|EdgiOS|Firefox|FxiOS|OPR|OPiOS|SamsungBrowser/i.test(ua);
+if (document.body) {
+  document.body.classList.toggle("is-safari", isSafari);
+}
+
 // Render localized/static content into the page.
 render();
 
@@ -39,8 +48,13 @@ navbarScrollLinks();
 // Initialize scroll-synced service/content switching.
 scrollSwitcher();
 
+
 // Enable smooth wheel-based page scrolling.
+
 pageSmoothScroll();
+
+
+
 
 // Reveal title/component elements once when they enter viewport.
 oneTimeScrollReveal();
@@ -74,4 +88,3 @@ textWave();
 
 // Apply continuous heading swim motion during scrolling.
 ongoingScrollMotion();
-

@@ -26,8 +26,18 @@ export function render() {
     // --- Update navbar ---
     const navLinks = document.querySelectorAll(".navBar a");
     const navKeys = ["service", "about", "contact"];
+    const forceSafariKaNavFont = document.body.classList.contains("is-safari") && lang === "ka";
     navLinks.forEach((el, i) => {
       el.textContent = content.navbar[lang][navKeys[i]];
+      if (forceSafariKaNavFont) {
+        el.style.fontFamily = "'BPG Square Banner Caps 2013 Safari', 'BPG Square Banner Caps 2013', sans-serif";
+        el.style.fontWeight = "400";
+        el.style.textTransform = "none";
+      } else {
+        el.style.removeProperty("font-family");
+        el.style.removeProperty("font-weight");
+        el.style.removeProperty("text-transform");
+      }
     });
 
     // --- Update banner ---
@@ -76,12 +86,25 @@ export function render() {
   const teamMembers = document.querySelectorAll(".team .teamMember");
   if (teamMembers.length) {
     const members = content.team[lang].members;
+    const forceSafariKaTeamRole =
+      document.body.classList.contains("is-safari") && lang === "ka";
     teamMembers.forEach((memberEl, i) => {
       const roleEl = memberEl.querySelector("h6");
       const nameEl = memberEl.querySelector("h5");
       const imageEl = memberEl.querySelector("img");
       if (!members[i]) return;
-      if (roleEl) roleEl.textContent = members[i].role;
+      if (roleEl) {
+        roleEl.textContent = members[i].role;
+        if (forceSafariKaTeamRole) {
+          roleEl.style.fontFamily = "'BPG Square Banner Caps 2013 Safari', 'BPG Square Banner Caps 2013', sans-serif";
+          roleEl.style.fontWeight = "400";
+          roleEl.style.textTransform = "none";
+        } else {
+          roleEl.style.removeProperty("font-family");
+          roleEl.style.removeProperty("font-weight");
+          roleEl.style.removeProperty("text-transform");
+        }
+      }
       if (nameEl) nameEl.textContent = members[i].name;
       if (imageEl && members[i].image) imageEl.src = members[i].image;
     });
@@ -187,4 +210,3 @@ export function render() {
     previousLang = lang;
   }, applyTransition ? 150 : 0);
 }
-

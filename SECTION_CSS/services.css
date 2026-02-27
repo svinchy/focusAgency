@@ -317,7 +317,7 @@ body[data-lang="ka"] .services h2 {
 }
 
 .services .content .service .service-content li {
-  background-color: transparent;
+
   padding: 1em 1.3em;
   border-radius: 3em;
   opacity: 0;
@@ -328,7 +328,7 @@ body[data-lang="ka"] .services h2 {
   transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
   filter 0.28s var(--ease-io);
   transition-delay: 0s !important;
-   background: rgba(0, 0, 0, 0.2);
+   background: rgba(0, 0, 0, 0.5);
     border: none;
 }
 
@@ -416,6 +416,19 @@ body[data-lang="ka"] .services h2 {
   translateY(2px)
   rotateX(-2deg)
   rotateY(2deg);
+}
+
+body.is-safari .service {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+body.is-safari .services .content .service:hover {
+  transform: none;
+}
+
+body.is-safari .services .content .service.active:hover {
+  transform: none;
 }
 
 .services .content .service.active .icon-arrow {
