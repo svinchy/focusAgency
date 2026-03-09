@@ -1,0 +1,1 @@
+export const test = function test() { /* console.log(this, this.state, this.context) */ }
