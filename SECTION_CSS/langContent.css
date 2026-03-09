@@ -9,7 +9,7 @@
   min-width: 100vw;
   min-height: 100vh;
   /* max-height: 100vh; */
-  background: url('../IMAGE/stars5.jpeg') no-repeat center;
+  background: url('../IMAGE/stars5.webp') no-repeat center;
   /* background: url('../IMAGE/starss.png') no-repeat center; */
   background-size: cover;
   background-attachment: fixed;
@@ -25,6 +25,10 @@ body.is-safari .lang-content {
   background-size: 100% auto;
   background-repeat: repeat-y;
   animation: none;
+}
+
+body.is-safari .lang-content .starsBg {
+  display: none;
 }
 
 body.is-safari .lang-content .globe {
@@ -46,9 +50,51 @@ body.is-safari .lang-content .globe {
     background-repeat: repeat-y;
     animation: none;
   }
+
+  .lang-content .starsBg {
+    display: none;
+  }
 }
 
 .lang-content .starsBg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  contain: paint;
+}
+
+.lang-content .starsBg::before,
+.lang-content .starsBg::after {
+  content: '';
+  position: absolute;
+  inset: -8%;
+  background: url('../IMAGE/stars5.webp') no-repeat center;
+  background-size: cover;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.lang-content .starsBg::before {
+  opacity: 0;
+  transform: translate3d(-2vw, -1.4vh, 0) scale(1.14);
+}
+
+.lang-content .starsBg::after {
+  opacity: 0;
+  transform: translate3d(0, 1.2vh, 0) scale(0.46);
+}
+
+body.intro-active:not(.intro-finished) .lang-content .starsBg::before {
+  animation: starsIntroDrift 3.05s cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+
+body.intro-active:not(.intro-finished) .lang-content .starsBg::after {
+  animation: starsIntroScale 3.05s cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+
+body.intro-finished .lang-content .starsBg {
   display: none;
 }
 
@@ -138,6 +184,52 @@ body.is-safari .lang-content .globe {
   0% { background-position: 50% 50%; }
   50% { background-position: 52% 48%; }
   100% { background-position: 50% 50%; }
+}
+
+@keyframes starsIntroDrift {
+  0% {
+    opacity: 0.22;
+    transform: translate3d(-2vw, -1.4vh, 0) scale(1.14);
+  }
+  24% {
+    opacity: 0.34;
+    transform: translate3d(-1vw, -0.8vh, 0) scale(1.115);
+  }
+  54% {
+    opacity: 0.29;
+    transform: translate3d(0.25vw, 0.15vh, 0) scale(1.08);
+  }
+  78% {
+    opacity: 0.24;
+    transform: translate3d(1.4vw, 0.95vh, 0) scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(2.7vw, 2.05vh, 0) scale(1.01);
+  }
+}
+
+@keyframes starsIntroScale {
+  0% {
+    opacity: 0.16;
+    transform: translate3d(0, 1.55vh, 0) scale(0.42);
+  }
+  22% {
+    opacity: 0.7;
+    transform: translate3d(0, 1vh, 0) scale(0.63);
+  }
+  48% {
+    opacity: 0.56;
+    transform: translate3d(0, 0.45vh, 0) scale(0.88);
+  }
+  74% {
+    opacity: 0.34;
+    transform: translate3d(0, -0.05vh, 0) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -0.45vh, 0) scale(1.22);
+  }
 }
 
 @keyframes starsTwinkle {

@@ -38,12 +38,19 @@ export function loadingIntro() {
     body.classList.add("intro-corners-move");
   }, moveStart);
 
-  // start fadeout + banner at 10% of corner movement
+  // Start overlay fade shortly after corner movement begins.
   const moveDuration = 3000;
   const fadeStart = moveStart + Math.round(moveDuration * 0.1);
   window.setTimeout(() => {
     body.classList.add("intro-fade");
   }, fadeStart);
+
+  // Start banner only after stars intro burst finishes.
+  const starsIntroDuration = 3050;
+  const bannerStart = starsIntroDuration + 130;
+  window.setTimeout(() => {
+    body.classList.add("intro-banner");
+  }, bannerStart);
 
   // Fallback: always mark intro as finished after full timeline.
   const introEnd = moveStart + moveDuration + 120;
@@ -89,4 +96,3 @@ export function loadingIntro() {
     }, { once: true });
   }
 }
-

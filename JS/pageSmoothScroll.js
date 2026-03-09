@@ -3,7 +3,8 @@
 // 3) Expose helper for nested areas to forward wheel deltas.
 export function pageSmoothScroll() {
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (prefersReduced) return;
+  const isCoarsePointer = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+  if (prefersReduced || isCoarsePointer) return;
 
   let current = window.scrollY || window.pageYOffset;
   let target = current;
@@ -163,4 +164,3 @@ export function pageSmoothScroll() {
   // Expose an explicit stopper for modules that lock page scroll.
   window.__stopSmoothScroll = stopSmoothScroll;
 }
-

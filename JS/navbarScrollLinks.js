@@ -4,6 +4,7 @@
 export function navbarScrollLinks() {
   const navBar = document.querySelector(".navBar");
   if (!navBar) return;
+  const isCoarsePointer = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
   navBar.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", (e) => {
@@ -15,12 +16,16 @@ export function navbarScrollLinks() {
 
       e.preventDefault();
       const top = target.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
+
       if (typeof window.__smoothScrollTo === "function") {
         window.__smoothScrollTo(top);
       } else {
-        window.scrollTo({ top, left: 0, behavior: "smooth" });
+        window.scrollTo({
+          top,
+          left: 0,
+          behavior: isCoarsePointer ? "auto" : "smooth"
+        });
       }
     });
   });
 }
-

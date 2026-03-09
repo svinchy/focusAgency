@@ -14,19 +14,51 @@ export const content = {
     en: {
       title: "We offer full digital services",
       items: [
-        { title: "Social Media Marketing", description: "Content creation and advertising" },
-        { title: "Google Analytics", description: "Full Google services support" },
-        { title: "Web Development", description: "Website building and management" },
-        { title: "Video Production", description: "Full photo/video production" }
+        {
+          title: "Social Media Marketing",
+          description: "Content creation and advertising",
+          image: "./IMAGE/media.webp"
+        },
+        {
+          title: "Google Analytics",
+          description: "Full Google services support",
+          image: "./IMAGE/analytics.webp"
+        },
+        {
+          title: "Web Development",
+          description: "Website building and management",
+          image: "./IMAGE/web.webp"
+        },
+        {
+          title: "Video Production",
+          description: "Full photo/video production",
+          image: "./IMAGE/video.webp"
+        }
       ]
     },
     ka: {
       title: "ჩვენ გთავაზობთ სრულ ციფრულ მომსახურებას",
       items: [
-        { title: "სოც მედია მარკეტინგი", description: "კონტენტის შექმნა და რეკლამა" },
-        { title: "გუგლ ანალიტიკა", description: "სრული Google სერვისების მომსახურება" },
-        { title: "ვებ დეველოპმენტი", description: "საიტების აწყობა და მართვა" },
-        { title: "ვიდეო პროდაქშენი", description: "სრული ფოტო/ვიდეო მომსახურება" }
+        {
+          title: "სოც მედია მარკეტინგი",
+          description: "კონტენტის შექმნა და რეკლამა",
+          image: "./IMAGE/media.webp"
+        },
+        {
+          title: "გუგლ ანალიტიკა",
+          description: "სრული Google სერვისების მომსახურება",
+          image: "./IMAGE/analytics.webp"
+        },
+        {
+          title: "ვებ დეველოპმენტი",
+          description: "საიტების აწყობა და მართვა",
+          image: "./IMAGE/web.webp"
+        },
+        {
+          title: "ვიდეო პროდაქშენი",
+          description: "სრული ფოტო/ვიდეო მომსახურება",
+          image: "./IMAGE/video.webp"
+        }
       ]
     }
   },
@@ -177,20 +209,20 @@ export const content = {
       title: "Our Team",
       more: "know us better",
       members: [
-        { role: "Founder", name: "Giorgi", image: "./IMAGE/choni2.png" },
-        { role: "Project Manager", name: "Liza", image: "./IMAGE/liza2.png" },
-        { role: "Graphic Designer", name: "Mariami", image: "./IMAGE/mariami2.png" },
-        { role: "Videograph", name: "Luka", image: "./IMAGE/luka2.png" }
+        { role: "Founder", name: "Giorgi", image: "./IMAGE/choni2.webp" },
+        { role: "Project Manager", name: "Liza", image: "./IMAGE/liza2.webp" },
+        { role: "Graphic Designer", name: "Mariami", image: "./IMAGE/mariami2.webp" },
+        { role: "Videograph", name: "Luka", image: "./IMAGE/luka2.webp" }
       ]
     },
     ka: {
       title: "ჩვენი გუნდი",
       more: "გაგვიცანით უკეთ",
       members: [
-        { role: "დამფუძნებელი", name: "გიორგი", image: "./IMAGE/choni2.png" },
-        { role: "პროექტ მენეჯერი", name: "ლიზა", image: "./IMAGE/liza2.png" },
-        { role: "გრაფიკული დიზაინერი", name: "მარიამი", image: "./IMAGE/mariami2.png" },
-        { role: "ვიდეოგრაფი", name: "ლუკა", image: "./IMAGE/luka2.png" }
+        { role: "დამფუძნებელი", name: "გიორგი", image: "./IMAGE/choni2.webp" },
+        { role: "პროექტ მენეჯერი", name: "ლიზა", image: "./IMAGE/liza2.webp" },
+        { role: "გრაფიკული დიზაინერი", name: "მარიამი", image: "./IMAGE/mariami2.webp" },
+        { role: "ვიდეოგრაფი", name: "ლუკა", image: "./IMAGE/luka2.webp" }
       ]
     }
   },
@@ -274,4 +306,3 @@ export const content = {
   },
 
 };
-

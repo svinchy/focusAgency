@@ -12,6 +12,7 @@ export function circleRotation() {
   let titleCurrent = 0;
   let titleTarget = 0;
   const ease = 0.05; // slower, smoother
+  let rafId = null;
 
   // Derive rotation/title targets from section scroll progress.
   const calcTarget = () => {
@@ -35,21 +36,32 @@ export function circleRotation() {
 
   // Interpolate toward targets for smooth motion.
   const animate = () => {
+    rafId = null;
     current += (target - current) * ease;
     titleCurrent += (titleTarget - titleCurrent) * ease;
     circle.style.setProperty("--steps-rot", `${current.toFixed(2)}deg`);
     title.style.setProperty("--steps-title-y", `${titleCurrent.toFixed(3)}em`);
-    requestAnimationFrame(animate);
+
+    const stillMoving =
+      Math.abs(target - current) > 0.02 || Math.abs(titleTarget - titleCurrent) > 0.002;
+    if (stillMoving) {
+      rafId = requestAnimationFrame(animate);
+    }
+  };
+
+  const scheduleAnimate = () => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(animate);
   };
 
   // Recompute targets on page scroll.
   const onScroll = () => {
     calcTarget();
+    scheduleAnimate();
   };
 
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
   calcTarget();
-  requestAnimationFrame(animate);
+  scheduleAnimate();
 }
-

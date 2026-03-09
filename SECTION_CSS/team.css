@@ -45,13 +45,12 @@ body[data-lang="ka"] .team h2 {
   align-items: center;
   justify-content: center;
   gap: 0.9em;
-  height: 30em;
+  min-height: 30em;
   perspective: 1200px;
   overflow: visible;
   width: calc(100% + 14em);
   max-width: 100%;
   padding: 0;
-  box-sizing: border-box;
 }
 
 /* teamMember behavior + animation (section-specific) */

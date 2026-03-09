@@ -3,7 +3,6 @@ import { languageSwitcher } from "./JS/languageSwitcher.js";
 import { scrollSwitcher } from "./JS/scrollSwitcher.js";
 import { navbarToggle } from "./JS/navbarToggle.js";
 import { navbarScrollLinks } from "./JS/navbarScrollLinks.js";
-import { pageSmoothScroll } from "./JS/pageSmoothScroll.js";
 import { oneTimeScrollReveal } from "./JS/oneTimeScrollReveal.js";
 import { scrollOverlayShade } from "./JS/scrollOverlayShade.js";
 import { ongoingScrollMotion } from "./JS/ongoingScrollMotion.js";
@@ -26,8 +25,10 @@ const ua = navigator.userAgent || "";
 const isSafari =
   /Safari/i.test(ua) &&
   !/Chrome|CriOS|Chromium|Edg|EdgiOS|Firefox|FxiOS|OPR|OPiOS|SamsungBrowser/i.test(ua);
+const isCoarsePointer = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 if (document.body) {
   document.body.classList.toggle("is-safari", isSafari);
+  document.body.classList.toggle("is-mobile-coarse", isCoarsePointer);
 }
 
 // Render localized/static content into the page.
@@ -49,13 +50,6 @@ navbarScrollLinks();
 scrollSwitcher();
 
 
-// Enable smooth wheel-based page scrolling.
-
-pageSmoothScroll();
-
-
-
-
 // Reveal title/component elements once when they enter viewport.
 oneTimeScrollReveal();
 
@@ -65,17 +59,24 @@ bannerAnimations();
 // Run initial branded loading/intro sequence.
 loadingIntro();
 
-// Apply circular steps rotation tied to scroll progress.
-circleRotation();
+// Keep heavy decorative scroll effects lighter on touch/mobile devices.
+if (!isCoarsePointer) {
+  // Apply circular steps rotation tied to scroll progress.
+  circleRotation();
+}
 
-// Update global overlay shade across sections on scroll.
-scrollOverlayShade();
+if (!isCoarsePointer) {
+  // Update global overlay shade across sections on scroll.
+  scrollOverlayShade();
+}
 
 // Initialize team card depth carousel navigation/animation.
 depthCarousel();
 
-// Feed team depth intensity from section scroll position.
-scrollDepth();
+if (!isCoarsePointer) {
+  // Feed team depth intensity from section scroll position.
+  scrollDepth();
+}
 
 // Start infinite testimonial carousel loop and focus syncing.
 infiniteCarousel();
@@ -86,5 +87,7 @@ scrollParallax();
 // Activate footer text wave effect on visibility.
 textWave();
 
-// Apply continuous heading swim motion during scrolling.
-ongoingScrollMotion();
+if (!isCoarsePointer) {
+  // Apply continuous heading swim motion during scrolling.
+  ongoingScrollMotion();
+}

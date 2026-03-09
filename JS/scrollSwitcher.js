@@ -8,6 +8,10 @@ const serviceKeys = [
   "webDevelopment",
   "videoProduction"
 ];
+let titleSwapTimer = null;
+let titleSwapInTimer = null;
+let descSwapTimer = null;
+let descSwapInTimer = null;
 
 // Render current service title/description and (optionally) its detail list.
 
@@ -37,23 +41,35 @@ const renderService = (index, { updateContent = true } = {}) => {
       title.style.removeProperty("text-transform");
     }
 
-    title.classList.add("swap-out");
-    setTimeout(() => {
-      title.textContent = item.title;
-      title.classList.remove("swap-out");
-      title.classList.add("swap-in");
-      setTimeout(() => title.classList.remove("swap-in"), 250);
-    }, 160);
+    const nextTitle = item.title || "";
+    if (title.textContent !== nextTitle) {
+      if (titleSwapTimer) clearTimeout(titleSwapTimer);
+      if (titleSwapInTimer) clearTimeout(titleSwapInTimer);
+
+      title.classList.add("swap-out");
+      titleSwapTimer = setTimeout(() => {
+        title.textContent = nextTitle;
+        title.classList.remove("swap-out");
+        title.classList.add("swap-in");
+        titleSwapInTimer = setTimeout(() => title.classList.remove("swap-in"), 250);
+      }, 160);
+    }
   }
 
   if (description) {
-    description.classList.add("swap-out");
-    setTimeout(() => {
-      description.textContent = item.description;
-      description.classList.remove("swap-out");
-      description.classList.add("swap-in");
-      setTimeout(() => description.classList.remove("swap-in"), 250);
-    }, 180);
+    const nextDescription = item.description || "";
+    if (description.textContent !== nextDescription) {
+      if (descSwapTimer) clearTimeout(descSwapTimer);
+      if (descSwapInTimer) clearTimeout(descSwapInTimer);
+
+      description.classList.add("swap-out");
+      descSwapTimer = setTimeout(() => {
+        description.textContent = nextDescription;
+        description.classList.remove("swap-out");
+        description.classList.add("swap-in");
+        descSwapInTimer = setTimeout(() => description.classList.remove("swap-in"), 250);
+      }, 180);
+    }
   }
 
   if (list && updateContent) {
@@ -68,6 +84,8 @@ const renderService = (index, { updateContent = true } = {}) => {
 // Update active index, UI text, dots, and optionally scroll images to the index.
 // Apply active index state, then sync dots and image panel.
 const setActiveIndex = (index, { scrollImage = true } = {}) => {
+  if (index === activeIndex) return;
+
   activeIndex = index;
   const service = document.querySelector(".service");
   const isActive = service ? service.classList.contains("active") : false;
@@ -108,6 +126,10 @@ export function scrollSwitcher() {
   let scrollTicking = false; // rAF throttle
   const isSafari = !!document.body?.classList.contains("is-safari");
   let touchStartY = 0;
+  let rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  let contentTopOffset = contentWrap
+    ? parseFloat(getComputedStyle(contentWrap).top) || 0
+    : 0;
 
   const isServiceScrollLocked = () => document.body?.dataset.serviceScrollLock === "1";
 
@@ -175,7 +197,6 @@ export function scrollSwitcher() {
     if (!contentWrap || !dotsWrap) return;
     const contentRect = contentWrap.getBoundingClientRect();
     const dotsRect = dotsWrap.getBoundingClientRect();
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     const gap = 1.5 * rootFontSize;
     const viewportW = window.innerWidth || document.documentElement.clientWidth;
     const viewportH = window.innerHeight || document.documentElement.clientHeight;
@@ -250,11 +271,10 @@ export function scrollSwitcher() {
     const viewportH = window.innerHeight;
     const scrollY = window.scrollY || window.pageYOffset;
 
-    const topOffset = parseFloat(getComputedStyle(contentWrap).top) || 0;
-    const sectionStart = sectionTop - topOffset;
-    const sectionEnd = sectionTop + sectionHeight - viewportH - topOffset;
+    const sectionStart = sectionTop - contentTopOffset;
+    const sectionEnd = sectionTop + sectionHeight - viewportH - contentTopOffset;
     const contentRect = contentWrap.getBoundingClientRect();
-    const contentAtTop = contentRect.top <= topOffset + 2;
+    const contentAtTop = contentRect.top <= contentTopOffset + 2;
     const inSection = scrollY >= sectionStart && scrollY <= sectionEnd;
     const showDots = inSection && contentAtTop;
     if (dotsWrap) dotsWrap.classList.toggle("is-visible", showDots);
@@ -304,8 +324,16 @@ export function scrollSwitcher() {
     });
   };
 
+  const onResize = () => {
+    rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    contentTopOffset = contentWrap
+      ? parseFloat(getComputedStyle(contentWrap).top) || 0
+      : 0;
+    onScroll();
+  };
+
   window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", onScroll);
+  window.addEventListener("resize", onResize);
   document.addEventListener("wheel", onDocumentWheelLock, { passive: false });
   document.addEventListener("touchstart", onDocumentTouchStartLock, { passive: true });
   document.addEventListener("touchmove", onDocumentTouchMoveLock, { passive: false });

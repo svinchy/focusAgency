@@ -47,10 +47,19 @@ export function render() {
     if (bannerSubtitle) bannerSubtitle.textContent = content.banner[lang].subtitle;
     applyBannerTitleWave();
 
-    /* ---------- Services ---------- */
+  /* ---------- Services ---------- */
   const servicesTitle = document.querySelector("[data-services='title']");
   if (servicesTitle) {
     servicesTitle.textContent = content.services[lang].title;
+  }
+  const serviceItems = content.services[lang].items || [];
+  const serviceImages = document.querySelectorAll(".services .content .images .image");
+  if (serviceImages.length) {
+    serviceImages.forEach((imageEl, i) => {
+      const imagePath = serviceItems[i]?.image;
+      if (!imagePath) return;
+      imageEl.style.backgroundImage = `url('${imagePath}')`;
+    });
   }
   refreshServiceContent();
 

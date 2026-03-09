@@ -98,10 +98,13 @@ body[data-lang="ka"] .services h2 {
 }
 
 
+
+
+
 @media (max-height: 900px) {
   .services .content {
     height: calc(100vh - 13.5em);
-     top: 6.5em;
+    top: 6.5em;
   }
 }
 
@@ -119,6 +122,16 @@ body[data-lang="ka"] .services h2 {
      top: 5.5em;
   }
 }
+
+/*
+@media (max-width: 480px) and (max-height: 1024px) {
+  .services .content {
+    height: calc(100vh - 20em);
+     top: 9em;
+  }
+} */
+
+
 
 
 .services .content::before {
@@ -167,22 +180,6 @@ body[data-lang="ka"] .services h2 {
     background-position: center;
     background-size: cover;
   }
-}
-
-.services .content .images .image-social {
-  background-image: url('../IMAGE/media.png');
-}
-
-.services .content .images .image-analytics {
-  background-image: url('../IMAGE/analytics.png');
-}
-
-.services .content .images .image-web {
-  background-image: url('../IMAGE/web.png');
-}
-
-.services .content .images .image-video {
-  background-image: url('../IMAGE/video.png');
 }
 
 /* Service Card Base */
