@@ -1,0 +1,19 @@
+{
+  "name": "focusagency",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "smbls start",
+    "build": "smbls build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "smbls": "^3.5.1"
+  },
+  "devDependencies": {
+    "parcel": "latest",
+    "parcel-reporter-static-files-copy": "^1.5.3"
+  }
+}

@@ -1,0 +1,30 @@
+export const Logo = {
+  extends: 'Box',
+  color: 'cream',
+  width: 'fit-content',
+  lineHeight: '0.85em',
+  fontSize: 'D2',
+  fontWeight: '800',
+  position: 'relative',
+  style: {
+    fontFamily: "'Exo 2', sans-serif",
+    mixBlendMode: 'difference',
+  },
+  zIndex: '15',
+  Span: {
+    tag: 'span',
+    text: 'F',
+    display: 'block',
+    lineHeight: '0.7em',
+  },
+  ':after': {
+    position: 'absolute',
+    borderRadius: '100%',
+    bottom: '-0.15em',
+    right: '-0.12em',
+    width: '0.3em',
+    height: '0.3em',
+    background: 'red',
+    style: { content: "''" },
+  },
+}

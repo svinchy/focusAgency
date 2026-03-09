@@ -1,0 +1,26 @@
+export const Corner = {
+  extends: 'Box',
+  width: '1.2em',
+  height: '1.2em',
+  position: 'relative',
+  ':before': {
+    position: 'absolute',
+    bottom: '0',
+    left: '0',
+    width: '2px',
+    height: '100%',
+    background: 'greyMuted',
+    borderRadius: '5px',
+    style: { content: "''" },
+  },
+  ':after': {
+    position: 'absolute',
+    bottom: '0',
+    left: '0',
+    width: '100%',
+    height: '2px',
+    borderRadius: '5px',
+    background: 'greyMuted',
+    style: { content: "''" },
+  },
+}
