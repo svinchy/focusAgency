@@ -21,11 +21,16 @@ export const REGISTRY = {
 **Impact**: Any element nested inside `content` (which is the primary child container in DOMQL) won't have its `beforeClassAssign` triggered, so functional CSS props (opacity, display, hide, etc.) never re-evaluate on state change.
 
 **Fix applied** (`smbls/packages/element/update.js`): Added explicit content update logic after the main property loop:
+
 ```js
 if (!preventContentUpdate) {
   const contentKey = ref.contentElementKey || 'content'
   const existingContent = element[contentKey]
-  if (existingContent && existingContent.__ref && isFunction(existingContent.update)) {
+  if (
+    existingContent &&
+    existingContent.__ref &&
+    isFunction(existingContent.update)
+  ) {
     update.call(existingContent, params[contentKey], { ...options })
   } else {
     // fallback to setChildren/setContent
@@ -46,9 +51,13 @@ When elements are created via `children` arrays (e.g. city items in a dropdown),
 **Impact**: The crash in the update loop prevents subsequent operations (like `classlist` re-evaluation) from running, so CSS never updates.
 
 **Fix applied** (`smbls/packages/element/update.js`): Skip `onXxx` event handler functions in the update property iteration:
+
 ```js
-const isRootEventHandler = isFunction(prop) && param.length > 2 &&
-  param.startsWith('on') && param[2] === param[2].toUpperCase()
+const isRootEventHandler =
+  isFunction(prop) &&
+  param.length > 2 &&
+  param.startsWith('on') &&
+  param[2] === param[2].toUpperCase()
 // ...added to the continue conditions
 ```
 
@@ -59,12 +68,14 @@ const isRootEventHandler = isFunction(prop) && param.length > 2 &&
 **File**: `smbls/packages/emotion/index.js`
 
 **The CSS-in-Props pipeline**:
+
 1. `Box.onBeforeClassAssign` calls `useCssInProps(props, element)`
 2. This **completely overwrites** `ref.__class` with fresh results
 3. `transformEmotionClass` iterates `ref.__class` to generate Emotion CSS class names into `ref.__classNames`
 4. `applyClassListOnNode` writes `__classNames` to the DOM node
 
 **Problem**: When a CSS prop like `hide` transitions from truthy to falsy:
+
 - The `CSS_PROPS_REGISTRY.hide` processor returns `{ display: 'none !important' }` when truthy
 - When falsy, it returns `false` (from `!!exec(val) && ({display: 'none !important'})`)
 - `usePropsAsCSS` checks `if (result)` and skips falsy — so `hide` is simply absent from the new `__class`
@@ -72,6 +83,7 @@ const isRootEventHandler = isFunction(prop) && param.length > 2 &&
 - The OLD `smbls-xxx-hide` class name stays in `__classNames` and on the DOM forever
 
 **Fix applied** (`smbls/packages/emotion/index.js`): Added stale className cleanup after the main loop:
+
 ```js
 for (const key in __classNames) {
   if (key === 'classProps' || key === 'class') continue
@@ -88,12 +100,14 @@ for (const key in __classNames) {
 **File**: `smbls/packages/css-in-props/src/props/theme.js` and `defaults.js`
 
 **CSS-in-Props has two property resolution paths**:
+
 1. **CSS_PROPS_REGISTRY** (theme.js, block.js): Processor functions that transform values (e.g. resolving theme colors via `getMediaColor`)
 2. **DEFAULT_CSS_PROPERTIES_LIST** (defaults.js): Raw pass-through — value used as-is in CSS
 
 **Problem**: Only the shorthand `borderColor` had a theme processor in `CSS_PROPS_REGISTRY`. The directional variants (`borderTopColor`, `borderBottomColor`, `borderLeftColor`, `borderRightColor`) were only in `DEFAULT_CSS_PROPERTIES_LIST`. When you wrote `borderTopColor: 'borderGray'`, the string `'borderGray'` was output directly as a CSS value. The browser doesn't understand it and falls back to `currentColor` (inheriting text color = black).
 
 **Fix applied** (`smbls/packages/css-in-props/src/props/theme.js`): Added theme-aware processors for all directional variants:
+
 ```js
 borderTopColor: (val, element) => {
   const globalTheme = getSystemGlobalTheme(element)
@@ -114,12 +128,14 @@ Since `CSS_PROPS_REGISTRY` is checked before `DEFAULT_CSS_PROPERTIES_LIST` in `u
 **Problem**: `applyEventsOnNode` only iterated `element.on` to register DOM event listeners. But `propertizeElement` moves root-level `onClick` to `props.onClick` (not to `on.click`). So elements with `onClick` defined in props never got their click handlers attached to DOM nodes.
 
 **Fix applied**: Added a second pass in `applyEventsOnNode` that scans `props` for `onXxx` patterns:
+
 ```js
 if (props) {
   for (const key in props) {
     if (key.length > 2 && key.startsWith('on') && isFunction(props[key])) {
       const eventName = key[2].toLowerCase() + key.slice(3)
-      if (!handled.has(eventName)) registerNodeEvent(eventName, element, node, options)
+      if (!handled.has(eventName))
+        registerNodeEvent(eventName, element, node, options)
     }
   }
 }
@@ -148,12 +164,14 @@ When a DOMQL component uses `tag: 'a'` with `attr: { href: '/' }` and also has a
 ## Key Architecture Insights
 
 ### CSS-in-Props Resolution Order (in `usePropsAsCSS`)
+
 1. `element.classlist[key]` — component-level class definitions
 2. `CSS_PROPS_REGISTRY[key]` — theme-aware processors (color, border, shadow, hide, etc.)
 3. `DEFAULT_CSS_PROPERTIES_LIST.includes(key)` — raw pass-through (no theme resolution)
 4. Everything else → `rest` (returned as non-CSS props)
 
 ### Update Cascade Path (state change → CSS re-evaluation)
+
 ```
 state.update()
   → applyElementUpdate
@@ -169,6 +187,7 @@ state.update()
 ```
 
 ### Emotion CSS Class Names
+
 - Content-hashed: `{opacity: "0"}` and `{opacity: "1"}` produce different class names
 - Format: `smbls-{hash}-{label}` (e.g. `smbls-g01xjr-opacity`)
 - `hide` when truthy generates a class with `display: none !important`
@@ -179,6 +198,7 @@ state.update()
 ## 8. CSS-in-Props Override Precedence
 
 `props` block CSS **cannot** override base component-level CSS. Override must match the declaration level:
+
 - Component-level `color: 'currentColor'` in Link → override with component-level `color: 'mediumBlue'`, NOT `props: { color: 'mediumBlue' }`
 - Same rule applies to sub-component overrides in nested children
 
@@ -210,23 +230,24 @@ Child key matching a registered component name auto-extends. E.g., `Hgroup: { ga
 
 All three projects are git submodules added to the monorepo at `/Users/nikoloza/www/next/`:
 
-| Project | Remote | Branch | .git file |
-|---------|--------|--------|-----------|
-| vdcapital | `symbo-ls/examples` | `vdcapital` | `gitdir: ../.git/modules/vdcapital` |
-| byld | `the-most-responsive/byld` | `feature/variables` | `gitdir: ../.git/modules/byld` |
-| 4it | `the-most-responsive/4it` | main (default) | `gitdir: ../.git/modules/4it` |
+| Project   | Remote                     | Branch              | .git file                           |
+| --------- | -------------------------- | ------------------- | ----------------------------------- |
+| vdcapital | `symbo-ls/examples`        | `vdcapital`         | `gitdir: ../.git/modules/vdcapital` |
+| byld      | `the-most-responsive/byld` | `feature/variables` | `gitdir: ../.git/modules/byld`      |
+| 4it       | `the-most-responsive/4it`  | main (default)      | `gitdir: ../.git/modules/4it`       |
 
 Each has a local `next` branch checked out for monorepo integration work.
 
 ### Standard Project Skeleton
 
 All migrated projects follow this structure:
+
 ```
 project/
 ├── .git                    # File (not dir) — submodule gitdir reference
 ├── .eslintrc               # {"extends": "@symbo.ls"}
 ├── .gitignore              # node_modules, dist, .parcel-cache
-├── package.json            # @symbo.ls/starter-kit-{name}, smbls@^3.4.11, parcel@^2.16.4
+├── package.json            # @symbo.ls/starter-kit-{name}, smbls@^3.5.1, parcel@^2.16.4
 ├── symbols.json            # key, bundler: "parcel", optional dir/version/branch
 ├── symbols/                # Main app code
 │   ├── index.js            # Entry: create(app, context)

@@ -60,7 +60,6 @@ export const Banner = {
       fontWeight: '900',
       lineHeight: '0.78em',
       letterSpacing: '-0.03em',
-      textTransform: 'uppercase',
       marginLeft: '0.45em',
       style: { fontFamily: "'Exo 2', sans-serif" },
       '@tabletXSS': { fontSize: '5em', marginLeft: '0.5em' },
