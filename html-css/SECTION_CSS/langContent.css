@@ -9,8 +9,8 @@
   min-width: 100vw;
   min-height: 100vh;
   /* max-height: 100vh; */
-  background: url('../IMAGE/stars5.webp') no-repeat center;
-  /* background: url('../IMAGE/starss.png') no-repeat center; */
+  background: url('/IMAGE/stars5.webp') no-repeat center;
+  /* background: url('/IMAGE/starss.png') no-repeat center; */
   background-size: cover;
   background-attachment: fixed;
   position: relative;
@@ -70,7 +70,7 @@ body.is-safari .lang-content .globe {
   content: '';
   position: absolute;
   inset: -8%;
-  background: url('../IMAGE/stars5.webp') no-repeat center;
+  background: url('/IMAGE/stars5.webp') no-repeat center;
   background-size: cover;
   transform-origin: center center;
   will-change: transform, opacity;
