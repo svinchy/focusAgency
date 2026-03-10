@@ -272,61 +272,79 @@ export const ServiceSection = {
   Dots: {
     extends: 'Flex',
     flow: 'y',
-    gap: 'Z2',
+    gap: '0.9em',
     position: 'fixed',
     zIndex: '30',
     opacity: '0',
     pointerEvents: 'none',
     style: {
-      transition: 'opacity 2s ease-in-out',
+      transition: 'opacity 0.02s ease-in-out',
       top: '50%',
       left: '0',
       transform: 'translateY(-50%)',
+      alignItems: 'center',
+      width: 'fit-content',
     },
     '@mobileL': { flow: 'x' },
     Dot1: {
       extends: 'Box',
       tag: 'button',
-      width: '0.6em',
-      height: '0.6em',
+      width: '0.9em',
+      height: '0.9em',
       round: '100%',
-      background: 'cream',
+      border: 'none',
       cursor: 'pointer',
-      opacity: '1',
-      style: { transition: 'opacity 0.3s ease, transform 0.3s ease' },
+      opacity: '0.8',
+      style: {
+        background: '#E44646',
+        boxShadow: '0 0 0 0.12em rgba(228, 70, 70, 0.35)',
+        transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), background 0.25s cubic-bezier(0.4,0,0.2,1)',
+      },
     },
     Dot2: {
       extends: 'Box',
       tag: 'button',
-      width: '0.6em',
-      height: '0.6em',
+      width: '0.9em',
+      height: '0.9em',
       round: '100%',
-      background: 'cream',
+      border: 'none',
       cursor: 'pointer',
-      opacity: '0.3',
-      style: { transition: 'opacity 0.3s ease, transform 0.3s ease' },
+      opacity: '0.8',
+      style: {
+        background: 'rgba(255, 241, 227, 0.35)',
+        boxShadow: 'inset 0 0 0 0.12em rgba(0, 0, 0, 0.2)',
+        transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), background 0.25s cubic-bezier(0.4,0,0.2,1)',
+      },
     },
     Dot3: {
       extends: 'Box',
       tag: 'button',
-      width: '0.6em',
-      height: '0.6em',
+      width: '0.9em',
+      height: '0.9em',
       round: '100%',
-      background: 'cream',
+      border: 'none',
       cursor: 'pointer',
-      opacity: '0.3',
-      style: { transition: 'opacity 0.3s ease, transform 0.3s ease' },
+      opacity: '0.8',
+      style: {
+        background: 'rgba(255, 241, 227, 0.35)',
+        boxShadow: 'inset 0 0 0 0.12em rgba(0, 0, 0, 0.2)',
+        transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), background 0.25s cubic-bezier(0.4,0,0.2,1)',
+      },
     },
     Dot4: {
       extends: 'Box',
       tag: 'button',
-      width: '0.6em',
-      height: '0.6em',
+      width: '0.9em',
+      height: '0.9em',
       round: '100%',
-      background: 'cream',
+      border: 'none',
       cursor: 'pointer',
-      opacity: '0.3',
-      style: { transition: 'opacity 0.3s ease, transform 0.3s ease' },
+      opacity: '0.8',
+      style: {
+        background: 'rgba(255, 241, 227, 0.35)',
+        boxShadow: 'inset 0 0 0 0.12em rgba(0, 0, 0, 0.2)',
+        transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), background 0.25s cubic-bezier(0.4,0,0.2,1)',
+      },
     },
   },
 
@@ -541,8 +559,13 @@ export const ServiceSection = {
         if (p) p.textContent = serviceData[index].desc
       }
       dots.forEach((dot, i) => {
-        dot.style.opacity = i === index ? '1' : '0.3'
-        dot.style.transform = i === index ? 'scale(1.3)' : 'scale(1)'
+        if (i === index) {
+          dot.style.background = '#E44646'
+          dot.style.boxShadow = '0 0 0 0.12em rgba(228, 70, 70, 0.35)'
+        } else {
+          dot.style.background = 'rgba(255, 241, 227, 0.35)'
+          dot.style.boxShadow = 'inset 0 0 0 0.12em rgba(0, 0, 0, 0.2)'
+        }
       })
       if (imagesNode) {
         const imageHeight = imagesNode.clientHeight
@@ -577,6 +600,29 @@ export const ServiceSection = {
         dotsNode.style.transition = showDots ? 'opacity 2s ease-in-out' : 'opacity 0.02s ease-in-out'
         dotsNode.style.opacity = showDots ? '1' : '0'
         dotsNode.style.pointerEvents = showDots ? 'auto' : 'none'
+      }
+      // Update content height based on viewport
+      if (contentNode) {
+        const vh = window.innerHeight
+        if (vh >= 1400) {
+          contentNode.style.height = 'calc(100vh - 25em)'
+          contentNode.style.top = '11em'
+        } else if (vh >= 1200) {
+          contentNode.style.height = 'calc(100vh - 20em)'
+          contentNode.style.top = '10em'
+        } else if (vh >= 1024) {
+          contentNode.style.height = 'calc(100vh - 18em)'
+          contentNode.style.top = '9em'
+        } else if (vh >= 900) {
+          contentNode.style.height = 'calc(100vh - 13.5em)'
+          contentNode.style.top = '6.5em'
+        } else if (vh >= 650) {
+          contentNode.style.height = 'calc(100vh - 12em)'
+          contentNode.style.top = '5.5em'
+        } else if (vh >= 500) {
+          contentNode.style.height = 'calc(100vh - 11em)'
+          contentNode.style.top = '5.5em'
+        }
       }
       const buffer = viewportH * 0.25
       const progressStart = sectionTop + buffer

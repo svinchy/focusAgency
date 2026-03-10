@@ -45,8 +45,8 @@ export const main = {
 
   Corner: {
     position: 'fixed',
-    bottom: 'A2',
-    left: 'A2',
+    bottom: '2.5em',
+    left: '2.5em',
     zIndex: '1000',
     attr: { 'data-intro-corner': '1' },
     style: {
@@ -56,8 +56,8 @@ export const main = {
   },
   Corner_2: {
     position: 'fixed',
-    top: 'A2',
-    right: 'A2',
+    top: '2.5em',
+    right: '2.5em',
     transform: 'rotate(180deg)',
     zIndex: '1000',
     attr: { 'data-intro-corner': '2' },
@@ -72,8 +72,8 @@ export const main = {
 
   Logo: {
     position: 'fixed',
-    top: 'B2',
-    left: 'B2',
+    top: '2em',
+    left: '2em',
     zIndex: '31',
     attr: { 'data-intro-logo': '1' },
     '@tabletL': {
@@ -97,41 +97,24 @@ export const main = {
   },
 
   MenuButton: {
-    zIndex: '31',
+    zIndex: '40',
     position: 'fixed',
-    top: 'A',
-    right: 'A1',
+    top: '1.5em',
+    right: '1.5em',
     display: 'none',
-    background: 'black',
-    round: '0',
-    padding: 'Z',
-    boxSizing: 'content-box',
-    fontSize: 'B',
-    '@mobileXSS': {
-      fontSize: 'Z2',
-    },
-    style: {
-      border: '1px solid rgba(255, 241, 227, .5)',
-    },
     '@tabletM': {
       display: 'flex',
       '.activeMenu': {
-        round: 'D',
+        round: '100%',
       },
     },
-    '@tabletS': {
-      top: 'A1',
-      right: 'A1',
+    '@mobileL': {
+      fontSize: '0.9em',
+      top: '1.05em',
+      right: '1.05em',
     },
     '@mobileM': {
-      top: 'Z2',
-      right: 'Z1',
-    },
-    '@mobileS': {
-      fontSize: 'A1',
-    },
-    '@mobileXS': {
-      fontSize: 'A',
+      fontSize: '0.75em',
     },
   },
 
@@ -139,8 +122,8 @@ export const main = {
 
   Navbar: {
     position: 'absolute',
-    right: 'E3',
-    top: 'E',
+    right: '8em',
+    top: '7em',
     zIndex: '5',
     '@tabletL': {
       right: 'D1',
@@ -192,15 +175,16 @@ export const main = {
 
   ChatBtn: {
     position: 'fixed',
-    zIndex: '4',
-    bottom: 'B',
-    right: 'C',
-    '@tabletS': {
-      right: 'B',
+    zIndex: '5',
+    bottom: '1.2em',
+    right: '1.2em',
+    '@mobileL': {
+      fontSize: '0.9em',
+      bottom: '1em',
+      right: '1em',
     },
-    '@mobileS': {
-      bottom: 'A',
-      right: 'A',
+    '@mobileM': {
+      fontSize: '0.8em',
     },
   },
 
@@ -284,6 +268,15 @@ export const main = {
       if (bannerH1) bannerH1.setAttribute('data-intro-banner-h1', '1')
       if (bannerH4) bannerH4.setAttribute('data-intro-banner-h4', '1')
 
+      // Lock final logo position after intro (matches HTML-CSS loadingIntro.js)
+      const applyFinalLogoPosition = () => {
+        if (!logoEl) return
+        const isMobile = window.matchMedia('(max-width: 560px)').matches
+        const finalOffset = isMobile ? '0.2em' : '0.5em'
+        logoEl.style.setProperty('top', finalOffset, 'important')
+        logoEl.style.setProperty('left', finalOffset, 'important')
+      }
+
       document.body.classList.add('intro-active')
       if (introLeftEl) introLeftEl.style.opacity = '1'
       if (introRightEl) introRightEl.style.opacity = '1'
@@ -291,20 +284,58 @@ export const main = {
       setTimeout(() => { document.body.classList.add('intro-reveal') }, 1000)
       setTimeout(() => { document.body.classList.add('intro-corners') }, 1400)
       setTimeout(() => { document.body.classList.add('intro-corners-move') }, 2600)
+      // Overlay fade: moveStart + Math.round(moveDuration * 0.1) = 2600 + 300 = 2900
       setTimeout(() => {
         if (introLeftEl) introLeftEl.style.opacity = '0'
         if (introRightEl) introRightEl.style.opacity = '0'
-      }, 2860)
+      }, 2900)
       setTimeout(() => { document.body.classList.add('intro-banner') }, 3180)
       setTimeout(() => {
         document.body.classList.add('intro-finished')
         document.body.classList.remove('intro-active')
+        applyFinalLogoPosition()
         if (logoEl) { logoEl.removeAttribute('data-intro-logo'); logoEl.style.animation = 'none' }
         if (corner1El) { corner1El.removeAttribute('data-intro-corner'); corner1El.style.animation = 'none' }
         if (corner2El) { corner2El.removeAttribute('data-intro-corner'); corner2El.style.animation = 'none' }
         // Enable banner title wave after intro
         applyBannerWave(bannerH1)
       }, 5720)
+
+      // Lock final positions on animation end (matches HTML-CSS loadingIntro.js)
+      if (logoEl) {
+        logoEl.addEventListener('animationend', (e) => {
+          if (e.animationName !== 'logoMove') return
+          applyFinalLogoPosition()
+          logoEl.style.transform = 'translate(0, 0)'
+          logoEl.style.animation = 'none'
+        }, { once: true })
+      }
+
+      if (corner1El) {
+        corner1El.addEventListener('animationend', (e) => {
+          if (e.animationName !== 'cornerToBottomLeft') return
+          corner1El.style.top = '50%'
+          corner1El.style.left = '50%'
+          corner1El.style.transform = 'translate(calc(-50% - 50vw + 2.5em), calc(-50% + 50vh - 2.5em)) rotate(0deg)'
+          corner1El.style.animation = 'none'
+        }, { once: true })
+      }
+
+      if (corner2El) {
+        corner2El.addEventListener('animationend', (e) => {
+          if (e.animationName !== 'cornerToTopRight') return
+          corner2El.style.top = '50%'
+          corner2El.style.left = '50%'
+          corner2El.style.transform = 'translate(calc(-50% + 50vw - 2.5em), calc(-50% - 50vh + 2.5em)) rotate(180deg)'
+          corner2El.style.animation = 'none'
+        }, { once: true })
+      }
+
+      window.addEventListener('resize', () => {
+        if (document.body.classList.contains('intro-finished')) {
+          applyFinalLogoPosition()
+        }
+      })
     }
 
     // ============================
@@ -354,6 +385,25 @@ export const main = {
         })
       }, { threshold: 0.4 })
       sectionTitles.forEach((t) => revealObserver.observe(t))
+    }
+
+    // ============================
+    // TEAM SCROLL REVEAL
+    // ============================
+    const teamSectionForReveal = node.querySelector('[data-section="team"]')
+    if (teamSectionForReveal) {
+      // Reveal the h2 title (already handled above)
+      // Reveal the team contents container (members + arrows)
+      const teamContents = teamSectionForReveal.querySelector('[id="about"]')
+      if (teamContents) {
+        teamContents.classList.add('team-reveal', 'team-reveal-delay')
+        const teamContentsObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add('is-visible')
+          })
+        }, { threshold: 0.25 })
+        teamContentsObserver.observe(teamContents)
+      }
     }
 
     // ============================
@@ -808,8 +858,8 @@ export const main = {
       const langBtns = node.querySelectorAll('[data-lang]')
       langBtns.forEach((btn) => {
         const isActive = btn.dataset.lang === lang
-        btn.style.color = isActive ? 'rgba(255, 241, 227, 1)' : 'rgba(255, 241, 227, 0.5)'
-        btn.style.borderColor = isActive ? 'rgba(255, 241, 227, 0.5)' : 'rgba(255, 241, 227, 0.15)'
+        btn.style.opacity = isActive ? '1' : '0.5'
+        btn.style.transform = isActive ? 'rotate(90deg) scale(1.15)' : 'rotate(90deg)'
       })
     }
 

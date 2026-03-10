@@ -152,18 +152,20 @@ export const Contact = {
       attr: { 'data-el': 'detail-label' },
     },
     SocialLinks: {
-      gap: 'A',
-      childProps: {
-        fontSize: 'C',
-      },
+      gap: '1em',
+      style: { marginTop: '1em' },
       children: () => [{
+          tag: 'a',
           Img: {
             src: 'facebook.png',
+            height: '2em',
           },
         },
         {
+          tag: 'a',
           Img: {
             src: 'instagram.png',
+            height: '2em',
           },
         },
       ],

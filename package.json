@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "smbls": "^3.5.1"
+    "smbls": "^3.6.1"
   },
   "devDependencies": {
     "parcel": "latest",

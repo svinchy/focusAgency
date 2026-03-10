@@ -3,7 +3,7 @@ export const Logo = {
   color: 'cream',
   width: 'fit-content',
   lineHeight: '0.85em',
-  fontSize: 'D2',
+  fontSize: '4em',
   fontWeight: '800',
   position: 'relative',
   style: {
