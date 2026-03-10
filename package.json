@@ -13,7 +13,7 @@
     "smbls": "^3.6.1"
   },
   "devDependencies": {
-    "parcel": "latest",
+    "parcel": "^2.16.4",
     "parcel-reporter-static-files-copy": "^1.5.3"
   }
 }
