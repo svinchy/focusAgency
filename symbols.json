@@ -1,4 +1,5 @@
 {
   "key": "focusagency.symbo.ls",
-  "bundler": "parcel"
+  "bundler": "parcel",
+  "brender": false
 }
