@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "smbls": "^3.6.1"
+    "smbls": "^3.6.3"
   },
   "devDependencies": {
     "parcel": "^2.16.4",
