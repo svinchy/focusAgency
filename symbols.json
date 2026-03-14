@@ -1,5 +1,6 @@
 {
   "key": "focusagency.symbo.ls",
   "bundler": "parcel",
-  "brender": true
+  "brender": true,
+  "useTemporaryProjectPlacement": true
 }
