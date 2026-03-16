@@ -1,6 +1,7 @@
 {
-  "key": "focusagency.symbo.ls",
+  "owner": "tmr",
+  "key": "focusagency",
   "bundler": "parcel",
   "brender": true,
-  "useTemporaryProjectPlacement": true
+  "useKV": true
 }
