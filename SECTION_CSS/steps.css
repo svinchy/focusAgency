@@ -2,7 +2,6 @@
   position: relative;
   min-height: 100em;
   padding: 9em 0 8em 0;
-
 }
 
 .steps h2 {
@@ -16,7 +15,6 @@
   text-align: right;
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
-  color: black;
   transform: translateX(var(--swim-x, 0em)) translateY(calc(var(--steps-title-y, 0em) + var(--swim-y, 0em))) rotate(var(--swim-r, 0deg));
   will-change: transform;
   color: var(--cream);
@@ -35,7 +33,6 @@
   }
 }
 
-
 @media (max-width: 1024px) {
   .steps h2 {
     right: 1em;
@@ -45,35 +42,25 @@
   }
 }
 
-
 @media (max-width: 860px) {
-  .steps h2 {
-    right: 1em;
-  }
   .steps .circle {
     transform: translate(-350px, -35%) rotate(var(--steps-rot, 0deg));
   }
 }
 
-
 @media (max-width: 768px) {
   .steps {
     min-height: 80em;
-  }
-  .steps h2 {
-    right: 1em;
-    /* font-size: 4em; */
   }
   .steps .circle {
     font-size: .87em;
   }
 
-.steps .circle .dot.dot1 hgroup {
-  margin: -10em 0 0 -3em;
-}
+  .steps .circle .dot.dot1 hgroup {
+    margin: -10em 0 0 -3em;
+  }
 
-
- .steps .circle .dot.dot2 hgroup {
+  .steps .circle .dot.dot2 hgroup {
     margin: -10em 0 0 3em;
   }
 
@@ -85,8 +72,8 @@
 @media (max-width: 560px) {
   .steps h2 {
     font-size: 3.5em;
-
   }
+
   .steps .circle {
     font-size: .8em;
   }
@@ -108,8 +95,8 @@
   .steps .circle {
     font-size: .65em;
   }
-
 }
+
 @media (max-width: 350px) {
   .steps h2 {
     font-size: 3.2em;
@@ -118,5 +105,4 @@
     transform: translate(-250px, -35%) rotate(var(--steps-rot, 0deg));
     font-size: .63em;
   }
-
 }

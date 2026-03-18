@@ -23,7 +23,7 @@ html {
 
 /* 4. Body defaults */
 body {
-  min-height: 100vh;
+  min-height: var(--app-viewport-height, 100vh);
   line-height: 1.5;
 }
 
@@ -66,15 +66,3 @@ ol {
   list-style: none;
   padding: 0;
 }
-
-/* 10. Text overflow safety */
-/* h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
-overflow-wrap: break-word;
-} */
-

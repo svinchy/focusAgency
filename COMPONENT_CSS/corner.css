@@ -1,6 +1,7 @@
 .corner {
-  width: 1.2em;
-  height: 1.2em;
+  --corner-size: 1.2em;
+  width: var(--corner-size);
+  height: var(--corner-size);
 }
 
 .corner::before {
@@ -28,4 +29,3 @@
 .corner2 {
   transform: rotate(180deg);
 }
-

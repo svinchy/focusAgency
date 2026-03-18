@@ -1,4 +1,3 @@
-// data.js
 export const content = {
   navbar: {
     en: { service: "service", about: "we are", contact: "contact" },
@@ -286,7 +285,7 @@ export const content = {
         namePlaceholder: "სახელი",
         emailPlaceholder: "ელ-ფოსტა",
         messagePlaceholder: "მოგვწერე",
-        submit: "გამოაგზავნეთ"
+        submit: "გამოგზავნე"
       },
       details: {
         phoneLabel: "დაგვირეკე ნებისმიერ დროს",

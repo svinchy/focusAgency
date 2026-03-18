@@ -1,32 +1,79 @@
 .navigationDots {
+  --dot-hit-size: 0.9em;
+  --dot-visual-size: 0.9em;
+  --dot-ring-size: 0.12em;
   display: flex;
   flex-direction: column;
   gap: 0.9em;
   align-items: center;
   width: fit-content;
-
 }
 
 .navigationDots .dot {
-  width: 0.9em;
-  height: 0.9em;
-  border-radius: 100%;
+  position: relative;
+  width: var(--dot-hit-size);
+  height: var(--dot-hit-size);
+  min-width: var(--dot-hit-size);
+  max-width: var(--dot-hit-size);
+  margin: 0;
+  padding: 0;
   border: none;
-  opacity: .8;
-  background: rgba(255, 241, 227, 0.35);
-  box-shadow: inset 0 0 0 0.12em rgba(0, 0, 0, 0.2);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
   cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-io), box-shadow var(--dur-fast) var(--ease-io), background var(--dur-fast) var(--ease-io);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-.navigationDots .dot:hover {
-  opacity: 1;
-  transform: scale(1.2);
+.navigationDots .dot::before {
+  content: "";
+  width: var(--dot-visual-size);
+  height: var(--dot-visual-size);
+  border-radius: 100%;
+  opacity: 0.8;
+  display: block;
+  background: rgba(255, 241, 227, 0.35);
+  box-shadow: inset 0 0 0 var(--dot-ring-size) rgba(0, 0, 0, 0.2);
+  transition:
+    transform var(--dur-fast) var(--ease-io),
+    box-shadow var(--dur-fast) var(--ease-io),
+    background var(--dur-fast) var(--ease-io),
+    opacity var(--dur-fast) var(--ease-io);
 }
 
-.navigationDots .dot.active {
+.navigationDots .dot:focus-visible {
+  outline: 0.12em solid rgba(255, 241, 227, 0.7);
+  outline-offset: 0.08em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .navigationDots .dot:hover::before {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.navigationDots .dot.active::before {
   background: #E44646;
-  box-shadow: 0 0 0 0.12em rgba(228, 70, 70, 0.35);
+  box-shadow: 0 0 0 var(--dot-ring-size) rgba(228, 70, 70, 0.35);
   transform: scale(1);
 }
 
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) {
+  .navigationDots {
+    --dot-hit-size: 2.1em;
+    --dot-visual-size: 1em;
+    gap: 0.22em;
+  }
+}
+
+@media (max-width: 560px) {
+  .navigationDots {
+    --dot-hit-size: 2.25em;
+    --dot-visual-size: 1.1em;
+  }
+}

@@ -4,6 +4,7 @@
   align-items: center;
   gap: 0em;
   max-width: fit-content;
+  font-size: .9em;
 }
 
 .langButton button {
@@ -22,19 +23,17 @@
   transform: rotate(90deg);
   padding: 0;
   transition:
-  opacity 0.3s ease,             /* fade in/out */
-  transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* smooth scale */
-
+  opacity 0.3s ease,
+  transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .langButton button:hover {
-  opacity:1;
+  opacity: 1;
 }
 
 .langButton button.active {
   opacity: 1;
   pointer-events: none;
-
 }
 
 .langButton button[data-lang="ka"] {
@@ -54,9 +53,7 @@ body.is-safari .langButton button[data-lang="ka"] {
   -webkit-font-smoothing: antialiased;
 }
 
-.langButton button.active[data-lang="ka"] {
-  transform: rotate(90deg) scale(1.15);
-}
+.langButton button.active[data-lang="ka"],
 .langButton button.active:last-child {
   transform: rotate(90deg) scale(1.15);
 }

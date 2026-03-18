@@ -4,7 +4,7 @@ footer {
   position: relative;
   padding-left: 7em;
   min-height: fit-content;
-  padding-bottom: 30em;
+  padding-bottom: calc(6em + var(--app-fixed-bottom-clearance, 0px));
   --footerGlow: 0;
 }
 
@@ -102,11 +102,19 @@ footer .contact nav a img {
 }
 
 footer > p {
-  max-width: 28em;
-  position: absolute;
-  bottom: 12em;
+  display: block;
+  width: 100%;
+  max-width: min(100%, 28em);
+  padding-right: 1em;
+  padding-bottom: 3em;
+  margin-top: 8em;
   font-weight: 300;
+  font-size: 3.5em;
+  line-height: 0.84;
   color: rgba(255, 241, 227, .75);
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 footer > p .wave-char {
@@ -198,8 +206,8 @@ footer.is-wave-active > p .wave-char {
 
 @media (max-width: 620px) {
    footer {
-    padding-left: 3.5em;
      padding-right: 3.5em;
+     padding-bottom: calc(6em + var(--app-fixed-bottom-clearance, 0px));
    }
    footer h2 {
     margin: 0 .5em 3.5em auto;
@@ -231,12 +239,11 @@ footer.is-wave-active > p .wave-char {
   .address img:nth-of-type(2) {
     margin-left: auto;
   }
+
   footer > p {
-    min-width: fit-content;
-    max-width: 10em;
-    /* padding-left: 2em; */
-    padding-right: 2em;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 1.1em 0 0;
+    padding-right: .2em;
   }
 }
 
@@ -245,12 +252,12 @@ footer.is-wave-active > p .wave-char {
     padding-left: 2em;
     padding-right: 2em;
   }
+  footer > p {
 
-  form input.name {
-    min-width: 100%;
-    max-width: 100%;
+    padding-right: 0;
   }
 
+  form input.name,
   form input.mail {
     min-width: 100%;
     max-width: 100%;
@@ -266,6 +273,9 @@ footer.is-wave-active > p .wave-char {
   .address img {
     height: 10em;
   }
-
 }
-
+@media (max-width: 350px) {
+  footer > p {
+    padding-left: .2em;
+  }
+}

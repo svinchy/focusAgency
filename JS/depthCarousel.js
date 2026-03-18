@@ -11,6 +11,7 @@ export function depthCarousel() {
   if (!members.length || !prev || !next || !teamSection) return;
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const staticMode = prefersReduced;
   let activeIndex = members.findIndex((member) => member.classList.contains("active"));
   if (activeIndex < 0) activeIndex = 0;
   let scrollStrength = 0;
@@ -93,7 +94,18 @@ export function depthCarousel() {
     });
   };
 
+  // Apply targets immediately for reduced-motion users.
+  const applyTargetsNow = () => {
+    members.forEach((member, i) => {
+      const tgt = state[i].target;
+      state[i].current = { ...tgt };
+      member.style.transform = `translate(-50%, -50%) translateX(${tgt.x}em) translateY(${tgt.y}em) translateZ(${tgt.z}px) rotateY(${tgt.r}deg) scale(${tgt.s})`;
+      member.style.opacity = tgt.o;
+    });
+  };
+
   const ease = 0.12;
+
   // Interpolate card transforms toward target state.
   const animate = () => {
     if (!running) return;
@@ -119,16 +131,19 @@ export function depthCarousel() {
   const applyDepth = (value) => {
     scrollStrength = Math.max(0, Math.min(1, Number(value) || 0));
     computeTargets();
+    if (staticMode) applyTargetsNow();
   };
 
   const goPrev = () => {
     activeIndex = (activeIndex - 1 + members.length) % members.length;
     computeTargets();
+    if (staticMode) applyTargetsNow();
   };
 
   const goNext = () => {
     activeIndex = (activeIndex + 1) % members.length;
     computeTargets();
+    if (staticMode) applyTargetsNow();
   };
 
   prev.addEventListener("click", goPrev);
@@ -137,13 +152,20 @@ export function depthCarousel() {
   window.addEventListener(TEAM_DEPTH_EVENT, (event) => {
     applyDepth(event?.detail?.strength);
   });
-  window.addEventListener("resize", computeTargets);
+  window.addEventListener("resize", () => {
+    computeTargets();
+    if (staticMode) applyTargetsNow();
+  });
 
   computeTargets();
+  if (staticMode) {
+    applyTargetsNow();
+    return;
+  }
 
   // Start rAF loop when section is in view.
   const start = () => {
-    if (running || prefersReduced) return;
+    if (running) return;
     running = true;
     rafId = requestAnimationFrame(animate);
   };
@@ -154,8 +176,6 @@ export function depthCarousel() {
     if (rafId) cancelAnimationFrame(rafId);
     rafId = null;
   };
-
-  if (prefersReduced) return;
 
   if (typeof IntersectionObserver === "undefined") {
     start();

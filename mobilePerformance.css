@@ -1,6 +1,55 @@
-@media (hover: none) and (pointer: coarse) {
+@media (max-width: 1180px), (hover: none) and (pointer: coarse) {
+  .lang-content {
+    background-attachment: scroll !important;
+    background-position: center top;
+    background-size: 100% auto;
+    background-repeat: repeat-y;
+  }
+
+  .banner::after {
+    display: none;
+  }
+
+  .services .content .images .image {
+    background-attachment: scroll !important;
+  }
+
+  .lang-content .starsBg::before,
+  .lang-content .starsBg::after {
+    animation: starsFieldLoopMobile 26s linear infinite alternate !important;
+    transform: translate3d(0, 0, 0) scale(1.04) !important;
+    inset: -2% !important;
+    will-change: auto !important;
+  }
+
   .lang-content .overlay_2 {
-    animation: none;
+    animation: none !important;
+  }
+
+  .lang-content .globeFrame {
+    will-change: auto !important;
+  }
+
+  .lang-content .globe {
+    animation: rotateGlobe 140s linear infinite !important;
+    filter: none !important;
+    transform-style: flat !important;
+    will-change: auto !important;
+  }
+
+  @keyframes starsFieldLoopMobile {
+    0% {
+      transform: translate3d(1.5%, 0.8%, 0) scale(1.03);
+      opacity: 0.56;
+    }
+    50% {
+      transform: translate3d(0, 0, 0) scale(1.06);
+      opacity: 0.62;
+    }
+    100% {
+      transform: translate3d(-1.5%, -0.8%, 0) scale(1.09);
+      opacity: 0.56;
+    }
   }
 
   .service,
@@ -21,4 +70,9 @@
     -webkit-mask-image: none;
     mask-image: none;
   }
+
+  .testimonial.is-active.is-scrolling .title img {
+    animation: none !important;
+  }
+
 }

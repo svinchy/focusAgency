@@ -11,34 +11,43 @@ export function circleRotation() {
   let target = 0;
   let titleCurrent = 0;
   let titleTarget = 0;
-  const ease = 0.05; // slower, smoother
+  const ease = 0.022;
+  const maxRotation = 60;
+  const maxTitleShift = 0.85;
   let rafId = null;
+  let lastTime = 0;
 
-  // Derive rotation/title targets from section scroll progress.
+  // Start the motion when the steps section itself reaches the viewport top.
   const calcTarget = () => {
-    const titleRect = title.getBoundingClientRect();
-    const start = titleRect.top;
     const sectionRect = section.getBoundingClientRect();
     const viewportH = window.innerHeight;
     const range = sectionRect.height - viewportH;
 
     if (range <= 0) {
       target = 0;
+      titleTarget = 0;
       return;
     }
 
-    // start when title reaches top edge
-    const progressRaw = (0 - start) / range;
+    const progressRaw = (0 - sectionRect.top) / range;
     const progress = Math.min(1, Math.max(0, progressRaw));
-    target = -progress * 90; // reverse rotation
-    titleTarget = -progress * 1.2; // em units for scroll swim
+    const smoothProgress = progress * progress * (3 - 2 * progress);
+
+    target = -smoothProgress * maxRotation;
+    titleTarget = -smoothProgress * maxTitleShift;
   };
 
   // Interpolate toward targets for smooth motion.
-  const animate = () => {
+  const animate = (time) => {
     rafId = null;
-    current += (target - current) * ease;
-    titleCurrent += (titleTarget - titleCurrent) * ease;
+
+    if (!lastTime) lastTime = time;
+    const delta = Math.min(64, time - lastTime || 16.67);
+    lastTime = time;
+    const frameEase = 1 - Math.pow(1 - ease, delta / (1000 / 60));
+
+    current += (target - current) * frameEase;
+    titleCurrent += (titleTarget - titleCurrent) * frameEase;
     circle.style.setProperty("--steps-rot", `${current.toFixed(2)}deg`);
     title.style.setProperty("--steps-title-y", `${titleCurrent.toFixed(3)}em`);
 
@@ -46,11 +55,14 @@ export function circleRotation() {
       Math.abs(target - current) > 0.02 || Math.abs(titleTarget - titleCurrent) > 0.002;
     if (stillMoving) {
       rafId = requestAnimationFrame(animate);
+    } else {
+      lastTime = 0;
     }
   };
 
   const scheduleAnimate = () => {
     if (rafId) return;
+    lastTime = 0;
     rafId = requestAnimationFrame(animate);
   };
 

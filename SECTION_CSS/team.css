@@ -80,7 +80,6 @@ body[data-lang="ka"] .team h2 {
 .team .contents .teamMember h5,
 .team .contents .teamMember .socialLinks {
   opacity: 0;
-  /* transform: translateY(0.4em); */
   transition: opacity 0.22s var(--ease-io), transform 0.22s var(--ease-io);
 }
 
@@ -100,7 +99,6 @@ body[data-lang="ka"] .team h2 {
 .team .contents .teamMember.active h6,
 .team .contents .teamMember.active .socialLinks {
   opacity: 1;
-  /* transform: translateY(0); */
 }
 
 .team .contents .teamMember.active::after {
@@ -229,4 +227,3 @@ body[data-lang="ka"] .team h2 {
     margin: -1.5em auto 0 auto;
   }
 }
-

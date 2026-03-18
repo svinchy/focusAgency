@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <link rel="stylesheet" href="reset.css">
 
@@ -41,11 +41,116 @@
   <link rel="stylesheet" href="ANIMATION_CSS/intro.css">
   <link rel="stylesheet" href="ANIMATION_CSS/bannerIntro.css">
 
+  <link rel="preconnect" href="https://go.crisp.chat">
+  <link rel="dns-prefetch" href="//go.crisp.chat">
+
 
   <title>Focus Agency - Digital Marketing & Web Development</title>
+
+  <script type="text/javascript">
+    window.CRISP_EMBED_URL =
+      "https://go.crisp.chat/chat/embed/?website_id=f48830e3-9049-4f5f-96bb-e91b246dcd6c";
+    window.__crispChatOpen = false;
+
+    window.updateCrispChatButton = function(isOpen) {
+      var root = document.documentElement;
+      var body = document.body;
+      var button = document.getElementById("open-chat-btn");
+
+      if (root) {
+        root.classList.toggle("chat-panel-open", !!isOpen);
+      }
+
+      if (body) {
+        body.classList.toggle("chat-panel-open", !!isOpen);
+      }
+
+      if (!button) {
+        window.__crispChatOpen = !!isOpen;
+        return;
+      }
+
+      var label = button.querySelector("span");
+      button.classList.toggle("is-active", !!isOpen);
+      button.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      button.setAttribute("aria-label", isOpen ? "Close chat" : "Open chat");
+
+      if (label) {
+        label.textContent = isOpen ? "x" : "chat";
+      }
+
+      window.__crispChatOpen = !!isOpen;
+    };
+
+    window.ensureCrispChatFrame = function() {
+      var frame = document.getElementById("crisp-chat-frame");
+      if (frame && !frame.getAttribute("src")) {
+        frame.src = frame.dataset.src || window.CRISP_EMBED_URL;
+      }
+
+      return frame;
+    };
+
+    window.openCrispChat = function() {
+      var overlay = document.getElementById("crisp-chat-overlay");
+      if (!overlay || window.__crispChatOpen) {
+        return;
+      }
+
+      window.ensureCrispChatFrame();
+      overlay.inert = false;
+      overlay.setAttribute("aria-hidden", "false");
+      window.updateCrispChatButton(true);
+
+      window.requestAnimationFrame(function() {
+        overlay.classList.add("is-visible");
+      });
+    };
+
+    window.closeCrispChat = function() {
+      var overlay = document.getElementById("crisp-chat-overlay");
+      if (!overlay || !window.__crispChatOpen) {
+        return;
+      }
+
+      overlay.classList.remove("is-visible");
+      overlay.inert = true;
+      overlay.setAttribute("aria-hidden", "true");
+      window.updateCrispChatButton(false);
+    };
+
+    window.toggleCrispChat = function() {
+      if (window.__crispChatOpen) {
+        window.closeCrispChat();
+        return;
+      }
+
+      window.openCrispChat();
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+      var overlay = document.getElementById("crisp-chat-overlay");
+      window.ensureCrispChatFrame();
+      window.updateCrispChatButton(false);
+
+      if (overlay) {
+        overlay.addEventListener("click", function(event) {
+          if (event.target === overlay) {
+            window.closeCrispChat();
+          }
+        });
+      }
+
+      document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+          window.closeCrispChat();
+        }
+      });
+    });
+  </script>
 </head>
 
-<body class="themeDocument intro-center intro-active intro-overlay">
+<body class="themeDocument">
 
   <div class="logo"> <span>F</span> </div>
   <div class="corner"></div>
@@ -61,7 +166,38 @@
 
 
   <!-- chat button -->
-  <button class="chatButton"><span>chat</span></button>
+  <button
+    class="chatButton"
+    id="open-chat-btn"
+    type="button"
+    onclick="window.toggleCrispChat()"
+    aria-expanded="false"
+    aria-label="Open chat"
+  ><span>chat</span></button>
+
+  <div
+    class="chatPanelOverlay"
+    id="crisp-chat-overlay"
+    aria-hidden="true"
+    inert
+  >
+    <section
+      class="chatPanel"
+      id="crisp-chat-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Focus Agency live chat"
+    >
+      <iframe
+        class="chatPanelFrame"
+        id="crisp-chat-frame"
+        title="Focus Agency live chat"
+        data-src="https://go.crisp.chat/chat/embed/?website_id=f48830e3-9049-4f5f-96bb-e91b246dcd6c"
+        loading="eager"
+        referrerpolicy="origin"
+      ></iframe>
+    </section>
+  </div>
 
 
   <!-- main content which language changable -->
@@ -69,8 +205,9 @@
     <div class="starsBg" aria-hidden="true"></div>
     <div class="overlay"></div>
     <div class="overlay_2"></div>
-    <img src="./IMAGE/globe.webp" alt="" class="globe">
-    <img src="./IMAGE/globe3.png" alt="" class="globe2">
+    <div class="globeFrame" aria-hidden="true">
+      <img src="./IMAGE/globe.webp" alt="" class="globe" decoding="async" fetchpriority="high">
+    </div>
 
 
     <!-- navbar -->
@@ -84,8 +221,8 @@
     <!-- banner -->
     <section class="banner">
       <hgroup class="bannerTitle">
-        <h4 data-banner="subtitle"></h4>
         <h1 data-banner="title"></h1>
+        <h4 data-banner="subtitle"></h4>
       </hgroup>
     </section>
 
@@ -111,7 +248,7 @@
             <p>Content creation and advertising</p>
           </hgroup>
           <ul class="service-content"></ul>
-          <button>
+          <button type="button">
             <img class="icon-arrow" src="/IMAGE/arrow.png" alt="">
             <img class="icon-close" src="/IMAGE/close.png" alt="">
           </button>
@@ -158,52 +295,52 @@
         <div class="teamMember active">
           <h6>Founder</h6>
           <h5>Giorgi</h5>
-          <img src="./IMAGE/choni2.webp" alt="">
+          <img src="./IMAGE/choni2.webp" alt="" loading="lazy" decoding="async">
           <nav class="socialLinks">
             <a href="">
-              <img src="./IMAGE/facebook.png" alt="">
+              <img src="./IMAGE/facebook.png" alt="" loading="lazy" decoding="async">
             </a>
             <a href="">
-              <img src="./IMAGE/linkedin.png" alt="">
+              <img src="./IMAGE/linkedin.png" alt="" loading="lazy" decoding="async">
             </a>
           </nav>
         </div>
         <div class="teamMember">
           <h6>Project Manager</h6>
           <h5>Liza</h5>
-          <img src="./IMAGE/liza2.webp" alt="">
+          <img src="./IMAGE/liza2.webp" alt="" loading="lazy" decoding="async">
           <nav class="socialLinks">
             <a href="">
-              <img src="./IMAGE/facebook.png" alt="">
+              <img src="./IMAGE/facebook.png" alt="" loading="lazy" decoding="async">
             </a>
             <a href="">
-              <img src="./IMAGE/linkedin.png" alt="">
+              <img src="./IMAGE/linkedin.png" alt="" loading="lazy" decoding="async">
             </a>
           </nav>
         </div>
         <div class="teamMember">
           <h6>Graphic Designer</h6>
           <h5>Mariami</h5>
-          <img src="./IMAGE/mariami2.webp" alt="">
+          <img src="./IMAGE/mariami2.webp" alt="" loading="lazy" decoding="async">
           <nav class="socialLinks">
             <a href="">
-              <img src="./IMAGE/facebook.png" alt="">
+              <img src="./IMAGE/facebook.png" alt="" loading="lazy" decoding="async">
             </a>
             <a href="">
-              <img src="./IMAGE/linkedin.png" alt="">
+              <img src="./IMAGE/linkedin.png" alt="" loading="lazy" decoding="async">
             </a>
           </nav>
         </div>
         <div class="teamMember">
           <h6>Videograph</h6>
           <h5>Luka</h5>
-          <img src="./IMAGE/luka2.webp" alt="">
+          <img src="./IMAGE/luka2.webp" alt="" loading="lazy" decoding="async">
           <nav class="socialLinks">
             <a href="">
-              <img src="./IMAGE/facebook.png" alt="">
+              <img src="./IMAGE/facebook.png" alt="" loading="lazy" decoding="async">
             </a>
             <a href="">
-              <img src="./IMAGE/linkedin.png" alt="">
+              <img src="./IMAGE/linkedin.png" alt="" loading="lazy" decoding="async">
             </a>
           </nav>
         </div>
@@ -211,10 +348,10 @@
       </div>
       <div class="navArrows">
         <button class="arrow prev" type="button" aria-label="Previous team member">
-          <img src="./IMAGE/arrow.png" alt="">
+          <img src="./IMAGE/arrow.png" alt="" loading="lazy" decoding="async">
         </button>
         <button class="arrow next" type="button" aria-label="Next team member">
-          <img src="./IMAGE/arrow.png" alt="">
+          <img src="./IMAGE/arrow.png" alt="" loading="lazy" decoding="async">
         </button>
       </div>
       <button class="more">know us better</button>
@@ -225,7 +362,7 @@
     <section class="testimonial">
 
       <div class="title">
-        <img src="./IMAGE/quotation-mark.png" alt="">
+        <img src="./IMAGE/quotation-mark.png" alt="" loading="lazy" decoding="async">
         <h3>people talks</h3>
       </div>
 
@@ -252,14 +389,16 @@
     </section>
 
     <!-- footer section -->
+
     <footer>
       <h2>focus agency</h2>
-      <form method="post" id="contact">
+      <form action="https://formspree.io/f/xqeypeyg" method="POST" id="contact">
         <legend>have a question?</legend>
         <input id="name" name="name" type="text" autocomplete="name" class="name" placeholder="name" />
         <input id="email" name="email" type="email" autocomplete="email" class="mail" placeholder="email" required />
         <textarea id="message" name="message" rows="6" placeholder="shoot a message" required></textarea>
         <button type="submit">send</button>
+        <p id="contact-status" role="status" aria-live="polite" hidden></p>
       </form>
 
       <div class="contact">
@@ -270,10 +409,10 @@
         <h5>Follow us</h5>
         <nav>
           <a href="">
-            <img src="./IMAGE/facebook.png" alt="">
+            <img src="./IMAGE/facebook.png" alt="" loading="lazy" decoding="async">
           </a>
           <a href="">
-            <img src="./IMAGE/instagram.png" alt="">
+            <img src="./IMAGE/instagram.png" alt="" loading="lazy" decoding="async">
           </a>
         </nav>
       </div>
@@ -285,8 +424,8 @@
             <span>Alexandre Khazbegi street N24 g</span>
           </p>
         </hgroup>
-        <img src="./IMAGE/street.webp" alt="">
-        <img src="./IMAGE/street2.webp" alt="">
+        <img src="./IMAGE/street.webp" alt="" loading="lazy" decoding="async">
+        <img src="./IMAGE/street2.webp" alt="" loading="lazy" decoding="async">
       </div>
 
       <p>

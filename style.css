@@ -1,3 +1,17 @@
+:root {
+  --app-viewport-width: 100vw;
+  --app-viewport-height: 100vh;
+  --app-viewport-offset-left: 0px;
+  --app-viewport-offset-top: 0px;
+  --app-viewport-right-offset: 0px;
+  --app-viewport-bottom-offset: 0px;
+  --app-safe-top: env(safe-area-inset-top, 0px);
+  --app-safe-right: env(safe-area-inset-right, 0px);
+  --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --app-safe-left: env(safe-area-inset-left, 0px);
+  --app-fixed-bottom-clearance: calc(var(--app-safe-bottom) + var(--app-viewport-bottom-offset));
+}
+
 html {
   height: 100vh;
   width: 100%;
@@ -5,10 +19,22 @@ html {
   margin: 0;
   overflow-y: scroll;
   overflow-x: hidden;
-
-  /* overflow: hidden; */
+  scrollbar-gutter: stable;
   box-sizing: border-box;
 }
+
+html.page-scroll-locked,
+body.page-scroll-locked {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Prevent accidental navigation reloads from placeholder links. */
+a[href=""] {
+  pointer-events: none;
+  cursor: default;
+}
+
 *::before,
 *::after {
   box-sizing: inherit;
@@ -17,37 +43,49 @@ html {
 body {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: var(--app-viewport-height, 100vh);
   line-height: var(--lh-body);
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-size: 16px;
-  --corner-final-offset: 2.5em;
+  font-size: 18px;
+  --corner-final-offset: 20px;
+  --corner-left-offset: var(--corner-final-offset);
+  --corner-right-offset: var(--corner-final-offset);
+  --corner-top-offset: var(--corner-final-offset);
+  --corner-bottom-offset: var(--corner-final-offset);
+  --logo-final-top-offset: 0.5em;
+  --logo-final-left-offset: 0.5em;
+}
+
+@media (max-width: 1180px), (hover: none) and (pointer: coarse) {
+  html {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    min-height: var(--app-viewport-height, 100%);
+  }
+
+  html.page-scroll-locked,
+  body.page-scroll-locked {
+    height: var(--app-viewport-height, 100%);
+    min-height: var(--app-viewport-height, 100%);
+    -webkit-overflow-scrolling: auto;
+  }
 }
 
 /* Breakpoint mapping:
    screenL = 1920px
    screenM = 1680px */
-@media (min-width: 1920px) {
-  body {
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 1920px) {
-  body {
-    font-size: 18px;
-  }
-}
-
 @media (max-width: 1680px) {
   body {
     font-size: 16px;
   }
 }
-
-/* English default */
 
 /* English default */
 body[data-lang="en"] {
@@ -59,32 +97,26 @@ body[data-lang="ka"] {
   font-family: var(--font-ka-body);
 }
 
-body .corner {
+body .corner,
+body .corner2 {
   position: fixed;
   z-index: 5;
-  bottom: var(--corner-final-offset);
-  left: var(--corner-final-offset);
+  bottom: calc(var(--corner-bottom-offset, var(--corner-final-offset)) + var(--app-fixed-bottom-clearance, 0px));
+  left: calc(var(--corner-left-offset, var(--corner-final-offset)) + var(--app-safe-left, 0px));
   transition:
-  opacity 1.6s ease,
-  top 1.2s ease,
-  left 1.2s ease,
-  right 1.2s ease,
-  bottom 1.2s ease,
-  transform 1.2s ease;
+    opacity 1.6s ease,
+    top 1.2s ease,
+    left 1.2s ease,
+    right 1.2s ease,
+    bottom 1.2s ease,
+    transform 1.2s ease;
 }
 
 body .corner2 {
   left: initial;
   bottom: initial;
-  top: var(--corner-final-offset);
-  right: var(--corner-final-offset);
-  transition:
-  opacity 1.6s ease,
-  top 1.2s ease,
-  left 1.2s ease,
-  right 1.2s ease,
-  bottom 1.2s ease,
-  transform 1.2s ease;
+  top: calc(var(--corner-top-offset, var(--corner-final-offset)) + var(--app-safe-top, 0px));
+  right: calc(var(--corner-right-offset, var(--corner-final-offset)) + var(--app-safe-right, 0px));
 }
 
 body.intro-active .corner,
@@ -94,56 +126,16 @@ body.intro-active .logo {
 }
 
 body .logo {
-  top: 2em;
-  left: 2em;
+  top: calc(2em + var(--app-safe-top, 0px));
+  left: calc(2em + var(--app-safe-left, 0px));
   padding-top: 0;
-}
-
-@media (max-width: 560px) {
-  body {
-    --corner-final-offset: 2em;
-  }
-
-  body .logo {
-     font-size: 3.5em;
-    top: .2em;
-    left: .2em;
-  }
-}
-
-
-@media (max-width: 480px) {
-
-  body .logo {
-     font-size: 3em;
-    top: .2em;
-    left: .2em;
-  }
 }
 
 .menuButton {
   position: fixed;
-  top: 1.5em;
-  right: 1.5em;
+  top: calc(1.5em + var(--app-safe-top, 0px));
+  right: calc(1.5em + var(--app-safe-right, 0px));
   display: none;
-}
-@media (max-width: 560px) {
-  .menuButton {
-    font-size: .9em;
-    top: 1.05em;
-    right: 1.05em;
-  }
-}
-
-@media (max-width: 480px) {
-  .menuButton {
-    font-size: .75em;
-  }
-}
-@media (max-width: 1180px) {
-  .menuButton {
-    display: flex;
-  }
 }
 
 body .navBar {
@@ -151,11 +143,6 @@ body .navBar {
   top: 7em;
   right: 8em;
   z-index: 5;
-}
-@media (max-width: 1180px) {
-  body .navBar {
-    display: flex;
-  }
 }
 
 body .langButton {
@@ -165,45 +152,77 @@ body .langButton {
   transform: translateY(-50%);
   right: 2em;
   transition:
-  transform 0.3s var(--ease-io),
-  opacity 0.22s ease;
-}
-
-@media (max-width: 560px) {
-  body .langButton {
-    font-size: .9em;
-  }
-}
-
-@media (max-width: 1180px) {
-  body .langButton {
-    right: .5em;
-  }
-
-  body.is-nav-open .langButton,
-  body.is-nav-open .chatButton {
-    opacity: 0;
-    pointer-events: none;
-  }
+    transform 0.3s var(--ease-io),
+    opacity 0.22s ease;
 }
 
 body .chatButton {
   position: fixed;
   z-index: 5;
-  bottom: 1.2em;
-  right: 1.2em;
+  bottom: calc(1.2em + var(--app-fixed-bottom-clearance, 0px));
+  right: calc(1.2em + var(--app-safe-right, 0px));
   transition: opacity 0.22s ease;
 }
-@media (max-width: 560px) {
-  body .chatButton {
-    font-size: .9em;
-    bottom: 1em;
-    right: 1em;
+
+@media (max-width: 1180px) {
+  .menuButton {
+    display: flex;
+  }
+
+  body .navBar {
+    display: flex;
+  }
+
+  body .langButton {
+    right: 0.5em;
+  }
+
+  body.is-nav-open .langButton,
+  body.is-nav-open .chatButton,
+  body.is-nav-open .corner,
+  body.is-nav-open .corner2 {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  body.is-nav-open .logo {
+    z-index: 130;
+    mix-blend-mode: normal;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
+  body {
+    --corner-final-offset: 20px;
+    --corner-left-offset: 12px;
+    --corner-bottom-offset: 12px;
+    --logo-final-top-offset: 0.3214em;
+    --logo-final-left-offset: 0.2857em;
+  }
+
+  body .logo {
+    font-size: 3.5em;
+    top: calc(var(--logo-final-top-offset) + var(--app-safe-top, 0px));
+    left: calc(var(--logo-final-left-offset) + var(--app-safe-left, 0px));
+  }
+
+  .menuButton {
+    top: calc(1.05em + var(--app-safe-top, 0px));
+    right: calc(1.05em + var(--app-safe-right, 0px));
+  }
+
+  body .langButton {
+    font-size: 0.9em;
+  }
+
   body .chatButton {
-    font-size: .8em;
+    bottom: calc(1em + var(--app-fixed-bottom-clearance, 0px));
+    right: calc(1em + var(--app-safe-right, 0px));
   }
 }
+/*
+@media (max-width: 480px) {
+  body .chatButton {
+    font-size: 0.8em;
+  }
+} */

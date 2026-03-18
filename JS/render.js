@@ -58,7 +58,11 @@ export function render() {
     serviceImages.forEach((imageEl, i) => {
       const imagePath = serviceItems[i]?.image;
       if (!imagePath) return;
+      imageEl.dataset.imageSrc = imagePath;
+
+      // Keep all service panels warm to avoid blank slices while scrolling between items.
       imageEl.style.backgroundImage = `url('${imagePath}')`;
+      imageEl.dataset.imageLoaded = "1";
     });
   }
   refreshServiceContent();

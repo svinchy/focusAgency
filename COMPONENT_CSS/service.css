@@ -3,17 +3,14 @@
   height: 15em;
   padding: 2.5em 2em 2em 2em;
   border-radius: var(--radius-l);
-  /* background: rgba(255, 241, 227, .3); */
   background:
   linear-gradient(140deg, rgba(224, 77, 77, .15), rgba(0, 0, 0, 0.2));
   color: var(--white);
   backdrop-filter: blur(20px) saturate(1.1);
   cursor: pointer;
-  /* transform-style: preserve-3d; */
   box-shadow:
   0 10px 30px rgba(0, 0, 0, 0.15),
   inset 0 0 0 0.08em rgba(255, 255, 255, 0.1);
-
 }
 
 .service hgroup h3 {
@@ -26,7 +23,12 @@
   color: rgba(255, 241, 227, .75);
 }
 body[data-lang="ka"] .service hgroup h3 {
-  font-family: var(--font-ka-cap);
+  font-family: 'BPG Square Banner Caps 2013 Safari', var(--font-ka-cap), sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  text-transform: none;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
   line-height: 1em;
 }
 

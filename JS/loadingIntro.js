@@ -11,14 +11,65 @@ export function loadingIntro() {
   const logo = document.querySelector(".logo");
   const corner = document.querySelector(".corner");
   const corner2 = document.querySelector(".corner2");
+  let bannerStarted = false;
+  let globeZoomStarted = false;
+  let introFinished = false;
+
+  const startBannerReveal = () => {
+    if (bannerStarted) return;
+    bannerStarted = true;
+    body.classList.add("intro-banner");
+  };
+
+  const startGlobeZoom = () => {
+    if (globeZoomStarted) return;
+    globeZoomStarted = true;
+    body.classList.add("intro-globe-zoom");
+  };
+
+  const applyFinalCornerPosition = (element, cornerName) => {
+    if (!element) return;
+
+    const isBottomLeft = cornerName === "bottom-left";
+    element.style.animation = "none";
+    element.style.opacity = isBottomLeft ? "1" : "0";
+    element.style.pointerEvents = isBottomLeft ? "" : "none";
+    element.style.top = isBottomLeft
+      ? "auto"
+      : "calc(var(--corner-top-offset, var(--corner-final-offset, 20px)) + var(--app-safe-top, 0px))";
+    element.style.right = isBottomLeft
+      ? "auto"
+      : "calc(var(--corner-right-offset, var(--corner-final-offset, 20px)) + var(--app-safe-right, 0px))";
+    element.style.bottom = isBottomLeft
+      ? "calc(var(--corner-bottom-offset, var(--corner-final-offset, 20px)) + var(--app-fixed-bottom-clearance, 0px))"
+      : "auto";
+    element.style.left = isBottomLeft
+      ? "calc(var(--corner-left-offset, var(--corner-final-offset, 20px)) + var(--app-safe-left, 0px))"
+      : "auto";
+    element.style.transform = isBottomLeft ? "none" : "rotate(180deg)";
+  };
+
+  const finishIntro = () => {
+    if (introFinished) return;
+    introFinished = true;
+    body.classList.remove("intro-globe-zoom");
+    body.classList.add("intro-finished");
+    applyFinalLogoPosition();
+    applyFinalCornerPosition(corner, "bottom-left");
+    applyFinalCornerPosition(corner2, "top-right");
+  };
 
   const applyFinalLogoPosition = () => {
     if (!logo) return;
-    const isMobile = window.matchMedia("(max-width: 560px)").matches;
-    const finalOffset = isMobile ? "0.2em" : "0.5em";
-    logo.style.setProperty("top", finalOffset, "important");
-    logo.style.setProperty("left", finalOffset, "important");
-    // logo.style.removeProperty("font-size");
+    const styles = getComputedStyle(body);
+    const finalTopOffset = styles
+      .getPropertyValue("--logo-final-top-offset")
+      .trim() || "0.5em";
+    const finalLeftOffset = styles
+      .getPropertyValue("--logo-final-left-offset")
+      .trim() || "0.5em";
+    logo.style.setProperty("top", `calc(${finalTopOffset} + var(--app-safe-top, 0px))`, "important");
+    logo.style.setProperty("left", `calc(${finalLeftOffset} + var(--app-safe-left, 0px))`, "important");
   };
 
   // 1) red dot pulses immediately
@@ -45,18 +96,26 @@ export function loadingIntro() {
     body.classList.add("intro-fade");
   }, fadeStart);
 
-  // Start banner only after stars intro burst finishes.
-  const starsIntroDuration = 3050;
-  const bannerStart = starsIntroDuration + 130;
+  const overlayFadeDuration = 1000;
+  const globeZoomFadeProgress = 0;
+  const moveEnd = moveStart + moveDuration;
+  const globeZoomStart = fadeStart + Math.round(overlayFadeDuration * globeZoomFadeProgress);
+  const globeZoomDuration = moveEnd - globeZoomStart;
+  body.style.setProperty("--globe-intro-zoom-duration", `${globeZoomDuration}ms`);
   window.setTimeout(() => {
-    body.classList.add("intro-banner");
+    startGlobeZoom();
+  }, globeZoomStart);
+
+  const bannerStart = globeZoomStart + Math.round(globeZoomDuration * 0.2);
+  window.setTimeout(() => {
+    startBannerReveal();
   }, bannerStart);
 
   // Fallback: always mark intro as finished after full timeline.
-  const introEnd = moveStart + moveDuration + 120;
+  const introEnd = Math.max(moveEnd, globeZoomStart + globeZoomDuration) + 120;
   window.setTimeout(() => {
-    body.classList.add("intro-finished");
-    applyFinalLogoPosition();
+    finishIntro();
+    startBannerReveal();
   }, introEnd);
 
   // lock final positions on animation end
@@ -72,27 +131,23 @@ export function loadingIntro() {
   window.addEventListener("resize", () => {
     if (body.classList.contains("intro-finished")) {
       applyFinalLogoPosition();
+      applyFinalCornerPosition(corner, "bottom-left");
+      applyFinalCornerPosition(corner2, "top-right");
     }
   });
 
   if (corner) {
     corner.addEventListener("animationend", (e) => {
       if (e.animationName !== "cornerToBottomLeft") return;
-      corner.style.top = "50%";
-      corner.style.left = "50%";
-      corner.style.transform = "translate(calc(-50% - 50vw + var(--corner-final-offset, 2.5em)), calc(-50% + 50vh - var(--corner-final-offset, 2.5em))) rotate(0deg)";
-      corner.style.animation = "none";
+      applyFinalCornerPosition(corner, "bottom-left");
     }, { once: true });
   }
 
   if (corner2) {
     corner2.addEventListener("animationend", (e) => {
       if (e.animationName !== "cornerToTopRight") return;
-      corner2.style.top = "50%";
-      corner2.style.left = "50%";
-      corner2.style.transform = "translate(calc(-50% + 50vw - var(--corner-final-offset, 2.5em)), calc(-50% - 50vh + var(--corner-final-offset, 2.5em))) rotate(180deg)";
-      corner2.style.animation = "none";
-      body.classList.add("intro-finished");
+      applyFinalCornerPosition(corner2, "top-right");
+      startGlobeZoom();
     }, { once: true });
   }
 }

@@ -7,6 +7,16 @@ export const infiniteCarousel = () => {
   const focus = document.querySelector(".testimonial .focus");
   const authorEl = document.querySelector(".testimonial .focus h5");
   if (!section || !list || !focus) return;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Respect reduced-motion users by keeping testimonial static.
+  if (prefersReducedMotion) {
+    const firstMessage = list.querySelector("p");
+    if (authorEl && firstMessage?.dataset.author) {
+      authorEl.textContent = firstMessage.dataset.author;
+    }
+    return;
+  }
 
   let track = list.querySelector(".messagesTrack");
   if (!track) {
@@ -46,17 +56,66 @@ export const infiniteCarousel = () => {
   let peakTrackIndex = -1;
   let prevActiveT = 0;
   const speedPxPerSec = 36;
+  let focusOffset = 0;
+  let listHeight = 0;
+  let originalMetrics = [];
+  let allMetrics = [];
+
+  const normalizePos = () => {
+    if (!(cycleHeight > 0)) {
+      pos = 0;
+      return;
+    }
+    pos = ((pos % cycleHeight) + cycleHeight) % cycleHeight;
+  };
 
   // Measure one full cycle height for seamless wrap.
   const measure = () => {
-    // Exact wrap point: offsetTop of the first item in the second cycle.
-    const secondCycleFirst = allItems[originalItems.length];
-    if (secondCycleFirst) {
-      cycleHeight = secondCycleFirst.offsetTop;
-    } else {
-      cycleHeight = track.scrollHeight / 2;
+    listHeight = list.clientHeight;
+    focusOffset = getFocusOffsetInList();
+
+    const styles = window.getComputedStyle(track);
+    const parsedGap = Number.parseFloat(styles.rowGap || styles.gap || "0");
+    const gap = Number.isFinite(parsedGap) ? parsedGap : 0;
+    let cursor = 0;
+
+    originalMetrics = originalItems.map((item, realIndex) => {
+      const height = item.offsetHeight;
+      const metric = {
+        realIndex,
+        top: cursor,
+        height,
+        center: cursor + height / 2
+      };
+      cursor += height + gap;
+      return metric;
+    });
+
+    cycleHeight = cursor > 0 ? cursor - gap : 0;
+
+    allMetrics = [
+      ...originalMetrics,
+      ...originalMetrics.map((metric) => ({
+        ...metric,
+        top: metric.top + cycleHeight,
+        center: metric.center + cycleHeight
+      }))
+    ];
+
+    if (!(cycleHeight > 0)) {
+      const fallbackHeight = track.scrollHeight / 2;
+      cycleHeight = fallbackHeight > 0 ? fallbackHeight : 0;
+      allMetrics = [
+        ...originalMetrics,
+        ...originalMetrics.map((metric) => ({
+          ...metric,
+          top: metric.top + cycleHeight,
+          center: metric.center + cycleHeight
+        }))
+      ];
     }
-    if (cycleHeight > 0) pos = pos % cycleHeight;
+
+    normalizePos();
   };
 
   // Locate focus center relative to the scrolling list viewport.
@@ -68,18 +127,16 @@ export const infiniteCarousel = () => {
 
   // Pick active real item nearest the focus center.
   const setActiveByCenter = () => {
-    if (!cycleHeight) return;
-    const focusOffset = getFocusOffsetInList();
+    if (!(cycleHeight > 0) || !originalMetrics.length) return;
     const center = (pos + focusOffset) % cycleHeight;
     let nextIndex = 0;
     let bestDist = Number.POSITIVE_INFINITY;
 
     // Pick the real item whose rendered center is nearest to focus center.
     // Uses actual layout positions, so it stays correct with custom gaps/heights.
-    for (let i = 0; i < originalItems.length; i += 1) {
-      const item = originalItems[i];
-      const itemCenter = item.offsetTop + item.offsetHeight / 2;
-      const direct = Math.abs(center - itemCenter);
+    for (let i = 0; i < originalMetrics.length; i += 1) {
+      const metric = originalMetrics[i];
+      const direct = Math.abs(center - metric.center);
       const wrap = cycleHeight - direct;
       const dist = Math.min(direct, wrap);
       if (dist < bestDist) {
@@ -89,6 +146,9 @@ export const infiniteCarousel = () => {
     }
     if (nextIndex === activeRealIndex) return;
     activeRealIndex = nextIndex;
+    originalItems.forEach((item, index) => {
+      item.classList.toggle("active", index === activeRealIndex);
+    });
   };
 
   // Trigger focus-card pulse effect.
@@ -103,10 +163,11 @@ export const infiniteCarousel = () => {
   };
 
   // Update focus author text for the active message.
-  const syncAuthorWithActive = () => {
+  const syncAuthorWithActive = ({ pulse = true } = {}) => {
     if (!authorEl || activeRealIndex < 0) return;
     const author = originalItems[activeRealIndex].dataset.author || `Client ${activeRealIndex + 1}`;
     authorEl.textContent = author;
+    if (!pulse) return;
     authorEl.classList.remove("is-pulse");
     void authorEl.offsetWidth;
     authorEl.classList.add("is-pulse");
@@ -118,18 +179,17 @@ export const infiniteCarousel = () => {
 
   // Apply opacity/scale falloff based on distance from focus.
   const updateItemVisuals = () => {
-    const focusOffset = getFocusOffsetInList();
-    const falloff = list.clientHeight * 0.38;
+    if (!(cycleHeight > 0) || !allMetrics.length) return;
+    const falloff = listHeight * 0.38;
     let activeT = 0;
 
-    allItems.forEach((item) => {
-      // Position of this item center inside the masked viewport.
-      let centerY = item.offsetTop - pos + item.offsetHeight / 2;
-      const full = cycleHeight;
+    allItems.forEach((item, index) => {
+      const metric = allMetrics[index];
+      if (!metric) return;
 
-      // Wrap into visible range to keep continuity at loop boundary.
-      while (centerY < -item.offsetHeight) centerY += full;
-      while (centerY > list.clientHeight + item.offsetHeight) centerY -= full;
+      // Position of this item center inside the masked viewport.
+      let centerY = metric.center - pos;
+      centerY -= Math.round((centerY - focusOffset) / cycleHeight) * cycleHeight;
 
       const dist = Math.abs(centerY - focusOffset);
       const t = Math.max(0, 1 - dist / Math.max(1, falloff));
@@ -173,11 +233,13 @@ export const infiniteCarousel = () => {
     if (!lastTs) lastTs = ts;
     const dt = (ts - lastTs) / 1000;
     lastTs = ts;
-    pos += speedPxPerSec * dt;
-    if (cycleHeight > 0) {
-      while (pos >= cycleHeight) pos -= cycleHeight;
-      while (pos < 0) pos += cycleHeight;
+    if (!(cycleHeight > 0) || !allMetrics.length) {
+      measure();
+      rafId = requestAnimationFrame(frame);
+      return;
     }
+    pos += speedPxPerSec * dt;
+    normalizePos();
     track.style.transform = `translate3d(0, ${-pos}px, 0)`;
     setActiveByCenter();
     updateItemVisuals();
@@ -217,14 +279,17 @@ export const infiniteCarousel = () => {
   measure();
   // Re-measure after initial layout settles (fonts/gaps/render pass).
   requestAnimationFrame(() => measure());
-  updateItemVisuals();
   setActiveByCenter();
+  syncAuthorWithActive({ pulse: false });
+  updateItemVisuals();
   io.observe(section);
   window.addEventListener("resize", onResize);
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(() => measure());
+  }
   if (typeof ResizeObserver !== "undefined") {
     const ro = new ResizeObserver(() => measure());
     ro.observe(track);
     ro.observe(list);
   }
 };
-

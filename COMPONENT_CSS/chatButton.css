@@ -1,24 +1,184 @@
-.chatButton {
+body .chatButton {
   font-family: var(--font-en);
   font-weight: 500;
-  width: 3.6em;
-  height: 3.6em;
+  width: 3em;
+  height: 3em;
   display: flex;
   align-items: center;
+  justify-content: center;
+  padding: 0;
   cursor: pointer;
-  background: rgba(255, 241, 227, .2);
-  border-radius: 100%;
+  background: rgba(255, 241, 227, 0.2);
+  border-radius: 999px;
   color: var(--cream);
-  border: none;
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 241, 227, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   position: fixed;
-  bottom: 1.2em;
-  right: 1.2em;
-}
-.chatButton span {
-  display: block;
-  margin: auto;
-  text-transform: uppercase;
-  font-size: .9em;
+  bottom: calc(1.05em + var(--app-fixed-bottom-clearance, 0px));
+  right: calc(1.05em + var(--app-safe-right, 0px));
+  z-index: 1000;
+  box-shadow: 0 0 0 rgba(80, 78, 78, 0);
+  transition:
+    background-color 0.28s var(--ease-io),
+    border-color 0.28s var(--ease-io),
+    box-shadow 0.28s var(--ease-io);
 }
 
+body .chatButton:hover {
+  background: rgba(80, 78, 78, 0.42);
+  border-color: rgba(255, 241, 227, 0.26);
+}
+
+body .chatButton.is-active {
+  background: rgba(44, 44, 44, 0.96);
+  border-color: rgba(255, 241, 227, 0.22);
+  box-shadow: 0 0 1.15em rgba(0, 0, 0, 0.34);
+}
+
+body .chatButton.is-active:hover {
+  background: rgba(52, 52, 52, 0.98);
+}
+
+body .chatButton span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  transition:
+    letter-spacing 0.28s var(--ease-io),
+    font-size 0.28s var(--ease-io);
+}
+
+body .chatButton.is-active span {
+  opacity: 0;
+  letter-spacing: 0;
+}
+
+body .chatButton.is-active::before,
+body .chatButton.is-active::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.05em;
+  height: 0.17em;
+  background: currentColor;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+body .chatButton.is-active::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+body .chatButton.is-active::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+body .chatPanelOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding:
+    calc(1.25em + var(--app-safe-top, 0px))
+    calc(1.25em + var(--app-safe-right, 0px))
+    calc(5.2rem + var(--app-fixed-bottom-clearance, 0px))
+    calc(1.25em + var(--app-safe-left, 0px));
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s var(--ease-io);
+}
+
+body .chatPanelOverlay[hidden] {
+  display: none;
+}
+
+body .chatPanelOverlay.is-visible {
+  opacity: 1;
+  pointer-events: none;
+}
+
+body .chatPanel {
+  width: 390px;
+  height: 680px;
+  max-width: calc(100vw - 2.5rem);
+  max-height: calc(100dvh - 2.5rem);
+  overflow: hidden;
+  border: 1px solid rgba(255, 241, 227, 0.12);
+  border-radius: var(--radius-m);
+  background: rgba(17, 17, 17, 0.98);
+  box-shadow: 0 1.6em 5em rgba(0, 0, 0, 0.42);
+  opacity: 0;
+  transform: translateY(1.25em) scale(0.98);
+  pointer-events: auto;
+  transition:
+    opacity 0.24s var(--ease-io),
+    transform 0.28s var(--ease-io);
+}
+
+body .chatPanelOverlay.is-visible .chatPanel {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+body .chatPanelFrame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: rgba(17, 17, 17, 1);
+}
+
+@media (max-width: 860px) {
+  body .chatPanelOverlay {
+    padding:
+      calc(0.9em + var(--app-safe-top, 0px))
+      calc(0.9em + var(--app-safe-right, 0px))
+      calc(4.8rem + var(--app-fixed-bottom-clearance, 0px))
+      calc(0.9em + var(--app-safe-left, 0px));
+  }
+
+  body .chatPanel {
+    width: 390px;
+    height: 680px;
+    max-width: calc(100vw - 1.8rem);
+    max-height: calc(100dvh - 1.8rem);
+    border-radius: 1.2em;
+  }
+}
+
+@media (max-width: 560px) {
+  body .chatButton {
+    bottom: calc(1em + var(--app-fixed-bottom-clearance, 0px));
+    right: calc(1em + var(--app-safe-right, 0px));
+  }
+
+  body .chatPanelOverlay {
+    padding:
+      calc(0.6em + var(--app-safe-top, 0px))
+      0
+      calc(4.95rem + var(--app-fixed-bottom-clearance, 0px))
+      0;
+    align-items: stretch;
+    justify-content: stretch;
+    background: transparent;
+  }
+
+  body .chatPanel {
+    width: 100vw;
+    height: calc(100dvh - (5.55rem + var(--app-fixed-bottom-clearance, 0px)));
+    max-width: none;
+    max-height: calc(100dvh - (5.55rem + var(--app-fixed-bottom-clearance, 0px)));
+    border: 0;
+    border-radius: 1.2em 1.2em 0 0;
+    transform: translateY(1.8em);
+  }
+}

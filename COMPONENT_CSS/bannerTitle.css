@@ -8,23 +8,25 @@ body[data-lang="ka"] .bannerTitle {
   max-width: 24em;
 }
 
-.bannerTitle h4 {
-  font-size: 1.5em;
-  padding-bottom: 2em;
-  max-width: 12em;
-  font-weight: 100;
-  letter-spacing: -0.5em;
-  line-height: var(--lh-compact);
-  letter-spacing: var(--tracking-wide);
-}
+
 
 .bannerTitle h1 {
-  font-size: 7em;
-  margin: 0 0 0 0.45em;
+  font-size: 6em;
+  margin-bottom: .5em;
   font-weight: 900;
   white-space: wrap;
   line-height: 0.78em;
+  max-width: 3em;
   letter-spacing: -0.03em;
   font-family: var(--font-en);
+}
+
+.bannerTitle h4 {
+  font-size: 1em;
+  max-width: 15em;
+  font-weight: 400;
+  line-height: var(--lh-compact);
+  letter-spacing: var(--tracking-wide);
+  margin-left: .25em;
 }
 

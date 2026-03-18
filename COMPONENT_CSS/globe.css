@@ -4,19 +4,48 @@
   100% { transform: rotate(360deg) scale(1); }
 }
 
-.globe {
-  width: 60em;
-  height: 60em;
-  display: block;
+.globeFrame {
+  position: fixed;
+  right: -5em;
+  bottom: -5em;
   z-index: 1;
-  object-fit: cover;
+  pointer-events: none;
+  transform-origin: 64% 58%;
+}
 
-  animation: rotateGlobe 120s linear infinite, scaleGlobe 20s ease-in-out infinite alternate;
+.globe {
+  --globe-size: clamp(28rem, 62vw, 60rem);
+  width: var(--globe-size);
+  height: var(--globe-size);
+  display: block;
+  object-fit: cover;
+  animation: rotateGlobe 120s linear infinite;
   transform-origin: center center;
   transform-style: preserve-3d;
   filter:
   drop-shadow(0 35px 45px rgba(0, 0, 0, 0.55))
   drop-shadow(0 0 70px rgba(0, 0, 0, 0.45));
+}
+
+body.intro-active .globeFrame {
+  transform: translate3d(2vw, 1.5vh, 0) scale(1.2);
+}
+
+body.intro-globe-zoom .globeFrame {
+  animation: globeIntroZoomOut var(--globe-intro-zoom-duration, 1.05s) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+body.intro-finished .globeFrame {
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+@keyframes globeIntroZoomOut {
+  0% {
+    transform: translate3d(2vw, 1.5vh, 0) scale(1.2);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
 }
 
 .globe2 {
@@ -32,4 +61,3 @@
   right: -5em;
   transform: rotate(45deg);
 }
-

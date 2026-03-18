@@ -1,7 +1,8 @@
 .banner {
   width: 100%;
   max-width: 100%;
-  height: 100vh;
+  height: var(--app-viewport-height, 100vh);
+  min-height: var(--app-viewport-height, 100vh);
   position: relative;
   background-color: transparent;
   overflow: hidden;
@@ -44,8 +45,8 @@
 
 .banner .bannerTitle {
   position: absolute;
-  top: 13em;
-  left: 10em;
+  top: 15em;
+  left: 13em;
   z-index: 4;
   max-width: 28em;
 }
@@ -76,13 +77,9 @@ body[data-lang="ka"] .banner .bannerTitle h1 {
     top: 9em;
     left: 6em;
   }
-  .banner .bannerTitle h4 {
-    font-size: 1.3em;
 
-  }
   .banner .bannerTitle h1 {
     font-size: 5em;
-    margin-left: 0.5em;
   }
 
   body[data-lang="ka"] .banner .bannerTitle h1 {
@@ -98,16 +95,9 @@ body[data-lang="ka"] .banner .bannerTitle h1 {
     gap: 1em;
   }
 
-  .banner .bannerTitle h4 {
-    font-size: 1.2em;
-    padding-bottom: 1.3em;
-    max-width: 14.5em;
-  }
 
   .banner .bannerTitle h1 {
     font-size: 4.85em;
-    margin-left: 0.5em;
-    /* line-height: 0.82em;  */
   }
 
   body[data-lang="ka"] .banner .bannerTitle h1 {
@@ -123,14 +113,11 @@ body[data-lang="ka"] .banner .bannerTitle h1 {
   }
 
   .banner .bannerTitle h4 {
-    font-size: 1.1em;
-    padding-bottom: 1.12em;
-    max-width: 14em;
+    font-size: .9em;
   }
 
   .banner .bannerTitle h1 {
     font-size: 4.15em;
-    margin-left: 0.35em;
   }
 
   body[data-lang="ka"] .banner .bannerTitle h1 {
@@ -145,15 +132,10 @@ body[data-lang="ka"] .banner .bannerTitle h1 {
 
   }
 
-  .banner .bannerTitle h4 {
-    font-size: 1em;
-    padding-bottom: 1em;
-    max-width: 13.2em;
-  }
 
   .banner .bannerTitle h1 {
     font-size: 3.6em;
-    margin-left: 0.25em;
+
     max-width: 4em;
   }
 
@@ -169,19 +151,13 @@ body[data-lang="ka"] .banner .bannerTitle h1 {
     right: 0.7em;
   }
 
-  .banner .bannerTitle h4 {
-    font-size: 0.9em;
-    padding-bottom: 0.85em;
-    max-width: 12.4em;
-  }
+
 
   .banner .bannerTitle h1 {
     font-size: 3.1em;
-    margin-left: 0.5em;
   }
 
   body[data-lang="ka"] .banner .bannerTitle h1 {
     font-size: 2.6em;
   }
 }
-

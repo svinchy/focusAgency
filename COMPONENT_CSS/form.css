@@ -15,13 +15,10 @@ legend {
   margin: 0 0 2em .5em;
 }
 
-input{
-  border: none;
+input {
   border: 1px solid rgba(255, 241, 227, .1);
-  margin: .5em 0;
   font-size: 1em;
   border-radius: 2em;
-  /* backdrop-filter: blur(20px); */
   padding: 1em 1.5em;
   color: var(--cream);
   margin: 0;
@@ -45,12 +42,10 @@ textarea {
   min-width: 28em;
   max-width: 28em;
   padding: 1.2em 1.5em;
-  border: none;
   background: transparent;
   border: 1px solid rgba(255, 241, 227, .1);
   border-radius: 2em;
   resize: none;
-  /* backdrop-filter: blur(20px); */
   color: var(--cream);
 }
 textarea::placeholder {
@@ -64,15 +59,11 @@ textarea:focus {
 
 form button {
   width: fit-content;
-  /* width: 3.2em;
-  height: 3.2em; */
   padding: .75em 1.5em;
-  border: none;
   background: rgba(224, 77, 77, .75);
   color: #fff;
   font-size: 1.1em;
   border-radius: 3em;
-  /* text-transform: uppercase; */
   border: none;
   display: flex;
   justify-content: center;
@@ -98,3 +89,13 @@ form button img {
   margin-top: .25em;
 }
 
+#contact-status {
+  position: absolute;
+  left: 0;
+  bottom: -2.2em;
+  margin: 0;
+  color: rgba(255, 241, 227, .85);
+  font-size: 0.84375em;
+  padding-left: 0.625em;
+  line-height: 1.2;
+}

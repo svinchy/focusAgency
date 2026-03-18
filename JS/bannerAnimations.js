@@ -6,21 +6,27 @@ export function bannerAnimations() {
   if (!banner) return;
 
   banner.style.willChange = "transform";
-  banner.style.transition = "transform 0.2s ease-out";
+  banner.style.transform = "translate3d(0, 0px, 0)";
 
   let ticking = false;
+  let lastOffset = Number.NaN;
   // Update banner position using current scroll offset.
   const onScroll = () => {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(() => {
       const y = window.scrollY || window.pageYOffset;
-      banner.style.transform = `translateY(${y * 0.6}px)`;
+      const offset = Math.round(y * 0.6 * 100) / 100;
+      if (offset !== lastOffset) {
+        banner.style.transform = `translate3d(0, ${offset}px, 0)`;
+        lastOffset = offset;
+      }
       ticking = false;
     });
   };
 
   window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
   onScroll();
 
   // Enable per-letter wave (same behavior style as footer text wave).
@@ -68,4 +74,3 @@ export function applyBannerTitleWave() {
 
   title.appendChild(frag);
 }
-

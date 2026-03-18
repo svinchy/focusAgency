@@ -12,11 +12,12 @@ let titleSwapTimer = null;
 let titleSwapInTimer = null;
 let descSwapTimer = null;
 let descSwapInTimer = null;
+let cachedServiceImageEls = null;
 
 // Render current service title/description and (optionally) its detail list.
 
 // Render the currently selected item text/details.
-const renderService = (index, { updateContent = true } = {}) => {
+const renderService = (index, { updateContent = true, immediate = false } = {}) => {
   const service = document.querySelector(".service");
   if (!service) return;
   const title = service.querySelector("h3");
@@ -42,33 +43,45 @@ const renderService = (index, { updateContent = true } = {}) => {
     }
 
     const nextTitle = item.title || "";
-    if (title.textContent !== nextTitle) {
+    if (title.textContent !== nextTitle || immediate) {
       if (titleSwapTimer) clearTimeout(titleSwapTimer);
       if (titleSwapInTimer) clearTimeout(titleSwapInTimer);
 
-      title.classList.add("swap-out");
-      titleSwapTimer = setTimeout(() => {
+      if (immediate) {
         title.textContent = nextTitle;
         title.classList.remove("swap-out");
-        title.classList.add("swap-in");
-        titleSwapInTimer = setTimeout(() => title.classList.remove("swap-in"), 250);
-      }, 160);
+        title.classList.remove("swap-in");
+      } else {
+        title.classList.add("swap-out");
+        titleSwapTimer = setTimeout(() => {
+          title.textContent = nextTitle;
+          title.classList.remove("swap-out");
+          title.classList.add("swap-in");
+          titleSwapInTimer = setTimeout(() => title.classList.remove("swap-in"), 250);
+        }, 160);
+      }
     }
   }
 
   if (description) {
     const nextDescription = item.description || "";
-    if (description.textContent !== nextDescription) {
+    if (description.textContent !== nextDescription || immediate) {
       if (descSwapTimer) clearTimeout(descSwapTimer);
       if (descSwapInTimer) clearTimeout(descSwapInTimer);
 
-      description.classList.add("swap-out");
-      descSwapTimer = setTimeout(() => {
+      if (immediate) {
         description.textContent = nextDescription;
         description.classList.remove("swap-out");
-        description.classList.add("swap-in");
-        descSwapInTimer = setTimeout(() => description.classList.remove("swap-in"), 250);
-      }, 180);
+        description.classList.remove("swap-in");
+      } else {
+        description.classList.add("swap-out");
+        descSwapTimer = setTimeout(() => {
+          description.textContent = nextDescription;
+          description.classList.remove("swap-out");
+          description.classList.add("swap-in");
+          descSwapInTimer = setTimeout(() => description.classList.remove("swap-in"), 250);
+        }, 180);
+      }
     }
   }
 
@@ -81,23 +94,111 @@ const renderService = (index, { updateContent = true } = {}) => {
   }
 };
 
+const getServiceImageEls = () => {
+  if (!cachedServiceImageEls || !cachedServiceImageEls.length) {
+    cachedServiceImageEls = Array.from(document.querySelectorAll(".services .content .images .image"));
+  }
+  return cachedServiceImageEls;
+};
+
+const ensureServiceImageLoaded = (index) => {
+  if (!Number.isInteger(index) || index < 0) return;
+  const imageEls = getServiceImageEls();
+  const imageEl = imageEls[index];
+  if (!imageEl) return;
+  if (imageEl.dataset.imageLoaded === "1" && imageEl.style.backgroundImage) return;
+
+  const imageSrc = imageEl.dataset.imageSrc;
+  if (!imageSrc) return;
+
+  imageEl.style.backgroundImage = `url('${imageSrc}')`;
+  imageEl.dataset.imageLoaded = "1";
+};
+
+const preloadServiceImagesAround = (index) => {
+  [index - 1, index, index + 1].forEach((i) => ensureServiceImageLoaded(i));
+};
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+const getScrollProgressPadding = () => {
+  const itemsCount = content.services[getLanguage()].items.length;
+  return itemsCount > 1 ? 0.5 / itemsCount : 0;
+};
+
+const getImageProgressFromScrollProgress = (scrollProgress) => {
+  const padding = getScrollProgressPadding();
+  const usableRange = 1 - (padding * 2);
+  if (usableRange <= 0) return clamp(scrollProgress, 0, 1);
+  return clamp((scrollProgress - padding) / usableRange, 0, 1);
+};
+
+const getScrollProgressFromImageProgress = (imageProgress) => {
+  const padding = getScrollProgressPadding();
+  const usableRange = 1 - (padding * 2);
+  if (usableRange <= 0) return clamp(imageProgress, 0, 1);
+  return clamp(padding + (clamp(imageProgress, 0, 1) * usableRange), 0, 1);
+};
+
+const getImageScrollTarget = (imagesWrap, index) => {
+  if (!imagesWrap) return 0;
+  const imageEls = getServiceImageEls();
+  const imageEl = imageEls[index];
+  if (!imageEl) return 0;
+  const maxScroll = Math.max(0, imagesWrap.scrollHeight - imagesWrap.clientHeight);
+  const centeredTop = imageEl.offsetTop - ((imagesWrap.clientHeight - imageEl.offsetHeight) / 2);
+  return Math.max(0, Math.min(maxScroll, centeredTop));
+};
+
+const getClosestImageIndex = (imagesWrap, scrollTop = imagesWrap?.scrollTop ?? 0) => {
+  if (!imagesWrap) return 0;
+  const imageEls = getServiceImageEls();
+  if (!imageEls.length) return 0;
+
+  const viewportCenter = scrollTop + imagesWrap.clientHeight / 2;
+  let closestIndex = 0;
+  let closestDistance = Number.POSITIVE_INFINITY;
+
+  imageEls.forEach((imageEl, index) => {
+    const imageCenter = imageEl.offsetTop + imageEl.offsetHeight / 2;
+    const distance = Math.abs(imageCenter - viewportCenter);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestIndex = index;
+    }
+  });
+
+  return closestIndex;
+};
+
 // Update active index, UI text, dots, and optionally scroll images to the index.
 // Apply active index state, then sync dots and image panel.
-const setActiveIndex = (index, { scrollImage = true } = {}) => {
-  if (index === activeIndex) return;
+const setActiveIndex = (
+  index,
+  { scrollImage = true, forceScroll = false, imageBehavior = "smooth", immediateText = false } = {}
+) => {
+  const isSameIndex = index === activeIndex;
+  const shouldRender = !isSameIndex || immediateText;
 
-  activeIndex = index;
-  const service = document.querySelector(".service");
-  const isActive = service ? service.classList.contains("active") : false;
-  renderService(index, { updateContent: isActive });
+  if (isSameIndex) {
+    preloadServiceImagesAround(index);
+  } else {
+    activeIndex = index;
+    preloadServiceImagesAround(index);
+  }
+
+  if (shouldRender) {
+    const service = document.querySelector(".service");
+    const isActive = service ? service.classList.contains("active") : false;
+    renderService(index, { updateContent: isActive, immediate: immediateText });
+  }
 
   // scroll image on dot click
   const imagesWrap = document.querySelector(".content .images");
-  if (imagesWrap && scrollImage) {
-    const imageHeight = imagesWrap.clientHeight;
+  if (imagesWrap && scrollImage && (!isSameIndex || forceScroll)) {
     imagesWrap.scrollTo({
-      top: imageHeight * index,
-      behavior: "smooth"
+      top: getImageScrollTarget(imagesWrap, index),
+      behavior: imageBehavior
     });
   }
 
@@ -124,12 +225,14 @@ export function scrollSwitcher() {
   const imagesWrap = document.querySelector(".content .images");
   const dotsWrap = document.querySelector(".navigationDots");
   let scrollTicking = false; // rAF throttle
-  const isSafari = !!document.body?.classList.contains("is-safari");
   let touchStartY = 0;
+  let pendingDotIndex = null;
+  let pendingDotTop = null;
   let rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   let contentTopOffset = contentWrap
     ? parseFloat(getComputedStyle(contentWrap).top) || 0
     : 0;
+  let contentFlowOffset = contentWrap ? contentWrap.offsetTop : 0;
 
   const isServiceScrollLocked = () => document.body?.dataset.serviceScrollLock === "1";
 
@@ -153,20 +256,20 @@ export function scrollSwitcher() {
   };
 
   const onDocumentWheelLock = (e) => {
-    if (!isSafari || !isServiceScrollLocked()) return;
+    if (!isServiceScrollLocked()) return;
     if (canScrollInsideServiceContent(e.target, e.deltaY)) return;
     e.preventDefault();
   };
 
   const onDocumentTouchStartLock = (e) => {
-    if (!isSafari || !isServiceScrollLocked()) return;
+    if (!isServiceScrollLocked()) return;
     const touch = e.touches?.[0];
     if (!touch) return;
     touchStartY = touch.clientY;
   };
 
   const onDocumentTouchMoveLock = (e) => {
-    if (!isSafari || !isServiceScrollLocked()) return;
+    if (!isServiceScrollLocked()) return;
     const touch = e.touches?.[0];
     if (!touch) return;
 
@@ -186,39 +289,114 @@ export function scrollSwitcher() {
     const html = document.documentElement;
     if (!body || !html) return;
     const navLock = body.dataset.navScrollLock === "1";
-    const serviceLock = body.dataset.serviceScrollLock === "1";
-    const shouldLock = navLock || serviceLock;
+    const shouldLock = navLock;
+
     body.classList.toggle("page-scroll-locked", shouldLock);
     html.classList.toggle("page-scroll-locked", shouldLock);
+  };
+
+  const applyServicesSectionHeight = () => {
+    if (!servicesSection) return;
+
+    const itemsCount = content.services[getLanguage()].items.length;
+    const supportsSmallViewportUnit =
+      typeof CSS !== "undefined" &&
+      typeof CSS.supports === "function" &&
+      CSS.supports("height", "1svh");
+    const viewportUnit = supportsSmallViewportUnit ? "svh" : "vh";
+    servicesSection.style.minHeight = `${itemsCount * 200}${viewportUnit}`;
+  };
+
+  const getStickyScrollBounds = () => {
+    if (!contentWrap || !servicesSection) return null;
+
+    const sectionTop = servicesSection.offsetTop;
+    const sectionHeight = servicesSection.offsetHeight;
+    const contentHeight = contentWrap.offsetHeight;
+    const stickyStart = sectionTop + contentFlowOffset - contentTopOffset;
+    const sectionEnd = sectionTop + sectionHeight - contentHeight - contentTopOffset;
+
+    return {
+      stickyStart,
+      sectionEnd,
+    };
+  };
+
+  const syncContentFlowOffset = () => {
+    if (!contentWrap || !servicesSection) return;
+
+    const contentRect = contentWrap.getBoundingClientRect();
+    const hasReachedSticky = contentRect.top <= contentTopOffset + 2;
+    if (hasReachedSticky && contentFlowOffset > 0) return;
+
+    const scrollY = window.scrollY || window.pageYOffset;
+    contentFlowOffset = (scrollY + contentRect.top) - servicesSection.offsetTop;
+  };
+
+  const scrollPageToServiceIndex = (index) => {
+    syncContentFlowOffset();
+    const bounds = getStickyScrollBounds();
+    if (!bounds) return null;
+
+    const { stickyStart, sectionEnd } = bounds;
+    const range = Math.max(0, sectionEnd - stickyStart);
+    const maxImageScroll = imagesWrap
+      ? Math.max(0, imagesWrap.scrollHeight - imagesWrap.clientHeight)
+      : 0;
+    const imageEl = getServiceImageEls()[index];
+    const fallbackCount = Math.max(1, content.services[getLanguage()].items.length - 1);
+    const fallbackProgress = fallbackCount > 0 ? index / fallbackCount : 0;
+    const progress = imageEl && maxImageScroll > 0
+      ? imageEl.offsetTop / maxImageScroll
+      : fallbackProgress;
+    const targetTop = stickyStart + (range * getScrollProgressFromImageProgress(progress));
+
+    if (typeof window.__smoothScrollTo === "function") {
+      window.__smoothScrollTo(targetTop);
+      return targetTop;
+    }
+
+    window.scrollTo({
+      top: targetTop,
+      left: 0,
+      behavior: "smooth"
+    });
+    return targetTop;
   };
 
   // Keep dots aligned next to the content container.
   const updateDotsPosition = () => {
     if (!contentWrap || !dotsWrap) return;
+    const visualViewport = window.visualViewport || null;
     const contentRect = contentWrap.getBoundingClientRect();
     const dotsRect = dotsWrap.getBoundingClientRect();
     const gap = 1.5 * rootFontSize;
-    const viewportW = window.innerWidth || document.documentElement.clientWidth;
-    const viewportH = window.innerHeight || document.documentElement.clientHeight;
+    const viewportW = visualViewport
+      ? visualViewport.width
+      : (window.innerWidth || document.documentElement.clientWidth);
+    const viewportOffsetLeft = visualViewport ? visualViewport.offsetLeft : 0;
 
     // Mobile layout: keep dots centered under the content block.
     if (viewportW <= 560) {
-      const centerX = contentRect.left + contentRect.width / 2;
-      const topFromContent = contentRect.bottom + rootFontSize; // 1em gap
-      const maxTop = viewportH - dotsRect.height - rootFontSize * 0.4;
-      const top = Math.min(topFromContent, maxTop);
+      // Mobile fallback: fixed viewport anchor avoids drift/jump from sticky+address-bar viewport changes.
+      const centerX = viewportOffsetLeft + viewportW / 2;
+      const layoutHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0);
+      const bottomClearance = visualViewport
+        ? Math.max(0, layoutHeight - (visualViewport.height + visualViewport.offsetTop))
+        : 0;
+      const bottom = bottomClearance + (rootFontSize * 1.1);
 
       dotsWrap.style.left = `${centerX}px`;
       dotsWrap.style.right = "auto";
-      dotsWrap.style.top = `${top}px`;
-      dotsWrap.style.bottom = "auto";
+      dotsWrap.style.top = "auto";
+      dotsWrap.style.bottom = `${bottom}px`;
       dotsWrap.style.transform = "translateX(-50%)";
       return;
     }
 
     let left = contentRect.right + gap;
-    const minLeft = rootFontSize * 0.5;
-    const maxLeft = viewportW - dotsRect.width - rootFontSize * 0.5;
+    const minLeft = viewportOffsetLeft + rootFontSize * 0.5;
+    const maxLeft = viewportOffsetLeft + viewportW - dotsRect.width - rootFontSize * 0.5;
     left = Math.max(minLeft, Math.min(maxLeft, left));
 
     dotsWrap.style.left = `${left}px`;
@@ -234,13 +412,14 @@ export function scrollSwitcher() {
       // Keep list interactions/scroll from collapsing the card on touch devices.
       if (e.target.closest(".service-content")) return;
       const isActive = service.classList.toggle("active");
-      document.body.dataset.serviceScrollLock = isActive ? "1" : "0";
-      applyPageScrollLock();
       if (isActive && typeof window.__stopSmoothScroll === "function") {
         window.__stopSmoothScroll();
       }
+      document.body.dataset.serviceScrollLock = isActive ? "1" : "0";
+      applyPageScrollLock();
       if (isActive) {
         renderService(activeIndex, { updateContent: true });
+        setActiveIndex(activeIndex, { scrollImage: true, forceScroll: true });
       }
     });
   }
@@ -249,52 +428,71 @@ export function scrollSwitcher() {
     // Dot click switches service.
     dot.addEventListener("click", (e) => {
       e.preventDefault();
-      setActiveIndex(i);
+      pendingDotIndex = i;
+      setActiveIndex(i, { scrollImage: false });
+      pendingDotTop = scrollPageToServiceIndex(i);
+      const scrollY = window.scrollY || window.pageYOffset;
+      if (pendingDotTop === null || Math.abs(scrollY - pendingDotTop) <= 2) {
+        pendingDotIndex = null;
+        pendingDotTop = null;
+      }
     });
   });
 
-  if (servicesSection) {
-    // Make section tall enough for scroll-driven steps.
-    const itemsCount = content.services[getLanguage()].items.length;
-    servicesSection.style.minHeight = `${itemsCount * 200}vh`;
-  }
+  // Make section tall enough for scroll-driven steps.
+  applyServicesSectionHeight();
+  syncContentFlowOffset();
 
   // Scroll handler: updates dots/title/description and scrolls images.
   // Map page scroll to active index and image progress.
   const handleScroll = () => {
     if (!service || !contentWrap || !servicesSection) return;
     updateDotsPosition();
-    if (service.classList.contains("active")) return;
+    syncContentFlowOffset();
 
-    const sectionTop = servicesSection.offsetTop;
-    const sectionHeight = servicesSection.offsetHeight;
-    const viewportH = window.innerHeight;
     const scrollY = window.scrollY || window.pageYOffset;
-
-    const sectionStart = sectionTop - contentTopOffset;
-    const sectionEnd = sectionTop + sectionHeight - viewportH - contentTopOffset;
-    const contentRect = contentWrap.getBoundingClientRect();
-    const contentAtTop = contentRect.top <= contentTopOffset + 2;
-    const inSection = scrollY >= sectionStart && scrollY <= sectionEnd;
-    const showDots = inSection && contentAtTop;
-    if (dotsWrap) dotsWrap.classList.toggle("is-visible", showDots);
-
-    const buffer = viewportH * 0.25; // keep some breathing room
-    const progressStart = sectionTop + buffer;
-    const progressEnd = sectionTop + sectionHeight - viewportH - buffer;
+    const bounds = getStickyScrollBounds();
+    if (!bounds) return;
+    const { stickyStart, sectionEnd } = bounds;
+    const progressStart = stickyStart;
+    const progressEnd = sectionEnd;
     const denom = progressEnd - progressStart;
     if (denom <= 0) return;
     const progressRaw = (scrollY - progressStart) / denom;
-    const progress = Math.min(1, Math.max(0, progressRaw));
+    const scrollProgress = clamp(progressRaw, 0, 1);
+    const dotsStart = getScrollProgressFromImageProgress(0);
+    const dotsEnd = getScrollProgressFromImageProgress(1);
+    const showDots = pendingDotIndex !== null || (progressRaw >= dotsStart && progressRaw <= dotsEnd);
+    if (dotsWrap) dotsWrap.classList.toggle("is-visible", showDots);
+
+    if (service.classList.contains("active")) return;
+
+    const imageProgress = getImageProgressFromScrollProgress(scrollProgress);
+    const imageScrollTop = imagesWrap
+      ? (imagesWrap.scrollHeight - imagesWrap.clientHeight) * imageProgress
+      : 0;
+
+    if (pendingDotIndex !== null) {
+      setActiveIndex(pendingDotIndex, { scrollImage: false });
+      if (imagesWrap) {
+        imagesWrap.scrollTop = imageScrollTop;
+      }
+      if (pendingDotTop !== null && Math.abs(scrollY - pendingDotTop) <= 2) {
+        pendingDotIndex = null;
+        pendingDotTop = null;
+      }
+      return;
+    }
+
     const itemsCount = content.services[getLanguage()].items.length;
-    const index = Math.min(itemsCount - 1, Math.max(0, Math.floor(progress * itemsCount)));
+    const fallbackIndex = Math.min(itemsCount - 1, Math.max(0, Math.floor(imageProgress * itemsCount)));
+    const index = imagesWrap ? getClosestImageIndex(imagesWrap, imageScrollTop) : fallbackIndex;
 
     setActiveIndex(index, { scrollImage: false });
 
     if (imagesWrap) {
       // Scroll image stack based on scroll progress.
-      const maxScroll = imagesWrap.scrollHeight - imagesWrap.clientHeight;
-      imagesWrap.scrollTop = maxScroll * progress;
+      imagesWrap.scrollTop = imageScrollTop;
     }
   };
 
@@ -303,13 +501,12 @@ export function scrollSwitcher() {
   const handleImagesScroll = () => {
     if (!service || !imagesWrap) return;
     if (service.classList.contains("active")) return;
+    if (pendingDotIndex !== null) return;
 
     const maxScroll = imagesWrap.scrollHeight - imagesWrap.clientHeight;
     if (maxScroll <= 0) return;
 
-    const progress = imagesWrap.scrollTop / maxScroll;
-    const itemsCount = content.services[getLanguage()].items.length;
-    const index = Math.min(itemsCount - 1, Math.max(0, Math.floor(progress * itemsCount)));
+    const index = getClosestImageIndex(imagesWrap);
     setActiveIndex(index, { scrollImage: false });
   };
 
@@ -326,14 +523,20 @@ export function scrollSwitcher() {
 
   const onResize = () => {
     rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    applyServicesSectionHeight();
     contentTopOffset = contentWrap
       ? parseFloat(getComputedStyle(contentWrap).top) || 0
       : 0;
+    syncContentFlowOffset();
     onScroll();
   };
 
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onResize);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", onResize);
+    window.visualViewport.addEventListener("scroll", onResize);
+  }
   document.addEventListener("wheel", onDocumentWheelLock, { passive: false });
   document.addEventListener("touchstart", onDocumentTouchStartLock, { passive: true });
   document.addEventListener("touchmove", onDocumentTouchMoveLock, { passive: false });
