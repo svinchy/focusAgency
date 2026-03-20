@@ -66,16 +66,30 @@ body[data-lang="ka"] .banner .bannerTitle h1 {
   }
 }
 
+
+@media (max-width: 1190px) {
+  .banner .bannerTitle {
+    left: 11em;
+  }
+}
+
+@media (max-width: 1024px) {
+  .banner .bannerTitle {
+    left: 11em;
+  }
+}
+
 @media (max-width: 860px) {
   .banner .bannerTitle {
     left: 7em;
   }
 }
 
+
 @media (max-width: 768px) {
   .banner .bannerTitle {
-    top: 9em;
-    left: 6em;
+    top: 11em;
+    left: 8em;
   }
 
   .banner .bannerTitle h1 {

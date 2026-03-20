@@ -71,7 +71,11 @@ body.is-safari[data-lang="ka"] .navBar a:hover {
     bottom: calc(-1 * var(--app-fixed-bottom-clearance, 0px));
     left: calc(-1 * var(--app-safe-left, 0px));
     min-width: calc(100vw + var(--app-safe-left, 0px) + var(--app-safe-right, 0px));
-    min-height: calc(var(--app-viewport-height, 100vh) + var(--app-safe-top, 0px) + var(--app-fixed-bottom-clearance, 0px));
+    min-height: calc(
+      var(--app-visual-viewport-height, var(--app-viewport-height, 100vh)) +
+      var(--app-safe-top, 0px) +
+      var(--app-fixed-bottom-clearance, 0px)
+    );
     display: flex;
     gap: 1em;
     justify-content: flex-end;
