@@ -2,16 +2,13 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "symbols",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["start"],
-      "port": 1234
-    },
-    {
-      "name": "html-css",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "html-css", "-l", "3000"],
-      "port": 3000
+      "name": "focusAgency",
+      "runtimeExecutable": "/Users/nikoloza/.nvm/versions/node/v22.15.0/bin/node",
+      "runtimeArgs": ["/Users/nikoloza/www/templates/node_modules/.bin/smbls", "start", "--no-cache", "-p", "1234"],
+      "port": 1234,
+      "env": {
+        "PATH": "/Users/nikoloza/.nvm/versions/node/v22.15.0/bin:/usr/local/bin:/usr/bin:/bin"
+      }
     }
   ]
 }

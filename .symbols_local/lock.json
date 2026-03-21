@@ -1,8 +1,7 @@
 {
   "etag": null,
+  "version": "1.0.0",
   "branch": "main",
-  "pulledAt": "2026-03-16T18:07:07.882Z",
-  "sharedLibraryVersions": {},
-  "version": "1.12.4824",
-  "projectId": "68e9042a8e2c4b49f6c3aba1"
+  "projectId": "69be7e370eebab7ab3f3747d",
+  "pulledAt": "2026-03-21T11:24:43.945Z"
 }

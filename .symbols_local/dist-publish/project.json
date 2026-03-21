@@ -1,0 +1,2369 @@
+{
+  "state": {},
+  "dependencies": {},
+  "components": {
+    "Address": {
+      "tag": "address",
+      "fontStyle": "normal",
+      "display": "flex",
+      "flexDirection": "column",
+      "gap": "1em"
+    },
+    "Button": {
+      "extends": "smbls.Button",
+      "tag": "button",
+      "font": "inherit",
+      "background": "none",
+      "border": "none",
+      "cursor": "pointer"
+    },
+    "Button1": {
+      "extends": "Button",
+      "tag": "button",
+      "font": "inherit",
+      "background": "none",
+      "border": "none",
+      "cursor": "pointer",
+      "type": "button"
+    },
+    "Button4": {
+      "extends": "Button",
+      "tag": "button",
+      "font": "inherit",
+      "background": "none",
+      "border": "none",
+      "cursor": "pointer",
+      "type": "button",
+      "Img": {
+        "src": "arrow.png",
+        "extends": "Img2"
+      }
+    },
+    "ChatButton": {
+      "tag": "button",
+      "fontFamily": "var(--font-en)",
+      "fontWeight": "500",
+      "width": "3em",
+      "height": "3em",
+      "display": "flex",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "padding": "0",
+      "cursor": "pointer",
+      "background": "rgba(255, 241, 227, 0.2)",
+      "borderRadius": "999px",
+      "color": "rgba(255, 241, 227, 1)",
+      "border": "1px solid rgba(255, 241, 227, 0.18)",
+      "backdropFilter": "blur(14px)",
+      "position": "fixed",
+      "bottom": "calc(1.2em + var(--app-fixed-bottom-clearance, 0px))",
+      "right": "calc(1.2em + var(--app-safe-right, 0px))",
+      "zIndex": "1000",
+      "boxShadow": "0 0 0 rgba(80, 78, 78, 0)",
+      "transition": "background-color 0.28s var(--ease-io), border-color 0.28s var(--ease-io), box-shadow 0.28s var(--ease-io)",
+      "font": "inherit",
+      ":hover": {
+        "background": "rgba(80, 78, 78, 0.42)",
+        "borderColor": "rgba(255, 241, 227, 0.26)"
+      },
+      "@mobileL": {
+        "bottom": "calc(1em + var(--app-fixed-bottom-clearance, 0px))",
+        "right": "calc(1em + var(--app-safe-right, 0px))"
+      },
+      "Span": {
+        "tag": "span",
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "textTransform": "uppercase",
+        "fontSize": "0.8em",
+        "letterSpacing": "0.04em",
+        "lineHeight": "1",
+        "transition": "letter-spacing 0.28s var(--ease-io), font-size 0.28s var(--ease-io)"
+      }
+    },
+    "ChatPanel": {
+      "tag": "section",
+      "width": "390px",
+      "height": "680px",
+      "maxWidth": "calc(100vw - 2.5rem)",
+      "maxHeight": "calc(100dvh - 2.5rem)",
+      "overflow": "hidden",
+      "border": "1px solid rgba(255, 241, 227, 0.12)",
+      "borderRadius": "var(--radius-m)",
+      "background": "rgba(17, 17, 17, 0.98)",
+      "boxShadow": "0 1.6em 5em rgba(0, 0, 0, 0.42)",
+      "opacity": "0",
+      "transform": "translateY(1.25em) scale(0.98)",
+      "pointerEvents": "auto",
+      "transition": "opacity 0.24s var(--ease-io), transform 0.28s var(--ease-io)",
+      ".is-visible &": {
+        "opacity": "1",
+        "transform": "translateY(0) scale(1)"
+      }
+    },
+    "ChatPanelFrame": {
+      "tag": "iframe",
+      "display": "block",
+      "width": "100%",
+      "height": "100%",
+      "border": "0",
+      "background": "rgba(17, 17, 17, 1)"
+    },
+    "ChatPanelOverlay": {
+      "tag": "div",
+      "position": "fixed",
+      "top": "var(--app-viewport-offset-top, 0px)",
+      "right": "var(--app-viewport-right-offset, 0px)",
+      "bottom": "var(--app-viewport-bottom-offset, 0px)",
+      "left": "var(--app-viewport-offset-left, 0px)",
+      "zIndex": "950",
+      "display": "flex",
+      "alignItems": "flex-end",
+      "justifyContent": "flex-end",
+      "padding": "calc(1.25em + var(--app-safe-top, 0px)) calc(1.25em + var(--app-safe-right, 0px)) calc(5.2rem + var(--app-fixed-bottom-clearance, 0px)) calc(1.25em + var(--app-safe-left, 0px))",
+      "backgroundColor": "transparent",
+      "opacity": "0",
+      "pointerEvents": "none",
+      "transition": "opacity 0.24s var(--ease-io), background-color 0.24s var(--ease-io)",
+      "&.is-visible": {
+        "opacity": "1",
+        "pointerEvents": "auto",
+        "backgroundColor": "rgba(8, 6, 6, 0.42)"
+      }
+    },
+    "Circle": {
+      "tag": "div",
+      "width": "42em",
+      "height": "42em",
+      "border": ".5px solid rgba(255, 241, 227, 0.5)",
+      "position": "absolute",
+      "borderRadius": "100%",
+      "transform": "translate(-200px, -40%) rotate(var(--steps-rot, 0deg))",
+      "transformOrigin": "center center",
+      "transition": "none"
+    },
+    "Contact": {
+      "tag": "div",
+      "display": "flex",
+      "flexDirection": "column",
+      "gap": "1.5em"
+    },
+    "Content": {
+      "tag": "div",
+      "marginTop": "1.6em",
+      "width": "100%",
+      "height": "calc(var(--app-viewport-height, 100vh) - 25em)",
+      "position": "sticky",
+      "top": "11em",
+      "zIndex": "10",
+      "borderRadius": "var(--radius-l)",
+      "overflow": "hidden",
+      "border": "1px solid rgba(255, 241, 227, 0.15)",
+      ":before": {
+        "content": "''",
+        "position": "absolute",
+        "width": "100%",
+        "height": "100%",
+        "zIndex": "2",
+        "background": "linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%)",
+        "top": "0",
+        "right": "0",
+        "pointerEvents": "none"
+      }
+    },
+    "Contents": {
+      "tag": "div",
+      "display": "flex",
+      "flexDirection": "row",
+      "position": "relative",
+      "perspective": "1200px",
+      "perspectiveOrigin": "center center",
+      "minHeight": "26em",
+      "alignItems": "center",
+      "justifyContent": "center"
+    },
+    "Corner": {
+      "tag": "div",
+      "--corner-size": "1.2em",
+      "width": "var(--corner-size)",
+      "height": "var(--corner-size)",
+      "position": "fixed",
+      "zIndex": "5",
+      "bottom": "calc(var(--corner-bottom-offset, var(--corner-final-offset)) + var(--app-fixed-bottom-clearance, 0px))",
+      "left": "calc(var(--corner-left-offset, var(--corner-final-offset)) + var(--app-safe-left, 0px))",
+      "transition": "opacity 1.6s ease, top 1.2s ease, left 1.2s ease, right 1.2s ease, bottom 1.2s ease, transform 1.2s ease",
+      ":before": {
+        "content": "''",
+        "position": "absolute",
+        "bottom": "0",
+        "left": "0",
+        "width": "2px",
+        "height": "100%",
+        "background": "rgba(170, 170, 170, 0.7)",
+        "borderRadius": "5px"
+      },
+      ":after": {
+        "content": "''",
+        "position": "absolute",
+        "bottom": "0",
+        "left": "0",
+        "width": "100%",
+        "height": "2px",
+        "borderRadius": "5px",
+        "background": "rgba(170, 170, 170, 0.7)"
+      },
+      "body.intro-active &": {
+        "position": "fixed",
+        "top": "50%",
+        "left": "50%",
+        "right": "auto",
+        "bottom": "auto",
+        "transform": "translate(-50%, -50%)",
+        "zIndex": "1600",
+        "opacity": "0",
+        "transitionProperty": "opacity",
+        "transitionDuration": "0.6s",
+        "transitionTimingFunction": "ease"
+      },
+      "body.intro-corners &": {
+        "opacity": "1",
+        "transform": "translate(-50%, -50%) translate(-2em, 2em)",
+        "animation": "cornerPulseStrongLeft 0.9s ease-out 1 both"
+      },
+      "body.intro-corners-move &": {
+        "animation": "cornerToBottomLeft 3s cubic-bezier(0.16, 1, 0.3, 1) both"
+      }
+    },
+    "Corner2": {
+      "tag": "div",
+      "--corner-size": "1.2em",
+      "width": "var(--corner-size)",
+      "height": "var(--corner-size)",
+      "position": "fixed",
+      "zIndex": "5",
+      "top": "calc(var(--corner-top-offset, var(--corner-final-offset)) + var(--app-safe-top, 0px))",
+      "right": "calc(var(--corner-right-offset, var(--corner-final-offset)) + var(--app-safe-right, 0px))",
+      "transform": "rotate(180deg)",
+      "transition": "opacity 1.6s ease, top 1.2s ease, left 1.2s ease, right 1.2s ease, bottom 1.2s ease, transform 1.2s ease",
+      ":before": {
+        "content": "''",
+        "position": "absolute",
+        "bottom": "0",
+        "left": "0",
+        "width": "2px",
+        "height": "100%",
+        "background": "rgba(170, 170, 170, 0.7)",
+        "borderRadius": "5px"
+      },
+      ":after": {
+        "content": "''",
+        "position": "absolute",
+        "bottom": "0",
+        "left": "0",
+        "width": "100%",
+        "height": "2px",
+        "borderRadius": "5px",
+        "background": "rgba(170, 170, 170, 0.7)"
+      },
+      "body.intro-active &": {
+        "position": "fixed",
+        "top": "50%",
+        "left": "50%",
+        "right": "auto",
+        "bottom": "auto",
+        "transform": "translate(-50%, -50%) rotate(180deg)",
+        "zIndex": "1600",
+        "opacity": "0",
+        "transitionProperty": "opacity",
+        "transitionDuration": "0.6s",
+        "transitionTimingFunction": "ease"
+      },
+      "body.intro-corners &": {
+        "opacity": "1",
+        "transform": "translate(-50%, -50%) translate(2em, -2em) rotate(180deg)",
+        "animation": "cornerPulseStrongRight 0.9s ease-out 1 both"
+      },
+      "body.intro-corners-move &": {
+        "animation": "cornerToTopRight 3s cubic-bezier(0.16, 1, 0.3, 1) both"
+      }
+    },
+    "Dot": {
+      "tag": "div",
+      "position": "absolute",
+      "width": "0.7em",
+      "height": "0.7em",
+      "background": "rgba(255, 241, 227, 1)",
+      "borderRadius": "100%",
+      "top": "50%",
+      "left": "100%",
+      "transform": "translate(-50%, -50%)"
+    },
+    "Focus": {
+      "tag": "div",
+      "position": "relative",
+      "width": "25em",
+      "height": "15em",
+      "display": "flex",
+      "alignItems": "center",
+      "justifyContent": "center"
+    },
+    "FocusCorner": {
+      "tag": "div",
+      "width": "1.25em",
+      "height": "1.25em",
+      "position": "absolute",
+      ":before": {
+        "content": "''",
+        "position": "absolute",
+        "width": "0.15em",
+        "height": "100%",
+        "background": "var(--red)",
+        "borderRadius": "2px"
+      },
+      ":after": {
+        "content": "''",
+        "position": "absolute",
+        "width": "100%",
+        "height": "0.15em",
+        "background": "var(--red)",
+        "borderRadius": "2px"
+      },
+      "&:nth-child(1)": {
+        "top": "0",
+        "left": "0"
+      },
+      "&:nth-child(2)": {
+        "top": "0",
+        "right": "0",
+        "transform": "rotate(90deg)"
+      },
+      "&:nth-child(3)": {
+        "bottom": "0",
+        "right": "0",
+        "transform": "rotate(180deg)"
+      },
+      "&:nth-child(4)": {
+        "bottom": "0",
+        "left": "0",
+        "transform": "rotate(270deg)"
+      }
+    },
+    "Footer": {
+      "tag": "footer",
+      "width": "100%",
+      "zIndex": "10",
+      "position": "relative",
+      "display": "flex",
+      "flexDirection": "row",
+      "flexWrap": "wrap",
+      "gap": "3em",
+      "padding": "4em 7em"
+    },
+    "Form": {
+      "tag": "form",
+      "display": "flex",
+      "flexDirection": "column",
+      "gap": "1em",
+      "position": "relative"
+    },
+    "GlobeFrame": {
+      "tag": "div",
+      "position": "fixed",
+      "right": "-5em",
+      "bottom": "-5em",
+      "zIndex": "1",
+      "pointerEvents": "none",
+      "transformOrigin": "64% 58%"
+    },
+    "H1": {
+      "tag": "h1",
+      "fontSize": "6em",
+      "fontWeight": "900",
+      "lineHeight": "var(--lh-tight)",
+      "margin": "0"
+    },
+    "H2": {
+      "tag": "h2",
+      "fontSize": "2em",
+      "fontWeight": "900",
+      "lineHeight": "var(--lh-tight)",
+      "letterSpacing": "var(--tracking-tight)",
+      "margin": "0"
+    },
+    "H3": {
+      "tag": "h3",
+      "fontWeight": "700",
+      "margin": "0"
+    },
+    "H4": {
+      "tag": "h4",
+      "fontWeight": "400",
+      "margin": "0"
+    },
+    "H5": {
+      "tag": "h5",
+      "fontWeight": "700",
+      "margin": "0"
+    },
+    "H6": {
+      "tag": "h6",
+      "fontWeight": "400",
+      "margin": "0",
+      "textTransform": "uppercase",
+      "fontSize": "0.75em",
+      "letterSpacing": "var(--tracking-wide)",
+      "fontFamily": "var(--font-ka-cap)"
+    },
+    "Hgroup": {
+      "extends": "smbls.Hgroup",
+      "tag": "hgroup"
+    },
+    "Iframe": {
+      "tag": "iframe",
+      "display": "block",
+      "width": "100%",
+      "height": "100%",
+      "border": "none"
+    },
+    "Image": {
+      "tag": "div",
+      "flex": "0 0 100%",
+      "width": "100%",
+      "height": "100%",
+      "borderRadius": "calc(var(--radius-l) - 0.5em)",
+      "backgroundRepeat": "no-repeat",
+      "backgroundPosition": "center center",
+      "backgroundSize": "cover",
+      "backgroundAttachment": "fixed",
+      "opacity": "1",
+      "overflow": "hidden"
+    },
+    "Images": {
+      "tag": "div",
+      "position": "absolute",
+      "inset": "0",
+      "display": "flex",
+      "flexDirection": "column",
+      "alignItems": "stretch",
+      "gap": "2%",
+      "padding": "0",
+      "boxSizing": "border-box",
+      "width": "100%",
+      "height": "100%",
+      "overflowY": "auto",
+      "scrollbarWidth": "none",
+      "::-webkit-scrollbar": {
+        "width": "0",
+        "height": "0"
+      }
+    },
+    "Img": {
+      "extends": "smbls.Img",
+      "tag": "img",
+      "display": "block",
+      "maxWidth": "100%",
+      "alt": ""
+    },
+    "Img2": {
+      "extends": "Img",
+      "tag": "img",
+      "display": "block",
+      "maxWidth": "100%",
+      "alt": "",
+      "loading": "lazy",
+      "decoding": "async"
+    },
+    "Input": {
+      "tag": "input",
+      "font": "inherit",
+      "border": "1px solid rgba(255, 241, 227, .1)",
+      "borderRadius": "2em",
+      "padding": "0.8em 1.5em",
+      "color": "rgba(255, 241, 227, 1)",
+      "background": "transparent",
+      "fontSize": "1em",
+      "outline": "none",
+      "width": "100%",
+      "::placeholder": {
+        "color": "rgba(255, 241, 227, 0.4)"
+      },
+      ":focus": {
+        "borderColor": "rgba(255, 241, 227, 0.3)"
+      }
+    },
+    "LangBtn": {
+      "tag": "button",
+      "background": "transparent",
+      "borderRadius": "0",
+      "cursor": "pointer",
+      "textTransform": "uppercase",
+      "color": "rgba(255, 241, 227, 1)",
+      "width": "2.8em",
+      "height": "2.8em",
+      "opacity": "0.5",
+      "display": "flex",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "transformOrigin": "center center",
+      "transform": "rotate(90deg)",
+      "padding": "0",
+      "border": "none",
+      "font": "inherit",
+      "transition": "opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      ":hover": {
+        "opacity": "1"
+      },
+      "&.active": {
+        "transform": "rotate(90deg) scale(1.15)"
+      },
+      "&[data-lang=\"ka\"]": {
+        "fontFamily": "var(--font-ka-cap)",
+        "fontStyle": "normal",
+        "fontWeight": "400",
+        "textTransform": "none",
+        "fontSize": "1em",
+        "marginBottom": "-0.5em"
+      },
+      "&:last-child": {
+        "fontFamily": "var(--font-en)",
+        "fontWeight": "600",
+        "fontSize": ".9em"
+      }
+    },
+    "LangButton": {
+      "tag": "div",
+      "position": "absolute",
+      "zIndex": "20",
+      "top": "50vh",
+      "transform": "translateY(-50%)",
+      "right": "2em",
+      "display": "flex",
+      "flexDirection": "column",
+      "alignItems": "center",
+      "maxWidth": "fit-content",
+      "fontSize": ".9em",
+      "transition": "transform 0.3s var(--ease-io), opacity 0.22s ease",
+      "@tabletM": {
+        "right": "0.5em"
+      },
+      "@mobileL": {
+        "fontSize": "0.9em"
+      }
+    },
+    "LangContent": {
+      "tag": "div",
+      "transition": "opacity 0.25s ease, letter-spacing 0.25s ease, line-height 0.25s ease",
+      "opacity": "1",
+      "width": "100%",
+      "minWidth": "100%",
+      "minHeight": "var(--app-viewport-height, 100vh)",
+      "background": "#000",
+      "position": "relative",
+      "isolation": "isolate",
+      "overflowX": "clip"
+    },
+    "Legend": {
+      "tag": "legend",
+      "fontSize": "1.2em",
+      "fontWeight": "300",
+      "marginBottom": "0.5em"
+    },
+    "Link": {
+      "extends": "smbls.Link",
+      "tag": "a",
+      "textDecoration": "none",
+      "color": "inherit"
+    },
+    "Link3": {
+      "extends": "Link",
+      "tag": "a",
+      "textDecoration": "none",
+      "color": "inherit",
+      "href": ""
+    },
+    "Logo": {
+      "tag": "div",
+      "color": "cream",
+      "width": "fit-content",
+      "lineHeight": "0.85em",
+      "fontSize": "4em",
+      "fontWeight": "800",
+      "position": "fixed",
+      "fontFamily": "var(--font-en)",
+      "mixBlendMode": "difference",
+      "zIndex": "15",
+      "top": "calc(2em + var(--app-safe-top, 0px))",
+      "left": "calc(2em + var(--app-safe-left, 0px))",
+      ":after": {
+        "content": "''",
+        "position": "absolute",
+        "borderRadius": "100%",
+        "bottom": "-0.15em",
+        "right": "-0.12em",
+        "width": "0.3em",
+        "height": "0.3em",
+        "background": "red"
+      },
+      "Span": {
+        "tag": "span",
+        "text": "F",
+        "display": "block",
+        "lineHeight": "0.7em"
+      },
+      "body.intro-active &": {
+        "position": "fixed",
+        "top": "50%",
+        "left": "50%",
+        "transform": "translate(-50%, -50%)",
+        "zIndex": "1600",
+        "color": "transparent",
+        "transition": "none"
+      },
+      "body.intro-active &::after": {
+        "animation": "logoDotPulse 1s ease-in-out infinite"
+      },
+      "body.intro-reveal &": {
+        "color": "cream",
+        "animation": "logoPulseStrong 0.9s ease-out 1 both"
+      },
+      "body.intro-corners-move &": {
+        "animation": "logoMove 2.8s cubic-bezier(0.16, 1, 0.3, 1) both"
+      },
+      "@mobileL": {
+        "fontSize": "3.5em",
+        "top": "calc(var(--logo-final-top-offset) + var(--app-safe-top, 0px))",
+        "left": "calc(var(--logo-final-left-offset) + var(--app-safe-left, 0px))"
+      }
+    },
+    "MenuButton": {
+      "tag": "button",
+      "position": "fixed",
+      "top": "calc(1.5em + var(--app-safe-top, 0px))",
+      "right": "calc(1.5em + var(--app-safe-right, 0px))",
+      "display": "none",
+      "border": "1px solid rgba(255, 241, 227, 0.45)",
+      "borderRadius": ".1em",
+      "background": "transparent",
+      "width": "3em",
+      "height": "3em",
+      "flexFlow": "column",
+      "gap": ".35em",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "cursor": "pointer",
+      "padding": "0 .35em",
+      "transition": "border-radius 0.25s var(--ease-io)",
+      "zIndex": "140",
+      "font": "inherit",
+      "@tabletM": {
+        "display": "flex",
+        "top": "calc(1.05em + var(--app-safe-top, 0px))",
+        "right": "calc(1.05em + var(--app-safe-right, 0px))"
+      },
+      "Div": {
+        "tag": "div",
+        "height": ".15em",
+        "background": "rgba(255, 241, 227, 1)",
+        "borderRadius": "2em",
+        "transformOrigin": "center center",
+        "transition": "transform 0.35s var(--ease-io), opacity 0.35s var(--ease-io), width 0.35s var(--ease-io), align-self 0.35s var(--ease-io)",
+        "width": "1.5em",
+        "alignSelf": "flex-end"
+      },
+      "Div_1": {
+        "tag": "div",
+        "height": ".15em",
+        "background": "rgba(255, 241, 227, 1)",
+        "borderRadius": "2em",
+        "transformOrigin": "center center",
+        "transition": "transform 0.35s var(--ease-io), opacity 0.35s var(--ease-io), width 0.35s var(--ease-io), align-self 0.35s var(--ease-io)",
+        "width": "1em",
+        "alignSelf": "flex-end"
+      }
+    },
+    "Messages": {
+      "tag": "div",
+      "display": "flex",
+      "flexDirection": "column",
+      "gap": "1.5em",
+      "overflow": "hidden",
+      "height": "15em",
+      "position": "relative"
+    },
+    "Nav": {
+      "extends": "smbls.Nav",
+      "tag": "nav",
+      "flow": "column",
+      "gap": "-",
+      "minWidth": "fit-content",
+      "maxWidth": "fit-content"
+    },
+    "NavArrows": {
+      "tag": "div",
+      "display": "flex",
+      "flexDirection": "column",
+      "gap": "0",
+      "position": "absolute",
+      "zIndex": "100"
+    },
+    "Overlay": {
+      "tag": "div",
+      "position": "absolute",
+      "width": "100%",
+      "height": "100%",
+      "background": "rgba(224, 77, 77, .1)",
+      "pointerEvents": "none",
+      "top": "0",
+      "left": "0",
+      "zIndex": "2",
+      ":before": {
+        "content": "''",
+        "position": "absolute",
+        "width": "100%",
+        "height": "100%",
+        "zIndex": "2",
+        "background": "linear-gradient(to left, rgba(0, 0, 0, var(--overlayShade, 1)) 0%, rgba(0, 0, 0, 0) 100%)",
+        "bottom": "0",
+        "right": "0",
+        "pointerEvents": "none"
+      }
+    },
+    "Overlay2": {
+      "tag": "div",
+      "position": "absolute",
+      "width": "100%",
+      "height": "100%",
+      "background": "rgba(224, 77, 77, .1)",
+      "pointerEvents": "none",
+      "top": "0",
+      "left": "0",
+      "zIndex": "3",
+      "animation": "starsTwinkle 6s ease-in-out infinite"
+    },
+    "P": {
+      "tag": "p",
+      "margin": "0",
+      "lineHeight": "var(--lh-body)"
+    },
+    "Section": {
+      "tag": "section",
+      "width": "100%",
+      "position": "relative"
+    },
+    "Service": {
+      "tag": "div",
+      "position": "absolute",
+      "zIndex": "3",
+      "bottom": "1em",
+      "left": "1em",
+      "touchAction": "manipulation",
+      "transition": "width var(--dur-slow) var(--ease-io), height var(--dur-slow) var(--ease-io), transform var(--dur-slow) var(--ease-soft), box-shadow var(--dur-slow) var(--ease-soft)",
+      "willChange": "transform",
+      "cursor": "pointer"
+    },
+    "StarsBg": {
+      "tag": "div",
+      "position": "fixed",
+      "top": "0",
+      "left": "0",
+      "width": "100%",
+      "height": "var(--app-visual-viewport-height, var(--app-viewport-height, 100vh))",
+      "zIndex": "1",
+      "pointerEvents": "none",
+      "overflow": "hidden",
+      "contain": "paint",
+      ":before": {
+        "content": "''",
+        "position": "absolute",
+        "inset": "-8%",
+        "background": "url('stars5.webp') no-repeat center",
+        "backgroundSize": "cover",
+        "transformOrigin": "center center",
+        "willChange": "transform, opacity",
+        "opacity": "0.62",
+        "transform": "translate3d(-1.8%, -1.2%, 0) scale(1.1)",
+        "animation": "starsFieldLoop 18s linear infinite alternate"
+      },
+      ":after": {
+        "content": "''",
+        "position": "absolute",
+        "inset": "-8%",
+        "background": "url('stars5.webp') no-repeat center",
+        "backgroundSize": "cover",
+        "transformOrigin": "center center",
+        "willChange": "transform, opacity",
+        "display": "none"
+      },
+      "body.intro-active &:before": {
+        "animation": "starsIntroSharp 2.6s linear both, starsFieldLoop 18s linear infinite alternate 2.6s"
+      }
+    },
+    "TeamMember": {
+      "minWidth": "20em",
+      "maxWidth": "20em",
+      "height": "25em",
+      "border": "1px solid rgba(255, 241, 227, .5)",
+      "position": "relative",
+      "round": "2em",
+      "overflow": "hidden",
+      "Nav": {
+        "extends": "Nav",
+        "class": "socialLinks",
+        "tag": "nav",
+        "flow": "column",
+        "gap": "-",
+        "minWidth": "fit-content",
+        "maxWidth": "fit-content",
+        "Link": {
+          "Img": {
+            "src": "facebook.png",
+            "extends": "Img2"
+          },
+          "extends": "Link3"
+        },
+        "Link_1": {
+          "Img": {
+            "src": "linkedin.png",
+            "extends": "Img2"
+          },
+          "extends": "Link3"
+        }
+      }
+    },
+    "TestimonialContent": {
+      "tag": "div",
+      "display": "flex",
+      "flexDirection": "row",
+      "gap": "2em",
+      "alignItems": "center",
+      "position": "relative"
+    },
+    "Textarea": {
+      "tag": "textarea",
+      "font": "inherit",
+      "border": "1px solid rgba(255, 241, 227, .1)",
+      "borderRadius": "2em",
+      "padding": "1em 1.5em",
+      "color": "rgba(255, 241, 227, 1)",
+      "background": "transparent",
+      "fontSize": "1em",
+      "outline": "none",
+      "resize": "none",
+      "minWidth": "28em",
+      "maxWidth": "28em",
+      "::placeholder": {
+        "color": "rgba(255, 241, 227, 0.4)"
+      },
+      ":focus": {
+        "borderColor": "rgba(255, 241, 227, 0.3)"
+      }
+    },
+    "Title": {
+      "tag": "div",
+      "display": "flex",
+      "alignItems": "center",
+      "gap": "0.5em",
+      "marginBottom": "1em"
+    }
+  },
+  "functions": {
+    "IMG": {
+      "globe": "globe.webp",
+      "stars": "stars5.webp",
+      "choni": "choni2.webp",
+      "liza": "liza2.webp",
+      "mariami": "mariami2.webp",
+      "luka": "luka2.webp",
+      "quotationMark": "quotation-mark.png",
+      "facebook": "facebook.png",
+      "instagram": "instagram.png",
+      "linkedin": "linkedin.png",
+      "arrow": "arrow.png",
+      "arrowLeft": "arrowLeft.png",
+      "arrowRight": "arrowRight.png",
+      "close": "close.png",
+      "send": "send.png",
+      "media": "media.webp",
+      "analytics": "analytics.webp",
+      "web": "web.webp",
+      "video": "video.webp",
+      "street": "street.webp",
+      "street2": "street2.webp"
+    },
+    "appFlags": "function appFlags2() {\n}",
+    "appInit": "function appInit2() {\n  const content = {\n    navbar: {\n      en: { service: \"service\", about: \"we are\", contact: \"contact\" },\n      ka: { service: \"\\u10E1\\u10D4\\u10E0\\u10D5\\u10D8\\u10E1\\u10D8\", about: \"\\u10E9\\u10D5\\u10D4\\u10DC \\u10D5\\u10D0\\u10E0\\u10D7\", contact: \"\\u10D9\\u10DD\\u10DC\\u10E2\\u10D0\\u10E5\\u10E2\\u10D8\" }\n    },\n    banner: {\n      en: { subtitle: \"Increase your sales and brand awareness with our team\", title: \"Focus Agency\" },\n      ka: { subtitle: \"\\u10D2\\u10D0\\u10D6\\u10D0\\u10E0\\u10D3\\u10D4\\u10D7 \\u10D7\\u10E5\\u10D5\\u10D4\\u10DC\\u10D8 \\u10D2\\u10D0\\u10E7\\u10D8\\u10D3\\u10D5\\u10D4\\u10D1\\u10D8 \\u10D3\\u10D0 \\u10D1\\u10E0\\u10D4\\u10DC\\u10D3\\u10D8\\u10E1 \\u10EA\\u10DC\\u10DD\\u10D1\\u10D0\\u10D3\\u10DD\\u10D1\\u10D0 \\u10E9\\u10D5\\u10D4\\u10DC\\u10D8 \\u10D2\\u10E3\\u10DC\\u10D3\\u10D8\\u10D7\", title: \"Focus Agency\" }\n    },\n    services: {\n      en: {\n        title: \"We offer full digital services\",\n        items: [\n          { title: \"Social Media Marketing\", description: \"Content creation and advertising\", image: this.scope.IMG.media },\n          { title: \"Google Analytics\", description: \"Full Google services support\", image: this.scope.IMG.analytics },\n          { title: \"Web Development\", description: \"Website building and management\", image: this.scope.IMG.web },\n          { title: \"Video Production\", description: \"Full photo/video production\", image: this.scope.IMG.video }\n        ]\n      },\n      ka: {\n        title: \"\\u10E9\\u10D5\\u10D4\\u10DC \\u10D2\\u10D7\\u10D0\\u10D5\\u10D0\\u10D6\\u10DD\\u10D1\\u10D7 \\u10E1\\u10E0\\u10E3\\u10DA \\u10EA\\u10D8\\u10E4\\u10E0\\u10E3\\u10DA \\u10DB\\u10DD\\u10DB\\u10E1\\u10D0\\u10EE\\u10E3\\u10E0\\u10D4\\u10D1\\u10D0\\u10E1\",\n        items: [\n          { title: \"\\u10E1\\u10DD\\u10EA \\u10DB\\u10D4\\u10D3\\u10D8\\u10D0 \\u10DB\\u10D0\\u10E0\\u10D9\\u10D4\\u10E2\\u10D8\\u10DC\\u10D2\\u10D8\", description: \"\\u10D9\\u10DD\\u10DC\\u10E2\\u10D4\\u10DC\\u10E2\\u10D8\\u10E1 \\u10E8\\u10D4\\u10E5\\u10DB\\u10DC\\u10D0 \\u10D3\\u10D0 \\u10E0\\u10D4\\u10D9\\u10DA\\u10D0\\u10DB\\u10D0\", image: this.scope.IMG.media },\n          { title: \"\\u10D2\\u10E3\\u10D2\\u10DA \\u10D0\\u10DC\\u10D0\\u10DA\\u10D8\\u10E2\\u10D8\\u10D9\\u10D0\", description: \"\\u10E1\\u10E0\\u10E3\\u10DA\\u10D8 Google \\u10E1\\u10D4\\u10E0\\u10D5\\u10D8\\u10E1\\u10D4\\u10D1\\u10D8\\u10E1 \\u10DB\\u10DD\\u10DB\\u10E1\\u10D0\\u10EE\\u10E3\\u10E0\\u10D4\\u10D1\\u10D0\", image: this.scope.IMG.analytics },\n          { title: \"\\u10D5\\u10D4\\u10D1 \\u10D3\\u10D4\\u10D5\\u10D4\\u10DA\\u10DD\\u10DE\\u10DB\\u10D4\\u10DC\\u10E2\\u10D8\", description: \"\\u10E1\\u10D0\\u10D8\\u10E2\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D0\\u10EC\\u10E7\\u10DD\\u10D1\\u10D0 \\u10D3\\u10D0 \\u10DB\\u10D0\\u10E0\\u10D7\\u10D5\\u10D0\", image: this.scope.IMG.web },\n          { title: \"\\u10D5\\u10D8\\u10D3\\u10D4\\u10DD \\u10DE\\u10E0\\u10DD\\u10D3\\u10D0\\u10E5\\u10E8\\u10D4\\u10DC\\u10D8\", description: \"\\u10E1\\u10E0\\u10E3\\u10DA\\u10D8 \\u10E4\\u10DD\\u10E2\\u10DD/\\u10D5\\u10D8\\u10D3\\u10D4\\u10DD \\u10DB\\u10DD\\u10DB\\u10E1\\u10D0\\u10EE\\u10E3\\u10E0\\u10D4\\u10D1\\u10D0\", image: this.scope.IMG.video }\n        ]\n      }\n    },\n    serviceContent: {\n      en: {\n        socialMediaMarketing: [\"Social Media Strategy\", \"Content Planning & Calendar\", \"Visual & Copy Content Creation\", \"Social Media Management\", \"Targeted Ad Campaigns\", \"Audience Analysis & Segmentation\", \"Brand Voice & Style Development\", \"Performance Analytics & Reporting\", \"Social Media Audit\", \"Engagement Growth\", \"Influencer Marketing\", \"Campaign Optimization\", \"Ad Budget Management\", \"Crisis Communication Management\", \"Brand Awareness Growth\"],\n        googleAnalytics: [\"Google Analytics Setup & Monitoring\", \"Keyword Research\", \"On-Page SEO\", \"Off-Page SEO / Link Building\", \"Technical SEO Audit\", \"Local SEO Optimization\", \"Competitor Analysis\", \"Content Optimization\", \"SEO Reporting & Insights\", \"Google Ads Campaign Setup\", \"Search Campaign Optimization\", \"Display Ads Management\", \"Remarketing Campaigns\", \"Conversion Tracking & Optimization\", \"Analytical Reporting\"],\n        webDevelopment: [\"Website Planning & Strategy\", \"UI/UX Design\", \"Front-End Development\", \"Back-End Development\", \"CMS Development\", \"E-Commerce Solutions\", \"SEO & Optimization\", \"Maintenance & Support\", \"Specialized Web Solutions\"],\n        videoProduction: [\"Social-first videos (Reels, Shorts, TikTok)\", \"Commercial / Ad video\", \"Corporate / Brand video\", \"Product video\", \"Medical / Healthcare videos\", \"Construction / Industrial videos\", \"Aerial videography\", \"Video content strategy\", \"Video ad media planning (Meta, YouTube, TikTok)\", \"Translation & subtitles in multiple languages\", \"Video upload & YouTube SEO optimization\"]\n      },\n      ka: {\n        socialMediaMarketing: [\"\\u10E1\\u10DD\\u10EA\\u10D8\\u10D0\\u10DA\\u10E3\\u10E0\\u10D8 \\u10DB\\u10D4\\u10D3\\u10D8\\u10D8\\u10E1 \\u10E1\\u10E2\\u10E0\\u10D0\\u10E2\\u10D4\\u10D2\\u10D8\\u10D8\\u10E1 \\u10E8\\u10D4\\u10DB\\u10E3\\u10E8\\u10D0\\u10D5\\u10D4\\u10D1\\u10D0\", \"\\u10D9\\u10DD\\u10DC\\u10E2\\u10D4\\u10DC\\u10E2 \\u10DE\\u10DA\\u10D0\\u10DC\\u10D8\\u10E0\\u10D4\\u10D1\\u10D0 \\u10D3\\u10D0 \\u10D9\\u10D0\\u10DA\\u10D4\\u10DC\\u10D3\\u10D0\\u10E0\\u10D8\", \"\\u10D5\\u10D8\\u10D6\\u10E3\\u10D0\\u10DA\\u10E3\\u10E0\\u10D8 \\u10D3\\u10D0 \\u10E2\\u10D4\\u10E5\\u10E1\\u10E2\\u10E3\\u10E0\\u10D8 \\u10D9\\u10DD\\u10DC\\u10E2\\u10D4\\u10DC\\u10E2\\u10D8\\u10E1 \\u10E8\\u10D4\\u10E5\\u10DB\\u10DC\\u10D0\", \"\\u10DD\\u10EA\\u10D8\\u10D0\\u10DA\\u10E3\\u10E0\\u10D8 \\u10E5\\u10E1\\u10D4\\u10DA\\u10D4\\u10D1\\u10D8\\u10E1 \\u10DB\\u10D0\\u10E0\\u10D7\\u10D5\\u10D0\", \"\\u10DB\\u10D8\\u10D6\\u10DC\\u10DD\\u10D1\\u10E0\\u10D8\\u10D5\\u10D8 \\u10E1\\u10D0\\u10E0\\u10D4\\u10D9\\u10DA\\u10D0\\u10DB\\u10DD \\u10D9\\u10D0\\u10DB\\u10DE\\u10D0\\u10DC\\u10D8\\u10D4\\u10D1\\u10D8\", \"\\u10D0\\u10E3\\u10D3\\u10D8\\u10E2\\u10DD\\u10E0\\u10D8\\u10D8\\u10E1 \\u10D0\\u10DC\\u10D0\\u10DA\\u10D8\\u10D6\\u10D8 \\u10D3\\u10D0 \\u10E1\\u10D4\\u10D2\\u10DB\\u10D4\\u10DC\\u10E2\\u10D0\\u10EA\\u10D8\\u10D0\", \"\\u10D1\\u10E0\\u10D4\\u10DC\\u10D3\\u10D8\\u10E1 \\u10E2\\u10DD\\u10DC\\u10D8\\u10E1\\u10D0 \\u10D3\\u10D0 \\u10E1\\u10E2\\u10D8\\u10DA\\u10D8\\u10E1 \\u10D3\\u10D4\\u10D5\\u10D4\\u10DA\\u10DD\\u10DE\\u10DB\\u10D4\\u10DC\\u10E2\\u10D8\", \"\\u10E8\\u10D4\\u10D3\\u10D4\\u10D2\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D0\\u10DC\\u10D0\\u10DA\\u10D8\\u10E2\\u10D8\\u10D9\\u10D0 \\u10D3\\u10D0 \\u10E0\\u10D4\\u10DE\\u10DD\\u10E0\\u10E2\\u10D8\\u10DC\\u10D2\\u10D8\", \"\\u10E1\\u10DD\\u10EA\\u10D8\\u10D0\\u10DA\\u10E3\\u10E0\\u10D8 \\u10DB\\u10D4\\u10D3\\u10D8\\u10D8\\u10E1 \\u10D0\\u10E3\\u10D3\\u10D8\\u10E2\\u10D8\", \"\\u10DB\\u10DD\\u10DB\\u10EE\\u10DB\\u10D0\\u10E0\\u10D4\\u10D1\\u10D4\\u10DA\\u10D7\\u10D0 \\u10E9\\u10D0\\u10E0\\u10D7\\u10E3\\u10DA\\u10DD\\u10D1\\u10D8\\u10E1 \\u10D6\\u10E0\\u10D3\\u10D0\", \"\\u10D8\\u10DC\\u10E4\\u10DA\\u10E3\\u10D4\\u10DC\\u10E1\\u10D4\\u10E0 \\u10DB\\u10D0\\u10E0\\u10D9\\u10D4\\u10E2\\u10D8\\u10DC\\u10D2\\u10D8\", \"\\u10E1\\u10DD\\u10EA\\u10D8\\u10D0\\u10DA\\u10E3\\u10E0\\u10D8 \\u10D9\\u10D0\\u10DB\\u10DE\\u10D0\\u10DC\\u10D8\\u10D4\\u10D1\\u10D8\\u10E1 \\u10DD\\u10DE\\u10E2\\u10D8\\u10DB\\u10D8\\u10D6\\u10D0\\u10EA\\u10D8\\u10D0\", \"\\u10E1\\u10D0\\u10E0\\u10D4\\u10D9\\u10DA\\u10D0\\u10DB\\u10DD \\u10D1\\u10D8\\u10E3\\u10EF\\u10D4\\u10E2\\u10D8\\u10E1 \\u10DB\\u10D0\\u10E0\\u10D7\\u10D5\\u10D0\", \"\\u10D9\\u10E0\\u10D8\\u10D6\\u10D8\\u10E1\\u10E3\\u10DA\\u10D8 \\u10D9\\u10DD\\u10DB\\u10E3\\u10DC\\u10D8\\u10D9\\u10D0\\u10EA\\u10D8\\u10D4\\u10D1\\u10D8\\u10E1 \\u10DB\\u10D0\\u10E0\\u10D7\\u10D5\\u10D0\", \"\\u10D1\\u10E0\\u10D4\\u10DC\\u10D3\\u10D8\\u10E1 \\u10EA\\u10DC\\u10DD\\u10D1\\u10D0\\u10D3\\u10DD\\u10D1\\u10D8\\u10E1 \\u10D0\\u10DB\\u10D0\\u10E6\\u10DA\\u10D4\\u10D1\\u10D0\"],\n        googleAnalytics: [\"\\u10D2\\u10E3\\u10D2\\u10DA \\u10D0\\u10DC\\u10D0\\u10DA\\u10D8\\u10E2\\u10D8\\u10E5\\u10E1\\u10D8\\u10E1 \\u10D3\\u10D0\\u10E7\\u10D4\\u10DC\\u10D4\\u10D1\\u10D0 \\u10D3\\u10D0 \\u10DB\\u10DD\\u10DC\\u10D8\\u10E2\\u10DD\\u10E0\\u10D8\\u10DC\\u10D2\\u10D8\", \"\\u10E1\\u10D0\\u10D9\\u10D5\\u10D0\\u10DC\\u10EB\\u10DD \\u10E1\\u10D8\\u10E2\\u10E7\\u10D5\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D9\\u10D5\\u10DA\\u10D4\\u10D5\\u10D0\", \"\\u10E1\\u10D0\\u10EB\\u10D8\\u10D4\\u10D1\\u10DD \\u10E1\\u10D8\\u10E1\\u10E2\\u10D4\\u10DB\\u10D8\\u10E1\\u10D7\\u10D5\\u10D8\\u10E1 \\u10DD\\u10DE\\u10E2\\u10D8\\u10DB\\u10D8\\u10D6\\u10D0\\u10EA\\u10D8\\u10D0\", \"\\u10D2\\u10D0\\u10E0\\u10D4 \\u10D1\\u10DB\\u10E3\\u10DA\\u10D4\\u10D1\\u10D8\\u10E1 \\u10E1\\u10E2\\u10E0\\u10D0\\u10E2\\u10D4\\u10D2\\u10D8\\u10D0\", \"\\u10E2\\u10D4\\u10E5\\u10DC\\u10D8\\u10D9\\u10E3\\u10E0\\u10D8 SEO \\u10D0\\u10DC\\u10D0\\u10DA\\u10D8\\u10D6\\u10D8\", \"\\u10D0\\u10D3\\u10D2\\u10D8\\u10DA\\u10DD\\u10D1\\u10E0\\u10D8\\u10D5\\u10D8 SEO \\u10DD\\u10DE\\u10E2\\u10D8\\u10DB\\u10D8\\u10D6\\u10D0\\u10EA\\u10D8\\u10D0\", \"\\u10D9\\u10DD\\u10DC\\u10D9\\u10E3\\u10E0\\u10D4\\u10DC\\u10E2\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D0\\u10DC\\u10D0\\u10DA\\u10D8\\u10D6\\u10D8\", \"\\u10D9\\u10DD\\u10DC\\u10E2\\u10D4\\u10DC\\u10E2\\u10D8\\u10E1 \\u10DD\\u10DE\\u10E2\\u10D8\\u10DB\\u10D8\\u10D6\\u10D0\\u10EA\\u10D8\\u10D0\", \"SEO \\u10E0\\u10D4\\u10DE\\u10DD\\u10E0\\u10E2\\u10D8\\u10DC\\u10D2\\u10D8 \\u10D3\\u10D0 \\u10E8\\u10D4\\u10D3\\u10D4\\u10D2\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D0\\u10DC\\u10D0\\u10DA\\u10D8\\u10D6\\u10D8\", \"\\u10D2\\u10E3\\u10D2\\u10DA Ads \\u10D9\\u10D0\\u10DB\\u10DE\\u10D0\\u10DC\\u10D8\\u10D4\\u10D1\\u10D8\\u10E1 \\u10E8\\u10D4\\u10E5\\u10DB\\u10DC\\u10D0\", \"\\u10EB\\u10D8\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D9\\u10D0\\u10DB\\u10DE\\u10D0\\u10DC\\u10D8\\u10D4\\u10D1\\u10D8\\u10E1 \\u10DD\\u10DE\\u10E2\\u10D8\\u10DB\\u10D8\\u10D6\\u10D0\\u10EA\\u10D8\\u10D0\", \"\\u10D1\\u10D0\\u10DC\\u10D4\\u10E0\\u10D4\\u10D1\\u10D8\\u10E1\\u10D0 \\u10D3\\u10D0 \\u10D3\\u10D8\\u10E1\\u10DE\\u10DA\\u10D4\\u10D8 \\u10E0\\u10D4\\u10D9\\u10DA\\u10D0\\u10DB\\u10D4\\u10D1\\u10D8\\u10E1 \\u10DB\\u10D0\\u10E0\\u10D7\\u10D5\\u10D0\", \"\\u10E0\\u10D4\\u10DB\\u10D0\\u10E0\\u10D9\\u10D4\\u10E2\\u10D8\\u10DC\\u10D2\\u10D8\\u10E1 \\u10D9\\u10D0\\u10DB\\u10DE\\u10D0\\u10DC\\u10D8\\u10D4\\u10D1\\u10D8\", \"\\u10D9\\u10DD\\u10DC\\u10D5\\u10D4\\u10E0\\u10E1\\u10D8\\u10D8\\u10E1 \\u10D7\\u10D5\\u10D0\\u10DA\\u10D7\\u10D5\\u10D0\\u10DA\\u10D8 \\u10D3\\u10D0 \\u10DD\\u10DE\\u10E2\\u10D8\\u10DB\\u10D8\\u10D6\\u10D0\\u10EA\\u10D8\\u10D0\", \"\\u10D0\\u10DC\\u10D0\\u10DA\\u10D8\\u10E2\\u10D8\\u10D9\\u10E3\\u10E0\\u10D8 \\u10D0\\u10DC\\u10D2\\u10D0\\u10E0\\u10D8\\u10E8\\u10D4\\u10D1\\u10D8\\u10E1 \\u10DB\\u10DD\\u10DB\\u10D6\\u10D0\\u10D3\\u10D4\\u10D1\\u10D0\"],\n        webDevelopment: [\"\\u10D5\\u10D4\\u10D1\\u10E1\\u10D0\\u10D8\\u10E2\\u10D8\\u10E1 \\u10D3\\u10D0\\u10D2\\u10D4\\u10D2\\u10DB\\u10D5\\u10D0 \\u10D3\\u10D0 \\u10E1\\u10E2\\u10E0\\u10D0\\u10E2\\u10D4\\u10D2\\u10D8\\u10D0\", \"\\u10DB\\u10DD\\u10DB\\u10EE\\u10DB\\u10D0\\u10E0\\u10D4\\u10D1\\u10DA\\u10D8\\u10E1 \\u10D8\\u10DC\\u10E2\\u10D4\\u10E0\\u10E4\\u10D4\\u10D8\\u10E1\\u10D8\\u10E1 \\u10D3\\u10D0 \\u10D2\\u10D0\\u10DB\\u10DD\\u10EA\\u10D3\\u10D8\\u10DA\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D3\\u10D8\\u10D6\\u10D0\\u10D8\\u10DC\\u10D8\", \"\\u10E4\\u10E0\\u10DD\\u10DC\\u10E2-\\u10D4\\u10DC\\u10D3 \\u10D3\\u10D4\\u10D5\\u10D4\\u10DA\\u10DD\\u10DE\\u10DB\\u10D4\\u10DC\\u10E2\\u10D8\", \"\\u10D1\\u10D4\\u10E5-\\u10D4\\u10DC\\u10D3 \\u10D3\\u10D4\\u10D5\\u10D4\\u10DA\\u10DD\\u10DE\\u10DB\\u10D4\\u10DC\\u10E2\\u10D8\", \"\\u10D9\\u10DD\\u10DC\\u10E2\\u10D4\\u10DC\\u10E2\\u10D8\\u10E1 \\u10DB\\u10D4\\u10DC\\u10D4\\u10EF\\u10DB\\u10D4\\u10DC\\u10E2\\u10D8\\u10E1 \\u10E1\\u10D8\\u10E1\\u10E2\\u10D4\\u10DB\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D3\\u10D4\\u10D5\\u10D4\\u10DA\\u10DD\\u10DE\\u10DB\\u10D4\\u10DC\\u10E2\\u10D8\", \"\\u10D4\\u10DA\\u10D4\\u10E5\\u10E2\\u10E0\\u10DD\\u10DC\\u10E3\\u10DA\\u10D8 \\u10D9\\u10DD\\u10DB\\u10D4\\u10E0\\u10EA\\u10D8\\u10D8\\u10E1 \\u10D2\\u10D0\\u10D3\\u10D0\\u10EC\\u10E7\\u10D5\\u10D4\\u10E2\\u10D4\\u10D1\\u10D8\", \"\\u10E1\\u10D0\\u10EB\\u10D8\\u10D4\\u10D1\\u10DD \\u10DD\\u10DE\\u10E2\\u10D8\\u10DB\\u10D8\\u10D6\\u10D0\\u10EA\\u10D8\\u10D0 \\u10D3\\u10D0 \\u10E8\\u10D4\\u10E1\\u10E0\\u10E3\\u10DA\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D2\\u10D0\\u10E3\\u10DB\\u10EF\\u10DD\\u10D1\\u10D4\\u10E1\\u10D4\\u10D1\\u10D0\", \"\\u10E2\\u10D4\\u10E5\\u10DC\\u10D8\\u10D9\\u10E3\\u10E0\\u10D8 \\u10DB\\u10EE\\u10D0\\u10E0\\u10D3\\u10D0\\u10ED\\u10D4\\u10E0\\u10D0 \\u10D3\\u10D0 \\u10DB\\u10DD\\u10D5\\u10DA\\u10D0\", \"\\u10E1\\u10DE\\u10D4\\u10EA\\u10D8\\u10D0\\u10DA\\u10D8\\u10D6\\u10D4\\u10D1\\u10E3\\u10DA\\u10D8 \\u10D5\\u10D4\\u10D1 \\u10D2\\u10D0\\u10D3\\u10D0\\u10EC\\u10E7\\u10D5\\u10D4\\u10E2\\u10D4\\u10D1\\u10D8\"],\n        videoProduction: [\"\\u10E1\\u10DD\\u10EA\\u10D8\\u10D0\\u10DA\\u10E3\\u10E0\\u10D8 \\u10E5\\u10E1\\u10D4\\u10DA\\u10D4\\u10D1\\u10D8\\u10E1\\u10D7\\u10D5\\u10D8\\u10E1 \\u10DD\\u10DE\\u10E2\\u10D8\\u10DB\\u10D8\\u10D6\\u10D4\\u10D1\\u10E3\\u10DA\\u10D8 \\u10D5\\u10D8\\u10D3\\u10D4\\u10DD\\u10D4\\u10D1\\u10D8 (Reels, Shorts, TikTok)\", \"\\u10E1\\u10D0\\u10E0\\u10D4\\u10D9\\u10DA\\u10D0\\u10DB\\u10DD \\u10D5\\u10D8\\u10D3\\u10D4\\u10DD (Commercial / Ad video)\", \"\\u10D9\\u10DD\\u10E0\\u10DE\\u10DD\\u10E0\\u10D0\\u10EA\\u10D8\\u10E3\\u10DA\\u10D8 \\u10D5\\u10D8\\u10D3\\u10D4\\u10DD / \\u10D1\\u10E0\\u10D4\\u10DC\\u10D3\\u10D8\\u10E1 \\u10D5\\u10D8\\u10D3\\u10D4\\u10DD\", \"\\u10DE\\u10E0\\u10DD\\u10D3\\u10E3\\u10E5\\u10E2\\u10D8\\u10E1 \\u10D5\\u10D8\\u10D3\\u10D4\\u10DD\", \"\\u10DB\\u10D4\\u10D3\\u10D8\\u10EA\\u10D8\\u10DC\\u10D8\\u10E1 / \\u10EF\\u10D0\\u10DC\\u10DB\\u10E0\\u10D7\\u10D4\\u10DA\\u10DD\\u10D1\\u10D8\\u10E1 \\u10D7\\u10D4\\u10DB\\u10D0\\u10E2\\u10E3\\u10E0\\u10D8 \\u10D5\\u10D8\\u10D3\\u10D4\\u10DD\\u10D4\\u10D1\\u10D8\", \"\\u10E1\\u10D0\\u10DB\\u10E8\\u10D4\\u10DC\\u10D4\\u10D1\\u10DA\\u10DD / \\u10D8\\u10DC\\u10D3\\u10E3\\u10E1\\u10E2\\u10E0\\u10D8\\u10E3\\u10DA\\u10D8 \\u10D5\\u10D8\\u10D3\\u10D4\\u10DD\\u10D4\\u10D1\\u10D8\", \"\\u10D3\\u10E0\\u10DD\\u10DC\\u10D8\\u10E1 \\u10D5\\u10D8\\u10D3\\u10D4\\u10DD\\u10D2\\u10D0\\u10D3\\u10D0\\u10E6\\u10D4\\u10D1\\u10D0 (Aerial videography)\", \"\\u10D5\\u10D8\\u10D3\\u10D4\\u10DD\\u10E1 \\u10D9\\u10DD\\u10DC\\u10E2\\u10D4\\u10DC\\u10E2\\u10D8\\u10E1 \\u10E1\\u10E2\\u10E0\\u10D0\\u10E2\\u10D4\\u10D2\\u10D8\\u10D8\\u10E1 \\u10E8\\u10D4\\u10DB\\u10E3\\u10E8\\u10D0\\u10D5\\u10D4\\u10D1\\u10D0\", \"\\u10D5\\u10D8\\u10D3\\u10D4\\u10DD \\u10E0\\u10D4\\u10D9\\u10DA\\u10D0\\u10DB\\u10D4\\u10D1\\u10D8\\u10E1 Mediaplan-\\u10D8\\u10E1 \\u10D3\\u10D0\\u10D2\\u10D4\\u10D2\\u10DB\\u10D5\\u10D0 (Meta, YouTube, TikTok)\", \"\\u10D7\\u10D0\\u10E0\\u10D2\\u10DB\\u10DC\\u10D0 \\u10D3\\u10D0 \\u10E1\\u10E3\\u10D1\\u10E2\\u10D8\\u10E2\\u10E0\\u10D4\\u10D1\\u10D8 \\u10E1\\u10EE\\u10D5\\u10D0\\u10D3\\u10D0\\u10E1\\u10EE\\u10D5\\u10D0 \\u10D4\\u10DC\\u10D0\\u10D6\\u10D4\", \"\\u10D5\\u10D8\\u10D3\\u10D4\\u10DD\\u10E1 \\u10D0\\u10E2\\u10D5\\u10D8\\u10E0\\u10D7\\u10D5\\u10D0 \\u10D3\\u10D0 SEO \\u10DD\\u10DE\\u10E2\\u10D8\\u10DB\\u10D8\\u10D6\\u10D0\\u10EA\\u10D8\\u10D0 YouTube-\\u10D6\\u10D4\"]\n      }\n    },\n    steps: {\n      en: { title: \"Flow to Work\", items: [{ number: \"01\", title: \"initial consultation\" }, { number: \"02\", title: \"strategy development and implementation.\" }, { number: \"03\", title: \"review and final refinement\" }] },\n      ka: { title: \"\\u10E1\\u10D0\\u10DB\\u10E3\\u10E8\\u10D0\\u10DD \\u10DE\\u10E0\\u10DD\\u10EA\\u10D4\\u10E1\\u10D8\", items: [{ number: \"01\", title: \"\\u10E1\\u10D0\\u10EC\\u10E7\\u10D8\\u10E1\\u10D8 \\u10D9\\u10DD\\u10DC\\u10E1\\u10E3\\u10DA\\u10E2\\u10D0\\u10EA\\u10D8\\u10D0\" }, { number: \"02\", title: \"\\u10E1\\u10E2\\u10E0\\u10D0\\u10E2\\u10D4\\u10D2\\u10D8\\u10D8\\u10E1 \\u10E8\\u10D4\\u10DB\\u10E3\\u10E8\\u10D0\\u10D5\\u10D4\\u10D1\\u10D0 \\u10D3\\u10D0 \\u10D3\\u10D0\\u10DC\\u10D4\\u10E0\\u10D2\\u10D5\\u10D0.\" }, { number: \"03\", title: \"\\u10E8\\u10D4\\u10E4\\u10D0\\u10E1\\u10D4\\u10D1\\u10D0 \\u10D3\\u10D0 \\u10E1\\u10D0\\u10D1\\u10DD\\u10DA\\u10DD\\u10DD \\u10D3\\u10D0\\u10EE\\u10D5\\u10D4\\u10EC\\u10D0\" }] }\n    },\n    team: {\n      en: { title: \"Our Team\", more: \"know us better\", members: [{ role: \"Founder\", name: \"Giorgi\", image: this.scope.IMG.choni }, { role: \"Project Manager\", name: \"Liza\", image: this.scope.IMG.liza }, { role: \"Graphic Designer\", name: \"Mariami\", image: this.scope.IMG.mariami }, { role: \"Videograph\", name: \"Luka\", image: this.scope.IMG.luka }] },\n      ka: { title: \"\\u10E9\\u10D5\\u10D4\\u10DC\\u10D8 \\u10D2\\u10E3\\u10DC\\u10D3\\u10D8\", more: \"\\u10D2\\u10D0\\u10D2\\u10D5\\u10D8\\u10EA\\u10D0\\u10DC\\u10D8\\u10D7 \\u10E3\\u10D9\\u10D4\\u10D7\", members: [{ role: \"\\u10D3\\u10D0\\u10DB\\u10E4\\u10E3\\u10EB\\u10DC\\u10D4\\u10D1\\u10D4\\u10DA\\u10D8\", name: \"\\u10D2\\u10D8\\u10DD\\u10E0\\u10D2\\u10D8\", image: this.scope.IMG.choni }, { role: \"\\u10DE\\u10E0\\u10DD\\u10D4\\u10E5\\u10E2 \\u10DB\\u10D4\\u10DC\\u10D4\\u10EF\\u10D4\\u10E0\\u10D8\", name: \"\\u10DA\\u10D8\\u10D6\\u10D0\", image: this.scope.IMG.liza }, { role: \"\\u10D2\\u10E0\\u10D0\\u10E4\\u10D8\\u10D9\\u10E3\\u10DA\\u10D8 \\u10D3\\u10D8\\u10D6\\u10D0\\u10D8\\u10DC\\u10D4\\u10E0\\u10D8\", name: \"\\u10DB\\u10D0\\u10E0\\u10D8\\u10D0\\u10DB\\u10D8\", image: this.scope.IMG.mariami }, { role: \"\\u10D5\\u10D8\\u10D3\\u10D4\\u10DD\\u10D2\\u10E0\\u10D0\\u10E4\\u10D8\", name: \"\\u10DA\\u10E3\\u10D9\\u10D0\", image: this.scope.IMG.luka }] }\n    },\n    testimonial: {\n      en: { title: \"people talks\", messages: [{ author: \"James Harisson\", text: \"I had an excellent experience everything was done accurately and on time\" }, { author: \"Nina Carter\", text: \"The team was responsive and execution quality was consistently high.\" }, { author: \"Robert Allen\", text: \"Strong communication and fast delivery through the whole process.\" }, { author: \"Maria Brown\", text: \"They understood the brief quickly and improved our results month by month.\" }, { author: \"David Smith\", text: \"Everything was clear, on schedule, and aligned with our business goals.\" }, { author: \"Sophia Miller\", text: \"Creative ideas with practical implementation and measurable impact.\" }, { author: \"Alex Johnson\", text: \"Professional workflow, transparent updates, and great final output.\" }] },\n      ka: { title: \"\\u10E9\\u10D5\\u10D4\\u10DC\\u10D6\\u10D4 \\u10D0\\u10DB\\u10D1\\u10DD\\u10D1\\u10D4\\u10DC\", messages: [{ author: \"\\u10EF\\u10D4\\u10D8\\u10DB\\u10E1 \\u10F0\\u10D0\\u10E0\\u10D8\\u10E1\\u10DD\\u10DC\\u10D8\", text: \"\\u10EB\\u10D0\\u10DA\\u10D8\\u10D0\\u10DC \\u10D9\\u10D0\\u10E0\\u10D2\\u10D8 \\u10D2\\u10D0\\u10DB\\u10DD\\u10EA\\u10D3\\u10D8\\u10DA\\u10D4\\u10D1\\u10D0 \\u10DB\\u10D8\\u10D5\\u10D8\\u10E6\\u10D4 \\u10E7\\u10D5\\u10D4\\u10DA\\u10D0\\u10E4\\u10D4\\u10E0\\u10D8 \\u10D6\\u10E3\\u10E1\\u10E2\\u10D0\\u10D3 \\u10D3\\u10D0 \\u10D3\\u10E0\\u10DD\\u10E3\\u10DA\\u10D0\\u10D3 \\u10E8\\u10D4\\u10E1\\u10E0\\u10E3\\u10DA\\u10D3\\u10D0.\" }, { author: \"\\u10DC\\u10D8\\u10DC\\u10D0 \\u10D9\\u10D0\\u10E0\\u10E2\\u10D4\\u10E0\\u10D8\", text: \"\\u10D2\\u10E3\\u10DC\\u10D3\\u10D8 \\u10DD\\u10DE\\u10D4\\u10E0\\u10D0\\u10E2\\u10D8\\u10E3\\u10DA\\u10D8 \\u10D8\\u10E7\\u10DD \\u10D3\\u10D0 \\u10E8\\u10D4\\u10E1\\u10E0\\u10E3\\u10DA\\u10D4\\u10D1\\u10D8\\u10E1 \\u10EE\\u10D0\\u10E0\\u10D8\\u10E1\\u10EE\\u10D8 \\u10E1\\u10E2\\u10D0\\u10D1\\u10D8\\u10DA\\u10E3\\u10E0\\u10D0\\u10D3 \\u10DB\\u10D0\\u10E6\\u10D0\\u10DA\\u10D8 \\u10D3\\u10D0\\u10E0\\u10E9\\u10D0.\" }, { author: \"\\u10E0\\u10DD\\u10D1\\u10D4\\u10E0\\u10E2 \\u10D0\\u10DA\\u10D4\\u10DC\\u10D8\", text: \"\\u10D9\\u10DD\\u10DB\\u10E3\\u10DC\\u10D8\\u10D9\\u10D0\\u10EA\\u10D8\\u10D0 \\u10EB\\u10DA\\u10D8\\u10D4\\u10E0\\u10D8 \\u10D8\\u10E7\\u10DD \\u10D3\\u10D0 \\u10DB\\u10D8\\u10EC\\u10DD\\u10D3\\u10D4\\u10D1\\u10D0 \\u10DB\\u10D7\\u10D4\\u10DA\\u10D8 \\u10DE\\u10E0\\u10DD\\u10EA\\u10D4\\u10E1\\u10D8\\u10E1 \\u10D2\\u10D0\\u10DC\\u10DB\\u10D0\\u10D5\\u10DA\\u10DD\\u10D1\\u10D0\\u10E8\\u10D8 \\u10E1\\u10EC\\u10E0\\u10D0\\u10E4\\u10D0\\u10D3 \\u10EE\\u10D3\\u10D4\\u10D1\\u10DD\\u10D3\\u10D0.\" }, { author: \"\\u10DB\\u10D0\\u10E0\\u10D8\\u10D0 \\u10D1\\u10E0\\u10D0\\u10E3\\u10DC\\u10D8\", text: \"\\u10D1\\u10E0\\u10D8\\u10E4\\u10D8 \\u10E1\\u10EC\\u10E0\\u10D0\\u10E4\\u10D0\\u10D3 \\u10D2\\u10D0\\u10D8\\u10D2\\u10D4\\u10E1 \\u10D3\\u10D0 \\u10E8\\u10D4\\u10D3\\u10D4\\u10D2\\u10D4\\u10D1\\u10D8 \\u10D7\\u10D5\\u10D8\\u10D3\\u10D0\\u10DC \\u10D7\\u10D5\\u10D4\\u10DB\\u10D3\\u10D4 \\u10DB\\u10DC\\u10D8\\u10E8\\u10D5\\u10DC\\u10D4\\u10DA\\u10DD\\u10D5\\u10DC\\u10D0\\u10D3 \\u10D2\\u10D0\\u10D0\\u10E3\\u10DB\\u10EF\\u10DD\\u10D1\\u10D4\\u10E1\\u10D4\\u10E1.\" }, { author: \"\\u10D3\\u10D0\\u10D5\\u10D8\\u10D7 \\u10E1\\u10DB\\u10D8\\u10D7\\u10D8\", text: \"\\u10E7\\u10D5\\u10D4\\u10DA\\u10D0\\u10E4\\u10D4\\u10E0\\u10D8 \\u10D8\\u10E7\\u10DD \\u10D2\\u10D0\\u10E1\\u10D0\\u10D2\\u10D4\\u10D1\\u10D8, \\u10D5\\u10D0\\u10D3\\u10D4\\u10D1\\u10E8\\u10D8 \\u10D3\\u10D0 \\u10E1\\u10E0\\u10E3\\u10DA\\u10D0\\u10D3 \\u10DB\\u10D8\\u10D1\\u10DB\\u10E3\\u10DA\\u10D8 \\u10D1\\u10D8\\u10D6\\u10DC\\u10D4\\u10E1 \\u10DB\\u10D8\\u10D6\\u10DC\\u10D4\\u10D1\\u10D6\\u10D4.\" }, { author: \"\\u10E1\\u10DD\\u10E4\\u10D8\\u10D0 \\u10DB\\u10D8\\u10DA\\u10D4\\u10E0\\u10D8\", text: \"\\u10D9\\u10E0\\u10D4\\u10D0\\u10E2\\u10D8\\u10E3\\u10DA\\u10D8 \\u10D8\\u10D3\\u10D4\\u10D4\\u10D1\\u10D8 \\u10DE\\u10E0\\u10D0\\u10E5\\u10E2\\u10D8\\u10D9\\u10E3\\u10DA \\u10E8\\u10D4\\u10E1\\u10E0\\u10E3\\u10DA\\u10D4\\u10D1\\u10D0\\u10E1\\u10D7\\u10D0\\u10DC \\u10D3\\u10D0 \\u10D2\\u10D0\\u10D6\\u10DD\\u10DB\\u10D5\\u10D0\\u10D3 \\u10E8\\u10D4\\u10D3\\u10D4\\u10D2\\u10D4\\u10D1\\u10D7\\u10D0\\u10DC \\u10D4\\u10E0\\u10D7\\u10D0\\u10D3.\" }, { author: \"\\u10D0\\u10DA\\u10D4\\u10E5\\u10E1 \\u10EF\\u10DD\\u10DC\\u10E1\\u10DD\\u10DC\\u10D8\", text: \"\\u10DE\\u10E0\\u10DD\\u10E4\\u10D4\\u10E1\\u10D8\\u10E3\\u10DA\\u10D8 \\u10E1\\u10D0\\u10DB\\u10E3\\u10E8\\u10D0\\u10DD \\u10DE\\u10E0\\u10DD\\u10EA\\u10D4\\u10E1\\u10D8, \\u10D2\\u10D0\\u10DB\\u10ED\\u10D5\\u10D8\\u10E0\\u10D5\\u10D0\\u10DA\\u10D4 \\u10D2\\u10D0\\u10DC\\u10D0\\u10EE\\u10DA\\u10D4\\u10D1\\u10D4\\u10D1\\u10D8 \\u10D3\\u10D0 \\u10EB\\u10DA\\u10D8\\u10D4\\u10E0\\u10D8 \\u10E1\\u10D0\\u10D1\\u10DD\\u10DA\\u10DD\\u10DD \\u10E8\\u10D4\\u10D3\\u10D4\\u10D2\\u10D8.\" }] }\n    },\n    contact: {\n      en: { brand: \"focus agency\", form: { legend: \"have a question?\", namePlaceholder: \"name\", emailPlaceholder: \"email\", messagePlaceholder: \"shoot a message\", submit: \"send\" }, details: { phoneLabel: \"call us any time\", phone: \"+995 595 893 399\", emailLabel: \"connect with us by email\", email: \"gamarjoba@focusagency.ge\", socialLabel: \"Follow us\" }, address: { title: \"you're welcome to visit us\", line1: \"Tbilisi, Saburtalo\", line2: \"Alexandre Khazbegi street N24 g\" }, paragraph: \"Our agency was founded with one main purpose - to support growth and success of businesses. Every client is unique to us, which is why we always listen carefully to your needs and create strategies that deliver real results.\" },\n      ka: { brand: \"Focus Agency\", form: { legend: \"\\u10D2\\u10D0\\u10E5\\u10D5\\u10E1 \\u10E8\\u10D4\\u10D9\\u10D8\\u10D7\\u10EE\\u10D5\\u10D0?\", namePlaceholder: \"\\u10E1\\u10D0\\u10EE\\u10D4\\u10DA\\u10D8\", emailPlaceholder: \"\\u10D4\\u10DA-\\u10E4\\u10DD\\u10E1\\u10E2\\u10D0\", messagePlaceholder: \"\\u10DB\\u10DD\\u10D2\\u10D5\\u10EC\\u10D4\\u10E0\\u10D4\", submit: \"\\u10D2\\u10D0\\u10DB\\u10DD\\u10D2\\u10D6\\u10D0\\u10D5\\u10DC\\u10D4\" }, details: { phoneLabel: \"\\u10D3\\u10D0\\u10D2\\u10D5\\u10D8\\u10E0\\u10D4\\u10D9\\u10D4 \\u10DC\\u10D4\\u10D1\\u10D8\\u10E1\\u10DB\\u10D8\\u10D4\\u10E0 \\u10D3\\u10E0\\u10DD\\u10E1\", phone: \"+995 595 893 399\", emailLabel: \"\\u10D3\\u10D0\\u10D2\\u10D5\\u10D8\\u10D9\\u10D0\\u10D5\\u10E8\\u10D8\\u10E0\\u10D3\\u10D8 \\u10D4\\u10DA-\\u10E4\\u10DD\\u10E1\\u10E2\\u10D0\\u10D6\\u10D4\", email: \"gamarjoba@focusagency.ge\", socialLabel: \"\\u10D2\\u10D0\\u10DB\\u10DD\\u10D2\\u10D5\\u10E7\\u10D4\\u10D5\\u10D8\" }, address: { title: \"\\u10E1\\u10D8\\u10D0\\u10DB\\u10DD\\u10D5\\u10DC\\u10D4\\u10D1\\u10D8\\u10D7 \\u10D2\\u10D8\\u10DB\\u10D0\\u10E1\\u10DE\\u10D8\\u10DC\\u10EB\\u10DA\\u10D4\\u10D1\\u10D7 \\u10DD\\u10E4\\u10D8\\u10E1\\u10E8\\u10D8\", line1: \"\\u10D7\\u10D1\\u10D8\\u10DA\\u10D8\\u10E1\\u10D8, \\u10E1\\u10D0\\u10D1\\u10E3\\u10E0\\u10D7\\u10D0\\u10DA\\u10DD\", line2: \"\\u10D0\\u10DA\\u10D4\\u10E5\\u10E1\\u10D0\\u10DC\\u10D3\\u10E0\\u10D4 \\u10E7\\u10D0\\u10D6\\u10D1\\u10D4\\u10D2\\u10D8\\u10E1 \\u10E5\\u10E3\\u10E9\\u10D0 N24 \\u10D2\" }, paragraph: \"\\u10E9\\u10D5\\u10D4\\u10DC\\u10D8 \\u10E1\\u10D0\\u10D0\\u10D2\\u10D4\\u10DC\\u10E2\\u10DD \\u10D4\\u10E0\\u10D7\\u10D8 \\u10DB\\u10D7\\u10D0\\u10D5\\u10D0\\u10E0\\u10D8 \\u10DB\\u10D8\\u10D6\\u10DC\\u10D8\\u10E1\\u10D7\\u10D5\\u10D8\\u10E1 \\u10E8\\u10D4\\u10D8\\u10E5\\u10DB\\u10DC\\u10D0 - \\u10EE\\u10D4\\u10DA\\u10D8 \\u10E8\\u10D4\\u10D5\\u10E3\\u10EC\\u10E7\\u10DD\\u10D7 \\u10D1\\u10D8\\u10D6\\u10DC\\u10D4\\u10E1\\u10D4\\u10D1\\u10D8\\u10E1 \\u10D6\\u10E0\\u10D3\\u10D0\\u10E1\\u10D0 \\u10D3\\u10D0 \\u10EC\\u10D0\\u10E0\\u10DB\\u10D0\\u10E2\\u10D4\\u10D1\\u10D0\\u10E1. \\u10D7\\u10D8\\u10D7\\u10DD\\u10D4\\u10E3\\u10DA\\u10D8 \\u10D9\\u10DA\\u10D8\\u10D4\\u10DC\\u10E2\\u10D8 \\u10E9\\u10D5\\u10D4\\u10DC\\u10D7\\u10D5\\u10D8\\u10E1 \\u10E3\\u10DC\\u10D8\\u10D9\\u10D0\\u10DA\\u10E3\\u10E0\\u10D8\\u10D0, \\u10D0\\u10DB\\u10D8\\u10E2\\u10DD\\u10DB \\u10E7\\u10E3\\u10E0\\u10D0\\u10D3\\u10E6\\u10D4\\u10D1\\u10D8\\u10D7 \\u10D5\\u10D8\\u10E1\\u10DB\\u10D4\\u10DC\\u10D7 \\u10E8\\u10D4\\u10DC\\u10E1 \\u10E1\\u10D0\\u10ED\\u10D8\\u10E0\\u10DD\\u10D4\\u10D1\\u10D4\\u10D1\\u10E1 \\u10D3\\u10D0 \\u10D5\\u10E5\\u10DB\\u10DC\\u10D8\\u10D7 \\u10E1\\u10E2\\u10E0\\u10D0\\u10E2\\u10D4\\u10D2\\u10D8\\u10D4\\u10D1\\u10E1, \\u10E0\\u10DD\\u10DB\\u10DA\\u10D4\\u10D1\\u10D8\\u10EA \\u10E0\\u10D4\\u10D0\\u10DA\\u10E3\\u10E0 \\u10E8\\u10D4\\u10D3\\u10D4\\u10D2\\u10E1 \\u10D8\\u10EB\\u10DA\\u10D4\\u10D5\\u10D0.\" }\n    }\n  };\n  window.__focusContent = content;\n  window.__focusLang = localStorage.getItem(\"lang\") || \"en\";\n  window.__focusPreviousLang = window.__focusLang;\n  window.__focusRender = this.scope.render;\n  if (\"scrollRestoration\" in history) history.scrollRestoration = \"manual\";\n  const ua = navigator.userAgent || \"\";\n  const isSafari = /Safari/i.test(ua) && !/Chrome|CriOS|Chromium|Edg|EdgiOS|Firefox|FxiOS|OPR|OPiOS|SamsungBrowser/i.test(ua);\n  const isCoarsePointer = window.matchMedia(\"(hover: none) and (pointer: coarse)\").matches;\n  const isTabletOrSmaller = window.matchMedia(\"(max-width: 1180px)\").matches;\n  const prefersReducedMotion = window.matchMedia(\"(prefers-reduced-motion: reduce)\").matches;\n  const flags = { isSafari, isCoarsePointer, isTabletOrSmaller, prefersReducedMotion, isPerformanceMode: isCoarsePointer || isTabletOrSmaller };\n  if (document.body) {\n    document.body.classList.toggle(\"is-safari\", isSafari);\n    document.body.classList.toggle(\"is-mobile-coarse\", isCoarsePointer);\n  }\n  const setMetrics = () => {\n    const vv = window.visualViewport;\n    const h = vv ? vv.height : window.innerHeight;\n    document.documentElement.style.setProperty(\"--app-visual-viewport-height\", h + \"px\");\n  };\n  setMetrics();\n  window.addEventListener(\"resize\", setMetrics);\n  if (window.visualViewport) {\n    window.visualViewport.addEventListener(\"resize\", setMetrics);\n    window.visualViewport.addEventListener(\"scroll\", setMetrics);\n  }\n  document.body.dataset.lang = window.__focusLang;\n  window.scrollTo(0, 0);\n  const setStaticImages = () => {\n    const globeImg = document.querySelector(\".globe\");\n    if (globeImg) globeImg.src = this.scope.IMG.globe;\n    const quoteImg = document.querySelector('.testimonial [key=\"Img\"]');\n    if (quoteImg) quoteImg.src = this.scope.IMG.quotationMark;\n    const streetImgs = document.querySelectorAll(\".address img\");\n    [this.scope.IMG.street, this.scope.IMG.street2].forEach((src, i) => {\n      if (streetImgs[i]) streetImgs[i].src = src;\n    });\n    const footerNavImgs = document.querySelectorAll(\"footer nav img\");\n    [this.scope.IMG.facebook, this.scope.IMG.instagram].forEach((src, i) => {\n      if (footerNavImgs[i]) footerNavImgs[i].src = src;\n    });\n    document.querySelectorAll(\".teamMember\").forEach((member) => {\n      const navImgs = member.querySelectorAll(\"nav img\");\n      [this.scope.IMG.facebook, this.scope.IMG.linkedin].forEach((src, i) => {\n        if (navImgs[i]) navImgs[i].src = src;\n      });\n    });\n    document.querySelectorAll(\".service button img\").forEach((img, i) => {\n      img.src = i % 2 === 0 ? this.scope.IMG.arrow : this.scope.IMG.close;\n    });\n    const navArrowImgs = document.querySelectorAll(\".navArrows button img\");\n    [this.scope.IMG.arrowLeft, this.scope.IMG.arrowRight].forEach((src, i) => {\n      if (navArrowImgs[i]) navArrowImgs[i].src = src;\n    });\n  };\n  setStaticImages();\n  window.toggleCrispChat = function() {\n    const overlay = document.getElementById(\"crisp-chat-overlay\");\n    const chatBtn = document.querySelector(\".chatButton\");\n    if (!overlay) return;\n    const isOpen = overlay.classList.toggle(\"is-visible\");\n    if (chatBtn) chatBtn.classList.toggle(\"is-active\", isOpen);\n    document.body.classList.toggle(\"chat-panel-open\", isOpen);\n    if (chatBtn) chatBtn.setAttribute(\"aria-expanded\", String(isOpen));\n    if (isOpen) {\n      overlay.removeAttribute(\"aria-hidden\");\n      overlay.removeAttribute(\"inert\");\n      const iframe = document.getElementById(\"crisp-chat-frame\");\n      if (iframe && iframe.dataset.src && !iframe.src) iframe.src = iframe.dataset.src;\n      document.body.dataset.chatScrollLock = \"1\";\n    } else {\n      overlay.setAttribute(\"aria-hidden\", \"true\");\n      overlay.setAttribute(\"inert\", \"\");\n      document.body.dataset.chatScrollLock = \"0\";\n    }\n  };\n}",
+    "applyBannerTitleWave": "function applyBannerTitleWave2() {\n  const title = document.querySelector(\".bannerTitle h1, .titleBanner h1\");\n  if (!title) return;\n  const source = title.textContent || \"\";\n  if (!source.trim()) return;\n  if (title.dataset.waveText === source && title.querySelector(\".wave-char\")) return;\n  title.dataset.waveText = source;\n  title.textContent = \"\";\n  const frag = document.createDocumentFragment();\n  let charIndex = 0;\n  const tokens = source.split(/(\\s+)/);\n  tokens.forEach((token) => {\n    if (!token) return;\n    if (/^\\s+$/.test(token)) {\n      frag.appendChild(document.createTextNode(token));\n      return;\n    }\n    const word = document.createElement(\"span\");\n    word.className = \"wave-word\";\n    Array.from(token).forEach((ch) => {\n      const span = document.createElement(\"span\");\n      span.className = \"wave-char\";\n      span.style.setProperty(\"--char-index\", String(charIndex));\n      span.textContent = ch;\n      word.appendChild(span);\n      charIndex += 1;\n    });\n    frag.appendChild(word);\n  });\n  title.appendChild(frag);\n  window.__applyBannerTitleWave = applyBannerTitleWave2;\n}",
+    "applyRuntimeBodyClasses": "function applyRuntimeBodyClasses2({ this.scope.isSafari, this.scope.isCoarsePointer }) {\n  if (!document.body) return;\n  document.body.classList.toggle(\"is-safari\", this.scope.isSafari);\n  document.body.classList.toggle(\"is-mobile-coarse\", this.scope.isCoarsePointer);\n}",
+    "bannerAnimations": "function bannerAnimations2() {\n  const banner = document.querySelector(\".bannerTitle, .titleBanner\");\n  if (!banner) return;\n  banner.style.willChange = \"transform\";\n  banner.style.transform = \"translate3d(0, 0px, 0)\";\n  let ticking = false;\n  let lastOffset = Number.NaN;\n  const onScroll = () => {\n    if (ticking) return;\n    ticking = true;\n    requestAnimationFrame(() => {\n      const y = window.scrollY || window.pageYOffset;\n      const offset = Math.round(y * 0.6 * 100) / 100;\n      if (offset !== lastOffset) {\n        banner.style.transform = \"translate3d(0, \" + offset + \"px, 0)\";\n        lastOffset = offset;\n      }\n      ticking = false;\n    });\n  };\n  window.addEventListener(\"scroll\", onScroll, { passive: true });\n  window.addEventListener(\"resize\", onScroll, { passive: true });\n  onScroll();\n  banner.classList.add(\"is-wave-active\");\n}",
+    "circleRotation": "function circleRotation2() {\n  const section = document.querySelector(\".steps\");\n  const circle = document.querySelector(\".steps .circle\");\n  const title = document.querySelector(\".steps h2\");\n  if (!section || !circle || !title) return;\n  let current = 0;\n  let target = 0;\n  let titleCurrent = 0;\n  let titleTarget = 0;\n  const ease = 0.022;\n  const maxRotation = 60;\n  const maxTitleShift = 0.85;\n  let rafId = null;\n  let lastTime = 0;\n  const calcTarget = () => {\n    const sectionRect = section.getBoundingClientRect();\n    const viewportH = window.innerHeight;\n    const range = sectionRect.height - viewportH;\n    if (range <= 0) {\n      target = 0;\n      titleTarget = 0;\n      return;\n    }\n    const progressRaw = (0 - sectionRect.top) / range;\n    const progress = Math.min(1, Math.max(0, progressRaw));\n    const smoothProgress = progress * progress * (3 - 2 * progress);\n    target = -smoothProgress * maxRotation;\n    titleTarget = -smoothProgress * maxTitleShift;\n  };\n  const animate = (time) => {\n    rafId = null;\n    if (!lastTime) lastTime = time;\n    const delta = Math.min(64, time - lastTime || 16.67);\n    lastTime = time;\n    const frameEase = 1 - Math.pow(1 - ease, delta / (1e3 / 60));\n    current += (target - current) * frameEase;\n    titleCurrent += (titleTarget - titleCurrent) * frameEase;\n    circle.style.setProperty(\"--steps-rot\", current.toFixed(2) + \"deg\");\n    title.style.setProperty(\"--steps-title-y\", titleCurrent.toFixed(3) + \"em\");\n    const stillMoving = Math.abs(target - current) > 0.02 || Math.abs(titleTarget - titleCurrent) > 2e-3;\n    if (stillMoving) {\n      rafId = requestAnimationFrame(animate);\n    } else {\n      lastTime = 0;\n    }\n  };\n  const scheduleAnimate = () => {\n    if (rafId) return;\n    lastTime = 0;\n    rafId = requestAnimationFrame(animate);\n  };\n  const onScroll = () => {\n    calcTarget();\n    scheduleAnimate();\n  };\n  window.addEventListener(\"scroll\", onScroll, { passive: true });\n  window.addEventListener(\"resize\", onScroll);\n  calcTarget();\n  scheduleAnimate();\n}",
+    "contactForm": "function contactForm2() {\n  const form = document.querySelector(\"footer form#contact\");\n  if (!form) return;\n  const submitButton = form.querySelector(\"button[type='submit']\");\n  const statusElement = document.querySelector(\"#contact-status\");\n  form.addEventListener(\"submit\", async (event) => {\n    if (!submitButton || !statusElement) return;\n    event.preventDefault();\n    const defaultLabel = submitButton.textContent;\n    submitButton.disabled = true;\n    submitButton.textContent = \"sending...\";\n    statusElement.hidden = false;\n    statusElement.textContent = \"Sending your message...\";\n    try {\n      const response = await fetch(form.action, {\n        method: \"POST\",\n        body: new FormData(form),\n        headers: { Accept: \"application/json\" }\n      });\n      if (!response.ok) throw new Error(\"Form submission failed\");\n      form.reset();\n      statusElement.textContent = \"Message sent successfully.\";\n    } catch {\n      statusElement.textContent = \"Something went wrong. Please try again.\";\n    } finally {\n      submitButton.disabled = false;\n      submitButton.textContent = defaultLabel;\n    }\n  });\n}",
+    "depthCarousel": "function depthCarousel2() {\n  const members = Array.from(document.querySelectorAll(\".team .teamMember\"));\n  const prev = document.querySelector(\".team .navArrows .prev\");\n  const next = document.querySelector(\".team .navArrows .next\");\n  const teamSection = document.querySelector(\".team\");\n  if (!members.length || !prev || !next || !teamSection) return;\n  const prefersReduced = window.matchMedia(\"(prefers-reduced-motion: reduce)\").matches;\n  const staticMode = prefersReduced;\n  let activeIndex2 = 0;\n  let scrollStrength = 0;\n  let rafId = null;\n  let running = false;\n  const state = members.map(() => ({\n    current: { x: 0, y: 0, z: 0, r: 0, s: 1, o: 1 },\n    target: { x: 0, y: 0, z: 0, r: 0, s: 1, o: 1 }\n  }));\n  const computeTargets = () => {\n    const layout = { xStep: 14.2, yStep: 0.95, zStep: 70, rotStep: 11, scaleDrop: 0.106, shiftX: 0, farSpread: 0.95, minScale: 0.72, yScroll: 1.85, zScroll: 108 };\n    const total = members.length;\n    const hasFourMemberLayout = total === 4;\n    const farOffset = total / 2;\n    const wrappedOffset = (index) => {\n      let offset = index - activeIndex2;\n      const half = Math.floor(total / 2);\n      if (offset > half) offset -= total;\n      if (offset < -half) offset += total;\n      return offset;\n    };\n    members.forEach((member, i) => {\n      const offset = wrappedOffset(i);\n      const abs = Math.abs(offset);\n      const sign = Math.sign(offset);\n      const isBackCard = hasFourMemberLayout && abs === farOffset;\n      let x, y, scale, rot, z, opacity, zIndex;\n      if (isBackCard) {\n        x = layout.shiftX;\n        y = layout.yStep * 0.55 + scrollStrength * layout.yScroll * 0.5;\n        scale = Math.max(layout.minScale, 1 - (farOffset - 0.25) * layout.scaleDrop);\n        rot = 0;\n        z = -(farOffset + 0.9) * layout.zStep + scrollStrength * -layout.zScroll * 0.85;\n        opacity = 0.55;\n        zIndex = 6;\n      } else {\n        const visualX = abs <= 2 ? offset * layout.xStep : sign * (2 * layout.xStep + (abs - 2) * layout.xStep * layout.farSpread);\n        const parallaxBase = abs + 1;\n        x = visualX + layout.shiftX;\n        y = abs * layout.yStep + scrollStrength * parallaxBase * layout.yScroll;\n        scale = Math.max(layout.minScale, 1 - abs * layout.scaleDrop);\n        rot = sign * -layout.rotStep * Math.min(abs, 2);\n        z = -abs * layout.zStep + scrollStrength * -layout.zScroll * parallaxBase;\n        const minOpacity = 0.25;\n        opacity = abs === 0 ? 1 : Math.max(minOpacity, 0.62 - abs * 0.12);\n        zIndex = 10 - abs;\n      }\n      member.classList.toggle(\"active\", i === activeIndex2);\n      member.style.zIndex = zIndex;\n      state[i].target = { x, y, z, r: rot, s: scale, o: opacity };\n    });\n  };\n  const applyTargetsNow = () => {\n    members.forEach((member, i) => {\n      const tgt = state[i].target;\n      state[i].current = Object.assign({}, tgt);\n      member.style.transform = \"translate(-50%, -50%) translateX(\" + tgt.x + \"em) translateY(\" + tgt.y + \"em) translateZ(\" + tgt.z + \"px) rotateY(\" + tgt.r + \"deg) scale(\" + tgt.s + \")\";\n      member.style.opacity = tgt.o;\n    });\n  };\n  const ease = 0.12;\n  const animate = () => {\n    if (!running) return;\n    members.forEach((member, i) => {\n      const cur = state[i].current;\n      const tgt = state[i].target;\n      cur.x += (tgt.x - cur.x) * ease;\n      cur.y += (tgt.y - cur.y) * ease;\n      cur.z += (tgt.z - cur.z) * ease;\n      cur.r += (tgt.r - cur.r) * ease;\n      cur.s += (tgt.s - cur.s) * ease;\n      cur.o += (tgt.o - cur.o) * ease;\n      member.style.transform = \"translate(-50%, -50%) translateX(\" + cur.x + \"em) translateY(\" + cur.y + \"em) translateZ(\" + cur.z + \"px) rotateY(\" + cur.r + \"deg) scale(\" + cur.s + \")\";\n      member.style.opacity = cur.o;\n    });\n    rafId = requestAnimationFrame(animate);\n  };\n  const applyDepth = (value) => {\n    scrollStrength = Math.max(0, Math.min(1, Number(value) || 0));\n    computeTargets();\n    if (staticMode) applyTargetsNow();\n  };\n  const goPrev = () => {\n    activeIndex2 = (activeIndex2 - 1 + members.length) % members.length;\n    computeTargets();\n    if (staticMode) applyTargetsNow();\n  };\n  const goNext = () => {\n    activeIndex2 = (activeIndex2 + 1) % members.length;\n    computeTargets();\n    if (staticMode) applyTargetsNow();\n  };\n  prev.addEventListener(\"click\", goPrev);\n  next.addEventListener(\"click\", goNext);\n  window.addEventListener(\"team-depth-change\", (event) => {\n    applyDepth(event && event.detail && event.detail.strength);\n  });\n  window.addEventListener(\"resize\", () => {\n    computeTargets();\n    if (staticMode) applyTargetsNow();\n  });\n  computeTargets();\n  if (staticMode) {\n    applyTargetsNow();\n    return;\n  }\n  const start = () => {\n    if (running) return;\n    running = true;\n    rafId = requestAnimationFrame(animate);\n  };\n  const stop = () => {\n    running = false;\n    if (rafId) cancelAnimationFrame(rafId);\n    rafId = null;\n  };\n  if (typeof IntersectionObserver === \"undefined\") {\n    start();\n    return;\n  }\n  const io = new IntersectionObserver((entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) start();\n      else stop();\n    });\n  }, { threshold: 0.15 });\n  io.observe(teamSection);\n}",
+    "detectRuntimeFlags": "function detectRuntimeFlags2() {\n  const ua = navigator.userAgent || \"\";\n  const isSafari = /Safari/i.test(ua) && !/Chrome|CriOS|Chromium|Edg|EdgiOS|Firefox|FxiOS|OPR|OPiOS|SamsungBrowser/i.test(ua);\n  const isCoarsePointer = window.matchMedia(\"(hover: none) and (pointer: coarse)\").matches;\n  const isTabletOrSmaller = window.matchMedia(\"(max-width: 1180px)\").matches;\n  const prefersReducedMotion = window.matchMedia(\"(prefers-reduced-motion: reduce)\").matches;\n  return {\n    isSafari,\n    isCoarsePointer,\n    isTabletOrSmaller,\n    prefersReducedMotion,\n    isPerformanceMode: isCoarsePointer || isTabletOrSmaller\n  };\n}",
+    "enforceScrollRestoration": "function enforceScrollRestoration2() {\n  if (\"scrollRestoration\" in history) {\n    history.scrollRestoration = \"manual\";\n  }\n}",
+    "infiniteCarousel": "function infiniteCarousel2() {\n  const section = document.querySelector(\".testimonial\");\n  const list = document.querySelector(\".testimonial .messages\");\n  const focus = document.querySelector(\".testimonial .focus\");\n  const authorEl = document.querySelector(\".testimonial .focus h5\");\n  if (!section || !list || !focus) return;\n  const prefersReducedMotion = window.matchMedia(\"(prefers-reduced-motion: reduce)\").matches;\n  if (prefersReducedMotion) {\n    const firstMessage = list.querySelector(\"p\");\n    if (authorEl && firstMessage && firstMessage.dataset.author) {\n      authorEl.textContent = firstMessage.dataset.author;\n    }\n    return;\n  }\n  let track = list.querySelector(\".messagesTrack\");\n  if (!track) {\n    track = document.createElement(\"div\");\n    track.className = \"messagesTrack\";\n    const nodes = Array.from(list.querySelectorAll(\"p\"));\n    nodes.forEach((node) => track.appendChild(node));\n    list.appendChild(track);\n  }\n  track.querySelectorAll(\"p[data-clone='true']\").forEach((n) => n.remove());\n  const originalItems = Array.from(track.querySelectorAll(\"p\"));\n  if (originalItems.length < 2) return;\n  originalItems.forEach((item, i) => {\n    item.dataset.realIndex = String(i);\n    const clone = item.cloneNode(true);\n    clone.dataset.clone = \"true\";\n    clone.dataset.realIndex = String(i);\n    track.appendChild(clone);\n  });\n  const allItems = Array.from(track.querySelectorAll(\"p\"));\n  let cycleHeight = 0;\n  let pos = 0;\n  let rafId = null;\n  let running = false;\n  let lastTs = 0;\n  let activeRealIndex = -1;\n  let focusPulseTimer = null;\n  let h5PulseTimer = null;\n  let lastPulsedRealIndex = -1;\n  let lastAuthorSyncedRealIndex = -1;\n  let peakTrackIndex = -1;\n  let prevActiveT = 0;\n  const speedPxPerSec = 36;\n  let focusOffset = 0;\n  let listHeight = 0;\n  let originalMetrics = [];\n  let allMetrics = [];\n  const normalizePos = () => {\n    if (!(cycleHeight > 0)) {\n      pos = 0;\n      return;\n    }\n    pos = (pos % cycleHeight + cycleHeight) % cycleHeight;\n  };\n  const getFocusOffsetInList = () => {\n    const listRect = list.getBoundingClientRect();\n    const focusRect = focus.getBoundingClientRect();\n    return focusRect.top - listRect.top + focusRect.height / 2;\n  };\n  const measure = () => {\n    listHeight = list.clientHeight;\n    focusOffset = getFocusOffsetInList();\n    const styles = window.getComputedStyle(track);\n    const parsedGap = Number.parseFloat(styles.rowGap || styles.gap || \"0\");\n    const gap = Number.isFinite(parsedGap) ? parsedGap : 0;\n    let cursor = 0;\n    originalMetrics = originalItems.map((item, realIndex) => {\n      const height = item.offsetHeight;\n      const metric = { realIndex, top: cursor, height, center: cursor + height / 2 };\n      cursor += height + gap;\n      return metric;\n    });\n    cycleHeight = cursor > 0 ? cursor - gap : 0;\n    allMetrics = [...originalMetrics, ...originalMetrics.map((m) => ({ ...m, top: m.top + cycleHeight, center: m.center + cycleHeight }))];\n    if (!(cycleHeight > 0)) {\n      const fallbackHeight = track.scrollHeight / 2;\n      cycleHeight = fallbackHeight > 0 ? fallbackHeight : 0;\n      allMetrics = [...originalMetrics, ...originalMetrics.map((m) => ({ ...m, top: m.top + cycleHeight, center: m.center + cycleHeight }))];\n    }\n    normalizePos();\n  };\n  const setActiveByCenter = () => {\n    if (!(cycleHeight > 0) || !originalMetrics.length) return;\n    const center = (pos + focusOffset) % cycleHeight;\n    let nextIndex = 0;\n    let bestDist = Number.POSITIVE_INFINITY;\n    for (let i = 0; i < originalMetrics.length; i++) {\n      const metric = originalMetrics[i];\n      const direct = Math.abs(center - metric.center);\n      const wrap = cycleHeight - direct;\n      const dist = Math.min(direct, wrap);\n      if (dist < bestDist) {\n        bestDist = dist;\n        nextIndex = i;\n      }\n    }\n    if (nextIndex === activeRealIndex) return;\n    activeRealIndex = nextIndex;\n    originalItems.forEach((item, index) => {\n      item.classList.toggle(\"active\", index === activeRealIndex);\n    });\n  };\n  const triggerFocusPulse = () => {\n    focus.classList.remove(\"is-pulse\");\n    void focus.offsetWidth;\n    focus.classList.add(\"is-pulse\");\n    if (focusPulseTimer) window.clearTimeout(focusPulseTimer);\n    focusPulseTimer = window.setTimeout(() => {\n      focus.classList.remove(\"is-pulse\");\n    }, 520);\n  };\n  const syncAuthorWithActive = ({ pulse = true } = {}) => {\n    if (!authorEl || activeRealIndex < 0) return;\n    const author = originalItems[activeRealIndex].dataset.author || \"Client \" + (activeRealIndex + 1);\n    authorEl.textContent = author;\n    if (!pulse) return;\n    authorEl.classList.remove(\"is-pulse\");\n    void authorEl.offsetWidth;\n    authorEl.classList.add(\"is-pulse\");\n    if (h5PulseTimer) window.clearTimeout(h5PulseTimer);\n    h5PulseTimer = window.setTimeout(() => {\n      authorEl.classList.remove(\"is-pulse\");\n    }, 520);\n  };\n  const updateItemVisuals = () => {\n    if (!(cycleHeight > 0) || !allMetrics.length) return;\n    const falloff = listHeight * 0.38;\n    let activeT = 0;\n    allItems.forEach((item, index) => {\n      const metric = allMetrics[index];\n      if (!metric) return;\n      let centerY = metric.center - pos;\n      centerY -= Math.round((centerY - focusOffset) / cycleHeight) * cycleHeight;\n      const dist = Math.abs(centerY - focusOffset);\n      const t = Math.max(0, 1 - dist / Math.max(1, falloff));\n      const easedT = Math.pow(t, 1.8);\n      const opacity = 0.04 + easedT * 0.96;\n      const scale = 0.82 + t * 0.3;\n      item.style.opacity = opacity.toFixed(3);\n      item.style.transform = \"scale(\" + scale.toFixed(3) + \")\";\n      if (Number(item.dataset.realIndex) === activeRealIndex && t > activeT) {\n        activeT = t;\n      }\n    });\n    if (activeRealIndex !== peakTrackIndex) {\n      peakTrackIndex = activeRealIndex;\n      prevActiveT = 0;\n    }\n    const hitPeak = activeRealIndex >= 0 && activeT >= 0.78 && activeT < prevActiveT;\n    if (hitPeak && lastPulsedRealIndex !== activeRealIndex) {\n      triggerFocusPulse();\n      lastPulsedRealIndex = activeRealIndex;\n    }\n    if (hitPeak && lastAuthorSyncedRealIndex !== activeRealIndex) {\n      syncAuthorWithActive();\n      lastAuthorSyncedRealIndex = activeRealIndex;\n    }\n    prevActiveT = activeT;\n  };\n  const frame = (ts) => {\n    if (!running) return;\n    if (!lastTs) lastTs = ts;\n    const dt = (ts - lastTs) / 1e3;\n    lastTs = ts;\n    if (!(cycleHeight > 0) || !allMetrics.length) {\n      measure();\n      rafId = requestAnimationFrame(frame);\n      return;\n    }\n    pos += speedPxPerSec * dt;\n    normalizePos();\n    track.style.transform = \"translate3d(0, \" + -pos + \"px, 0)\";\n    setActiveByCenter();\n    updateItemVisuals();\n    rafId = requestAnimationFrame(frame);\n  };\n  const start = () => {\n    if (running) return;\n    running = true;\n    lastTs = 0;\n    rafId = requestAnimationFrame(frame);\n  };\n  const stop = () => {\n    running = false;\n    if (rafId) cancelAnimationFrame(rafId);\n    rafId = null;\n  };\n  const io = new IntersectionObserver((entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) start();\n      else stop();\n    });\n  }, { threshold: 0.3 });\n  measure();\n  requestAnimationFrame(() => measure());\n  setActiveByCenter();\n  syncAuthorWithActive({ pulse: false });\n  updateItemVisuals();\n  io.observe(section);\n  window.addEventListener(\"resize\", () => measure());\n  if (document.fonts && document.fonts.ready) {\n    document.fonts.ready.then(() => measure());\n  }\n  if (typeof ResizeObserver !== \"undefined\") {\n    const ro = new ResizeObserver(() => measure());\n    ro.observe(track);\n    ro.observe(list);\n  }\n}",
+    "initViewportMetrics": "function initViewportMetrics2() {\n  const setMetrics = () => {\n    const vv = window.visualViewport;\n    const w = vv ? vv.width : window.innerWidth;\n    const h = vv ? vv.height : window.innerHeight;\n    document.documentElement.style.setProperty(\"--app-viewport-width\", w + \"px\");\n    document.documentElement.style.setProperty(\"--app-visual-viewport-height\", h + \"px\");\n  };\n  setMetrics();\n  window.addEventListener(\"resize\", setMetrics);\n  if (window.visualViewport) {\n    window.visualViewport.addEventListener(\"resize\", setMetrics);\n    window.visualViewport.addEventListener(\"scroll\", setMetrics);\n  }\n}",
+    "languageSwitcher": "function languageSwitcher2() {\n  const buttons = document.querySelectorAll(\".langButton button\");\n  const currentLang = localStorage.getItem(\"lang\") || \"en\";\n  window.__focusLang = currentLang;\n  buttons.forEach((btn) => {\n    btn.classList.toggle(\"active\", getLang(btn, buttons) === currentLang);\n  });\n  buttons.forEach((button) => {\n    button.addEventListener(\"click\", () => {\n      const selectedLang = getLang(button, buttons);\n      localStorage.setItem(\"lang\", selectedLang);\n      window.__focusLang = selectedLang;\n      if (typeof window.__focusRender === \"function\") window.__focusRender();\n      buttons.forEach((btn) => {\n        btn.classList.toggle(\"active\", getLang(btn, buttons) === selectedLang);\n      });\n    });\n  });\n}",
+    "loadingIntro": "function loadingIntro2() {\n  const prefersReduced = window.matchMedia(\"(prefers-reduced-motion: reduce)\").matches;\n  if (prefersReduced) return;\n  const body = document.body;\n  body.classList.add(\"intro-active\", \"intro-overlay\");\n  const logo = document.querySelector(\".logo\");\n  const corner = document.querySelector(\".corner\");\n  const corner2 = document.querySelector(\".corner2\");\n  let bannerStarted = false;\n  let globeZoomStarted = false;\n  let introFinished = false;\n  const startBannerReveal = () => {\n    if (bannerStarted) return;\n    bannerStarted = true;\n    body.classList.add(\"intro-banner\");\n  };\n  const startGlobeZoom = () => {\n    if (globeZoomStarted) return;\n    globeZoomStarted = true;\n    body.classList.add(\"intro-globe-zoom\");\n  };\n  const applyFinalCornerPosition = (element, cornerName) => {\n    if (!element) return;\n    const isBottomLeft = cornerName === \"bottom-left\";\n    element.style.animation = \"none\";\n    element.style.opacity = isBottomLeft ? \"1\" : \"0\";\n    element.style.pointerEvents = isBottomLeft ? \"\" : \"none\";\n    element.style.top = isBottomLeft ? \"auto\" : \"calc(var(--corner-top-offset, var(--corner-final-offset, 20px)) + var(--app-safe-top, 0px))\";\n    element.style.right = isBottomLeft ? \"auto\" : \"calc(var(--corner-right-offset, var(--corner-final-offset, 20px)) + var(--app-safe-right, 0px))\";\n    element.style.bottom = isBottomLeft ? \"calc(var(--corner-bottom-offset, var(--corner-final-offset, 20px)) + var(--app-fixed-bottom-clearance, 0px))\" : \"auto\";\n    element.style.left = isBottomLeft ? \"calc(var(--corner-left-offset, var(--corner-final-offset, 20px)) + var(--app-safe-left, 0px))\" : \"auto\";\n    element.style.transform = isBottomLeft ? \"none\" : \"rotate(180deg)\";\n  };\n  const applyFinalLogoPosition = () => {\n    if (!logo) return;\n    const styles = getComputedStyle(body);\n    const finalTopOffset = styles.getPropertyValue(\"--logo-final-top-offset\").trim() || \"0.5em\";\n    const finalLeftOffset = styles.getPropertyValue(\"--logo-final-left-offset\").trim() || \"0.5em\";\n    logo.style.setProperty(\"top\", \"calc(\" + finalTopOffset + \" + var(--app-safe-top, 0px))\", \"important\");\n    logo.style.setProperty(\"left\", \"calc(\" + finalLeftOffset + \" + var(--app-safe-left, 0px))\", \"important\");\n  };\n  const finishIntro = () => {\n    if (introFinished) return;\n    introFinished = true;\n    body.classList.remove(\"intro-globe-zoom\");\n    body.classList.add(\"intro-finished\");\n    applyFinalLogoPosition();\n    applyFinalCornerPosition(corner, \"bottom-left\");\n    applyFinalCornerPosition(corner2, \"top-right\");\n  };\n  window.setTimeout(() => {\n    body.classList.add(\"intro-reveal\");\n  }, 1e3);\n  window.setTimeout(() => {\n    body.classList.add(\"intro-corners\");\n  }, 1400);\n  const moveStart = 2600;\n  window.setTimeout(() => {\n    body.classList.add(\"intro-corners-move\");\n  }, moveStart);\n  const moveDuration = 3e3;\n  const fadeStart = moveStart + Math.round(moveDuration * 0.1);\n  window.setTimeout(() => {\n    body.classList.add(\"intro-fade\");\n  }, fadeStart);\n  const overlayFadeDuration = 1e3;\n  const globeZoomFadeProgress = 0;\n  const moveEnd = moveStart + moveDuration;\n  const globeZoomStart = fadeStart + Math.round(overlayFadeDuration * globeZoomFadeProgress);\n  const globeZoomDuration = moveEnd - globeZoomStart;\n  body.style.setProperty(\"--globe-intro-zoom-duration\", globeZoomDuration + \"ms\");\n  window.setTimeout(() => {\n    startGlobeZoom();\n  }, globeZoomStart);\n  const bannerStart = globeZoomStart + Math.round(globeZoomDuration * 0.2);\n  window.setTimeout(() => {\n    startBannerReveal();\n  }, bannerStart);\n  const introEnd = Math.max(moveEnd, globeZoomStart + globeZoomDuration) + 120;\n  window.setTimeout(() => {\n    finishIntro();\n    startBannerReveal();\n  }, introEnd);\n  if (logo) {\n    logo.addEventListener(\"animationend\", (e) => {\n      if (e.animationName !== \"logoMove\") return;\n      applyFinalLogoPosition();\n      logo.style.transform = \"translate(0, 0)\";\n      logo.style.animation = \"none\";\n    }, { once: true });\n  }\n  window.addEventListener(\"resize\", () => {\n    if (body.classList.contains(\"intro-finished\")) {\n      applyFinalLogoPosition();\n      applyFinalCornerPosition(corner, \"bottom-left\");\n      applyFinalCornerPosition(corner2, \"top-right\");\n    }\n  });\n  if (corner) {\n    corner.addEventListener(\"animationend\", (e) => {\n      if (e.animationName !== \"cornerToBottomLeft\") return;\n      applyFinalCornerPosition(corner, \"bottom-left\");\n    }, { once: true });\n  }\n  if (corner2) {\n    corner2.addEventListener(\"animationend\", (e) => {\n      if (e.animationName !== \"cornerToTopRight\") return;\n      applyFinalCornerPosition(corner2, \"top-right\");\n      startGlobeZoom();\n    }, { once: true });\n  }\n}",
+    "navbarScrollLinks": "function navbarScrollLinks2() {\n  const navLinks = document.querySelectorAll('.navBar a[href^=\"#\"]');\n  navLinks.forEach((link) => {\n    link.addEventListener(\"click\", (e) => {\n      const targetId = link.getAttribute(\"href\").slice(1);\n      const target = document.getElementById(targetId);\n      if (!target) return;\n      e.preventDefault();\n      const y = target.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2 + target.offsetHeight / 2;\n      window.scrollTo({ top: Math.max(0, y), behavior: \"smooth\" });\n    });\n  });\n}",
+    "navbarToggle": "function navbarToggle2() {\n  const navBar = document.querySelector(\".navBar\");\n  const menuButton = document.querySelector(\".menuButton\");\n  if (!navBar || !menuButton) return;\n  const applyPageScrollLock = () => {\n    const body = document.body;\n    const html = document.documentElement;\n    if (!body || !html) return;\n    if (typeof window.syncDocumentScrollLock === \"function\") {\n      window.syncDocumentScrollLock();\n      return;\n    }\n    const shouldLock = body.dataset.navScrollLock === \"1\" || body.dataset.chatScrollLock === \"1\";\n    body.classList.toggle(\"page-scroll-locked\", shouldLock);\n    html.classList.toggle(\"page-scroll-locked\", shouldLock);\n  };\n  navBar.classList.add(\"animation-two\");\n  const closeMenu = () => {\n    navBar.classList.remove(\"is-open\");\n    menuButton.classList.remove(\"is-active\");\n    menuButton.setAttribute(\"aria-expanded\", \"false\");\n    if (document.body) document.body.classList.remove(\"is-nav-open\");\n    if (document.body) document.body.dataset.navScrollLock = \"0\";\n    applyPageScrollLock();\n  };\n  const toggleMenu = () => {\n    const isOpen = navBar.classList.toggle(\"is-open\");\n    menuButton.classList.toggle(\"is-active\", isOpen);\n    menuButton.setAttribute(\"aria-expanded\", String(isOpen));\n    if (document.body) document.body.classList.toggle(\"is-nav-open\", isOpen);\n    if (document.body) document.body.dataset.navScrollLock = isOpen ? \"1\" : \"0\";\n    applyPageScrollLock();\n    if (isOpen && typeof window.__stopSmoothScroll === \"function\") {\n      window.__stopSmoothScroll();\n    }\n  };\n  menuButton.setAttribute(\"type\", \"button\");\n  menuButton.setAttribute(\"aria-label\", \"Toggle navigation\");\n  menuButton.setAttribute(\"aria-expanded\", \"false\");\n  if (document.body) {\n    document.body.classList.remove(\"is-nav-open\");\n    document.body.dataset.navScrollLock = \"0\";\n    applyPageScrollLock();\n  }\n  menuButton.addEventListener(\"click\", (e) => {\n    e.preventDefault();\n    e.stopPropagation();\n    toggleMenu();\n  });\n  navBar.querySelectorAll(\"a\").forEach((link) => {\n    link.addEventListener(\"click\", () => {\n      closeMenu();\n    });\n  });\n  document.addEventListener(\"keydown\", (e) => {\n    if (e.key === \"Escape\") closeMenu();\n  });\n  window.addEventListener(\"resize\", () => {\n    navBar.classList.add(\"animation-two\");\n    closeMenu();\n  });\n}",
+    "oneTimeScrollReveal": "function oneTimeScrollReveal2() {\n  const targets = document.querySelectorAll(\".services h2, .steps h2, .team h2, .testimonial h3, .services .content\");\n  if (!targets.length) return;\n  if (typeof IntersectionObserver === \"undefined\") {\n    targets.forEach((el) => el.classList.add(\"is-visible\"));\n    return;\n  }\n  const io = new IntersectionObserver((entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) {\n        entry.target.classList.add(\"is-visible\");\n        io.unobserve(entry.target);\n      }\n    });\n  }, { threshold: 0.1, rootMargin: \"0px 0px -10% 0px\" });\n  targets.forEach((el) => io.observe(el));\n}",
+    "ongoingScrollMotion": "function ongoingScrollMotion2() {\n  let currentY = window.scrollY;\n  let targetY = window.scrollY;\n  let rafId = null;\n  let isAnimating = false;\n  window.__smoothScrollTo = function(y) {\n    targetY = y;\n    if (!isAnimating) {\n      isAnimating = true;\n      rafId = requestAnimationFrame(step);\n    }\n  };\n  window.__smoothScrollBy = function(dy) {\n    targetY = targetY + dy;\n    if (!isAnimating) {\n      isAnimating = true;\n      rafId = requestAnimationFrame(step);\n    }\n  };\n  window.__stopSmoothScroll = function() {\n    isAnimating = false;\n    if (rafId) cancelAnimationFrame(rafId);\n    rafId = null;\n    targetY = window.scrollY;\n    currentY = window.scrollY;\n  };\n  const step = () => {\n    if (!isAnimating) return;\n    currentY += (targetY - currentY) * 0.1;\n    if (Math.abs(targetY - currentY) < 0.5) {\n      currentY = targetY;\n      window.scrollTo(0, currentY);\n      isAnimating = false;\n      return;\n    }\n    window.scrollTo(0, currentY);\n    rafId = requestAnimationFrame(step);\n  };\n}",
+    "render": "function render2() {\n  const content = window.__focusContent;\n  if (!content) return;\n  const lang = window.__focusLang || localStorage.getItem(\"lang\") || \"en\";\n  const container = document.querySelector(\".lang-content\");\n  const previousLang = window.__focusPreviousLang || lang;\n  const applyTransition = lang !== previousLang;\n  if (applyTransition && container) {\n    container.style.opacity = \"0\";\n  }\n  const applyBannerWave = window.__applyBannerTitleWave;\n  setTimeout(() => {\n    const navLinks = document.querySelectorAll(\".navBar a\");\n    const navKeys = [\"service\", \"about\", \"contact\"];\n    const forceSafariKa = document.body.classList.contains(\"is-safari\") && lang === \"ka\";\n    navLinks.forEach((el, i) => {\n      if (content.navbar[lang] && navKeys[i]) {\n        el.textContent = content.navbar[lang][navKeys[i]];\n      }\n      if (forceSafariKa) {\n        el.style.fontFamily = \"'BPG Square Banner Caps 2013 Safari', 'BPG Square Banner Caps 2013', sans-serif\";\n        el.style.fontWeight = \"400\";\n        el.style.textTransform = \"none\";\n      } else {\n        el.style.removeProperty(\"font-family\");\n        el.style.removeProperty(\"font-weight\");\n        el.style.removeProperty(\"text-transform\");\n      }\n    });\n    const bannerTitle = document.querySelector(\".bannerTitle h1\");\n    const bannerSubtitle = document.querySelector(\".bannerTitle h4\");\n    if (bannerTitle && content.banner[lang]) bannerTitle.textContent = content.banner[lang].title;\n    if (bannerSubtitle && content.banner[lang]) bannerSubtitle.textContent = content.banner[lang].subtitle;\n    if (typeof applyBannerWave === \"function\") applyBannerWave();\n    const servicesTitle = document.querySelector(\".services > h2, .services h2:first-child\");\n    if (servicesTitle && content.services[lang]) servicesTitle.textContent = content.services[lang].title;\n    const serviceItems = content.services[lang] && content.services[lang].items || [];\n    const serviceImages = document.querySelectorAll(\".services .content .images .image\");\n    serviceImages.forEach((imageEl, i) => {\n      const imagePath = serviceItems[i] && serviceItems[i].image;\n      if (!imagePath) return;\n      imageEl.dataset.imageSrc = imagePath;\n      imageEl.style.backgroundImage = \"url('\" + imagePath + \"')\";\n      imageEl.dataset.imageLoaded = \"1\";\n    });\n    if (typeof window.__refreshServiceContent === \"function\") window.__refreshServiceContent();\n    const stepsTitle = document.querySelector(\".steps h2\");\n    if (stepsTitle && content.steps[lang]) stepsTitle.textContent = content.steps[lang].title;\n    const stepsItems = document.querySelectorAll(\".steps .circle .dot\");\n    if (stepsItems.length && content.steps[lang]) {\n      const items = content.steps[lang].items;\n      stepsItems.forEach((itemEl, i) => {\n        const h3 = itemEl.querySelector(\"h3\");\n        const p = itemEl.querySelector(\"p\");\n        if (items[i]) {\n          if (h3) h3.textContent = items[i].number;\n          if (p) p.textContent = items[i].title;\n        }\n      });\n    }\n    const teamTitle = document.querySelector(\".team h2\");\n    if (teamTitle && content.team[lang]) teamTitle.textContent = content.team[lang].title;\n    const moreButton = document.querySelector(\".team .more\");\n    if (moreButton && content.team[lang]) moreButton.textContent = content.team[lang].more;\n    const teamMembers = document.querySelectorAll(\".team .teamMember\");\n    if (teamMembers.length && content.team[lang]) {\n      const members = content.team[lang].members;\n      const forceSafariKaTeam = document.body.classList.contains(\"is-safari\") && lang === \"ka\";\n      teamMembers.forEach((memberEl, i) => {\n        const roleEl = memberEl.querySelector(\"h6\");\n        const nameEl = memberEl.querySelector(\"h5\");\n        const imageEl = memberEl.querySelector(\"img\");\n        if (!members[i]) return;\n        if (roleEl) {\n          roleEl.textContent = members[i].role;\n          if (forceSafariKaTeam) {\n            roleEl.style.fontFamily = \"'BPG Square Banner Caps 2013 Safari', 'BPG Square Banner Caps 2013', sans-serif\";\n            roleEl.style.fontWeight = \"400\";\n            roleEl.style.textTransform = \"none\";\n          } else {\n            roleEl.style.removeProperty(\"font-family\");\n            roleEl.style.removeProperty(\"font-weight\");\n            roleEl.style.removeProperty(\"text-transform\");\n          }\n        }\n        if (nameEl) nameEl.textContent = members[i].name;\n        if (imageEl && members[i].image) imageEl.src = members[i].image;\n      });\n    }\n    const testimonialTitle = document.querySelector(\".testimonial .title h3\");\n    if (testimonialTitle && content.testimonial[lang]) testimonialTitle.textContent = content.testimonial[lang].title;\n    const testimonialMessages = content.testimonial[lang] && content.testimonial[lang].messages;\n    const messagesRoot = document.querySelector(\".testimonial .messages\");\n    if (messagesRoot && testimonialMessages && testimonialMessages.length) {\n      const allParagraphs = Array.from(messagesRoot.querySelectorAll(\"p\"));\n      const hasRealIndex = allParagraphs.some((p) => p.dataset.realIndex !== void 0);\n      if (hasRealIndex) {\n        allParagraphs.forEach((p, i) => {\n          const idxRaw = p.dataset.realIndex;\n          const idx = Number.isFinite(Number(idxRaw)) ? Number(idxRaw) : i;\n          const source = testimonialMessages[idx % testimonialMessages.length];\n          p.textContent = source.text;\n          p.dataset.author = source.author;\n        });\n      } else {\n        allParagraphs.forEach((p, i) => {\n          const source = testimonialMessages[i % testimonialMessages.length];\n          p.textContent = source.text;\n          p.dataset.author = source.author;\n        });\n      }\n      const currentActive = messagesRoot.querySelector(\"p.active\");\n      const focusAuthor = document.querySelector(\".testimonial .focus h5\");\n      if (focusAuthor && currentActive && currentActive.dataset.author) {\n        focusAuthor.textContent = currentActive.dataset.author;\n      } else if (focusAuthor) {\n        focusAuthor.textContent = testimonialMessages[0].author;\n      }\n    }\n    const contactContent = content.contact && content.contact[lang];\n    if (contactContent) {\n      const footerTitle = document.querySelector(\"footer h2\");\n      if (footerTitle) footerTitle.textContent = contactContent.brand;\n      const formLegend = document.querySelector(\"footer form legend\");\n      if (formLegend) formLegend.textContent = contactContent.form.legend;\n      const nameInput = document.querySelector(\"footer form #name\");\n      const emailInput = document.querySelector(\"footer form #email\");\n      const messageInput = document.querySelector(\"footer form #message\");\n      const submitButton = document.querySelector(\"footer form button[type='submit']\");\n      if (nameInput) nameInput.placeholder = contactContent.form.namePlaceholder;\n      if (emailInput) emailInput.placeholder = contactContent.form.emailPlaceholder;\n      if (messageInput) messageInput.placeholder = contactContent.form.messagePlaceholder;\n      if (submitButton) submitButton.textContent = contactContent.form.submit;\n      const contactLabels = document.querySelectorAll(\"footer .contact h5\");\n      if (contactLabels[0]) contactLabels[0].textContent = contactContent.details.phoneLabel;\n      if (contactLabels[1]) contactLabels[1].textContent = contactContent.details.emailLabel;\n      if (contactLabels[2]) contactLabels[2].textContent = contactContent.details.socialLabel;\n      const contactValues = document.querySelectorAll(\"footer .contact p\");\n      if (contactValues[0]) contactValues[0].textContent = contactContent.details.phone;\n      if (contactValues[1]) contactValues[1].textContent = contactContent.details.email;\n      const addressTitle = document.querySelector(\"footer .address hgroup h5\");\n      if (addressTitle) addressTitle.textContent = contactContent.address.title;\n      const addressLines = document.querySelectorAll(\"footer .address hgroup p span\");\n      if (addressLines[0]) addressLines[0].textContent = contactContent.address.line1;\n      if (addressLines[1]) addressLines[1].textContent = contactContent.address.line2;\n      const footerParagraph = document.querySelector(\"footer > p\");\n      if (footerParagraph) {\n        footerParagraph.textContent = contactContent.paragraph;\n        if (typeof window.__textWave === \"function\") window.__textWave(contactContent.paragraph);\n      }\n    }\n    document.body.dataset.lang = lang;\n    window.__focusPreviousLang = lang;\n    if (applyTransition && container) {\n      container.style.opacity = \"1\";\n    }\n  }, applyTransition ? 150 : 0);\n}",
+    "scrollDepth": "function scrollDepth2() {\n  const teamSection = document.querySelector(\".team\");\n  if (!teamSection) return;\n  let ticking = false;\n  const TEAM_DEPTH_EVENT = \"team-depth-change\";\n  const onScroll = () => {\n    if (ticking) return;\n    ticking = true;\n    requestAnimationFrame(() => {\n      ticking = false;\n      const rect = teamSection.getBoundingClientRect();\n      const vh = window.innerHeight;\n      const visible = Math.max(0, Math.min(rect.height, vh - Math.max(0, rect.top), rect.bottom));\n      const strength = rect.height > 0 ? visible / rect.height : 0;\n      window.dispatchEvent(new CustomEvent(TEAM_DEPTH_EVENT, { detail: { strength } }));\n    });\n  };\n  window.addEventListener(\"scroll\", onScroll, { passive: true });\n}",
+    "scrollOverlayShade": "function scrollOverlayShade2() {\n  const langContent = document.querySelector(\".lang-content\");\n  if (!langContent) return;\n  let ticking = false;\n  const onScroll = () => {\n    if (ticking) return;\n    ticking = true;\n    requestAnimationFrame(() => {\n      ticking = false;\n      const scrollY = window.scrollY || window.pageYOffset;\n      const docHeight = document.documentElement.scrollHeight - window.innerHeight;\n      const progress = docHeight > 0 ? Math.min(1, scrollY / Math.min(docHeight, window.innerHeight * 2)) : 0;\n      const shade = Math.max(0.3, 1 - progress * 0.5);\n      langContent.style.setProperty(\"--overlayShade\", shade.toFixed(3));\n    });\n  };\n  window.addEventListener(\"scroll\", onScroll, { passive: true });\n  onScroll();\n}",
+    "scrollParallax": "function scrollParallax2() {\n  const addressImgs = document.querySelectorAll(\"footer .address img\");\n  if (!addressImgs.length) return;\n  let ticking = false;\n  const onScroll = () => {\n    if (ticking) return;\n    ticking = true;\n    requestAnimationFrame(() => {\n      ticking = false;\n      const scrollY = window.scrollY || window.pageYOffset;\n      addressImgs.forEach((img, i) => {\n        const factor = i % 2 === 0 ? 0.12 : -0.08;\n        img.style.transform = \"translateY(\" + scrollY * factor + \"px)\";\n      });\n    });\n  };\n  window.addEventListener(\"scroll\", onScroll, { passive: true });\n}",
+    "scrollSwitcher": "function scrollSwitcher2() {\n  const content = this.scope.content_data();\n  const service = document.querySelector(\".service\");\n  const dots = document.querySelectorAll(\".navigationDots .dot\");\n  const contentWrap = document.querySelector(\".content\");\n  const servicesSection = document.querySelector(\".services\");\n  const imagesWrap = document.querySelector(\".content .images\");\n  const dotsWrap = document.querySelector(\".navigationDots\");\n  const mobileServicesMedia = window.matchMedia(\"(max-width: 1180px), (hover: none) and (pointer: coarse)\");\n  let scrollTicking = false;\n  let touchStartY = 0;\n  let pendingDotIndex = null;\n  let pendingDotTop = null;\n  let keepDotsVisibleUntilManualScroll = false;\n  let isStaticLayout = mobileServicesMedia.matches;\n  let manualServiceTouchStartY = 0;\n  let manualServiceScrollStartTop = 0;\n  let manualServiceScrollEl = null;\n  let rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;\n  let contentTopOffset = contentWrap ? parseFloat(getComputedStyle(contentWrap).top) || 0 : 0;\n  let contentFlowOffset = contentWrap ? contentWrap.offsetTop : 0;\n  const isServiceScrollLocked = () => !isStaticLayout && document.body && document.body.dataset.serviceScrollLock === \"1\";\n  const syncServiceScrollLock = (shouldLock) => {\n    if (!document.body) return;\n    document.body.dataset.serviceScrollLock = !isStaticLayout && shouldLock ? \"1\" : \"0\";\n  };\n  const holdDotsVisible = () => {\n    keepDotsVisibleUntilManualScroll = true;\n  };\n  const releaseDotsVisibilityHold = () => {\n    keepDotsVisibleUntilManualScroll = false;\n  };\n  const getActiveServiceScrollEl = () => {\n    if (!isStaticLayout || !service || !service.classList.contains(\"active\")) return null;\n    const scrollEl = service.querySelector(\".service-content\");\n    if (!scrollEl) return null;\n    if (scrollEl.scrollHeight <= scrollEl.clientHeight + 1) return null;\n    return scrollEl;\n  };\n  const resetManualServiceTouch = () => {\n    manualServiceScrollEl = null;\n    manualServiceTouchStartY = 0;\n    manualServiceScrollStartTop = 0;\n  };\n  const onServiceTouchStart = (e) => {\n    if (!isStaticLayout || !service || !service.classList.contains(\"active\")) return;\n    if (e.target instanceof Element && e.target.closest(\"button\")) return;\n    const touch = e.touches && e.touches[0];\n    const scrollEl = getActiveServiceScrollEl();\n    if (!touch || !scrollEl) {\n      resetManualServiceTouch();\n      return;\n    }\n    manualServiceTouchStartY = touch.clientY;\n    manualServiceScrollStartTop = scrollEl.scrollTop;\n    manualServiceScrollEl = scrollEl;\n  };\n  const onServiceTouchMove = (e) => {\n    if (!manualServiceScrollEl) return;\n    const touch = e.touches && e.touches[0];\n    if (!touch) return;\n    const maxScroll = Math.max(0, manualServiceScrollEl.scrollHeight - manualServiceScrollEl.clientHeight);\n    const nextTop = manualServiceScrollStartTop + (manualServiceTouchStartY - touch.clientY);\n    manualServiceScrollEl.scrollTop = clamp(nextTop, 0, maxScroll);\n    e.preventDefault();\n  };\n  const canScrollInsideServiceContent = (target, deltaY) => {\n    if (!(target instanceof Element)) return false;\n    const nested = target.closest(\".service-content\");\n    if (!nested) return false;\n    const maxScroll = nested.scrollHeight - nested.clientHeight;\n    if (maxScroll <= 1) return false;\n    if (deltaY > 0) return nested.scrollTop + nested.clientHeight < nested.scrollHeight - 1;\n    if (deltaY < 0) return nested.scrollTop > 0;\n    return false;\n  };\n  const onDocumentWheelLock = (e) => {\n    if (!isServiceScrollLocked()) return;\n    if (canScrollInsideServiceContent(e.target, e.deltaY)) return;\n    e.preventDefault();\n  };\n  const onDocumentTouchStartLock = (e) => {\n    if (!isServiceScrollLocked()) return;\n    const touch = e.touches && e.touches[0];\n    if (!touch) return;\n    touchStartY = touch.clientY;\n  };\n  const onDocumentTouchMoveLock = (e) => {\n    if (!isServiceScrollLocked()) return;\n    const touch = e.touches && e.touches[0];\n    if (!touch) return;\n    const deltaY = touchStartY - touch.clientY;\n    if (canScrollInsideServiceContent(e.target, deltaY)) {\n      touchStartY = touch.clientY;\n      return;\n    }\n    e.preventDefault();\n    touchStartY = touch.clientY;\n  };\n  const applyPageScrollLock = () => {\n    const body = document.body;\n    const html = document.documentElement;\n    if (!body || !html) return;\n    if (typeof window.syncDocumentScrollLock === \"function\") {\n      window.syncDocumentScrollLock();\n      return;\n    }\n    const shouldLock = body.dataset.navScrollLock === \"1\" || body.dataset.chatScrollLock === \"1\";\n    body.classList.toggle(\"page-scroll-locked\", shouldLock);\n    html.classList.toggle(\"page-scroll-locked\", shouldLock);\n  };\n  const applyServicesSectionHeight = () => {\n    if (!servicesSection || !contentWrap) return;\n    contentWrap.classList.toggle(\"is-static\", isStaticLayout);\n    if (isStaticLayout) {\n      servicesSection.style.removeProperty(\"min-height\");\n      return;\n    }\n    const contentObj = this.scope.content_data();\n    const itemsCount = contentObj ? contentObj.services[getLanguage()].items.length : 4;\n    const supportsSmallViewportUnit = typeof CSS !== \"undefined\" && typeof CSS.supports === \"function\" && CSS.supports(\"height\", \"1svh\");\n    const viewportUnit = supportsSmallViewportUnit ? \"svh\" : \"vh\";\n    servicesSection.style.minHeight = itemsCount * 200 + viewportUnit;\n  };\n  const getStickyScrollBounds = () => {\n    if (isStaticLayout) return null;\n    if (!contentWrap || !servicesSection) return null;\n    const sectionTop = servicesSection.offsetTop;\n    const sectionHeight = servicesSection.offsetHeight;\n    const contentHeight = contentWrap.offsetHeight;\n    const stickyStart = sectionTop + contentFlowOffset - contentTopOffset;\n    const sectionEnd = sectionTop + sectionHeight - contentHeight - contentTopOffset;\n    return { stickyStart, sectionEnd };\n  };\n  const syncContentFlowOffset = () => {\n    if (isStaticLayout) return;\n    if (!contentWrap || !servicesSection) return;\n    const contentRect = contentWrap.getBoundingClientRect();\n    const hasReachedSticky = contentRect.top <= contentTopOffset + 2;\n    if (hasReachedSticky && contentFlowOffset > 0) return;\n    const scrollY = window.scrollY || window.pageYOffset;\n    contentFlowOffset = scrollY + contentRect.top - servicesSection.offsetTop;\n  };\n  const scrollPageToServiceIndex = (index) => {\n    if (isStaticLayout) {\n      setActiveIndex(index, { scrollImage: true, forceScroll: true });\n      return null;\n    }\n    syncContentFlowOffset();\n    const bounds = getStickyScrollBounds();\n    if (!bounds) return null;\n    const { stickyStart, sectionEnd } = bounds;\n    const range = Math.max(0, sectionEnd - stickyStart);\n    const maxImageScroll = imagesWrap ? Math.max(0, imagesWrap.scrollHeight - imagesWrap.clientHeight) : 0;\n    const imageEl = getServiceImageEls()[index];\n    const contentObj = this.scope.content_data();\n    const fallbackCount = contentObj ? Math.max(1, contentObj.services[getLanguage()].items.length - 1) : 3;\n    const fallbackProgress = fallbackCount > 0 ? index / fallbackCount : 0;\n    const progress = imageEl && maxImageScroll > 0 ? imageEl.offsetTop / maxImageScroll : fallbackProgress;\n    const targetTop = stickyStart + range * getScrollProgressFromImageProgress(progress);\n    if (typeof window.__smoothScrollTo === \"function\") {\n      window.__smoothScrollTo(targetTop);\n      return targetTop;\n    }\n    window.scrollTo({ top: targetTop, left: 0, behavior: \"smooth\" });\n    return targetTop;\n  };\n  const updateDotsPosition = () => {\n    if (!contentWrap || !dotsWrap) return;\n    if (isStaticLayout) {\n      dotsWrap.style.removeProperty(\"left\");\n      dotsWrap.style.removeProperty(\"right\");\n      dotsWrap.style.removeProperty(\"top\");\n      dotsWrap.style.removeProperty(\"bottom\");\n      dotsWrap.style.removeProperty(\"transform\");\n      return;\n    }\n    const visualViewport = window.visualViewport || null;\n    const contentRect = contentWrap.getBoundingClientRect();\n    const dotsRect = dotsWrap.getBoundingClientRect();\n    const gap = 1.5 * rootFontSize;\n    const viewportW = visualViewport ? visualViewport.width : window.innerWidth || document.documentElement.clientWidth;\n    const viewportOffsetLeft = visualViewport ? visualViewport.offsetLeft : 0;\n    if (viewportW <= 560) {\n      const centerX = viewportOffsetLeft + viewportW / 2;\n      dotsWrap.style.left = centerX + \"px\";\n      dotsWrap.style.right = \"auto\";\n      dotsWrap.style.top = \"auto\";\n      dotsWrap.style.bottom = \"calc(1.1em + var(--app-fixed-bottom-clearance, 0px))\";\n      dotsWrap.style.transform = \"translateX(-50%)\";\n      return;\n    }\n    let left = contentRect.right + gap;\n    const minLeft = viewportOffsetLeft + rootFontSize * 0.5;\n    const maxLeft = viewportOffsetLeft + viewportW - dotsRect.width - rootFontSize * 0.5;\n    left = Math.max(minLeft, Math.min(maxLeft, left));\n    dotsWrap.style.left = left + \"px\";\n    dotsWrap.style.right = \"auto\";\n    dotsWrap.style.top = \"50%\";\n    dotsWrap.style.bottom = \"auto\";\n    dotsWrap.style.transform = \"translateY(-50%)\";\n  };\n  const setActiveIndex = (index, { scrollImage = true, forceScroll = false, imageBehavior = \"smooth\", immediateText = false } = {}) => {\n    const isSameIndex = index === activeIndex;\n    const shouldRender = !isSameIndex || immediateText;\n    if (isSameIndex) {\n      preloadServiceImagesAround(index);\n    } else {\n      activeIndex = index;\n      preloadServiceImagesAround(index);\n    }\n    if (shouldRender) {\n      const isActive = service ? service.classList.contains(\"active\") : false;\n      renderService(index, { updateContent: isActive, immediate: immediateText });\n    }\n    const imagesWrapEl = document.querySelector(\".content .images\");\n    if (imagesWrapEl && scrollImage && (!isSameIndex || forceScroll)) {\n      imagesWrapEl.scrollTo({ top: getImageScrollTarget(imagesWrapEl, index), behavior: imageBehavior });\n    }\n    const dotsEl = document.querySelectorAll(\".navigationDots .dot\");\n    dotsEl.forEach((dot, i) => {\n      dot.classList.toggle(\"active\", i === index);\n    });\n  };\n  window.__refreshServiceContent = () => {\n    renderService(activeIndex);\n  };\n  if (service) {\n    service.addEventListener(\"click\", (e) => {\n      if (e.target.closest(\".service-content\")) return;\n      if (isStaticLayout && !e.target.closest(\"button\")) return;\n      const isActive = service.classList.toggle(\"active\");\n      if (isActive && typeof window.__stopSmoothScroll === \"function\") window.__stopSmoothScroll();\n      syncServiceScrollLock(isActive);\n      applyPageScrollLock();\n      resetManualServiceTouch();\n      if (typeof window.__queueViewportMetricsSync === \"function\") window.__queueViewportMetricsSync();\n      if (isActive) {\n        renderService(activeIndex, { updateContent: true });\n        setActiveIndex(activeIndex, { scrollImage: true, forceScroll: true, imageBehavior: isStaticLayout ? \"auto\" : \"smooth\" });\n      }\n    });\n  }\n  dots.forEach((dot, i) => {\n    dot.addEventListener(\"click\", (e) => {\n      e.preventDefault();\n      holdDotsVisible();\n      if (isStaticLayout) {\n        pendingDotIndex = null;\n        pendingDotTop = null;\n        setActiveIndex(i, { scrollImage: true, forceScroll: true });\n        return;\n      }\n      if (service && service.classList.contains(\"active\")) {\n        pendingDotIndex = null;\n        pendingDotTop = null;\n        setActiveIndex(i, { scrollImage: true, forceScroll: true });\n        return;\n      }\n      pendingDotIndex = i;\n      setActiveIndex(i, { scrollImage: false });\n      pendingDotTop = scrollPageToServiceIndex(i);\n      const scrollY = window.scrollY || window.pageYOffset;\n      if (pendingDotTop === null || Math.abs(scrollY - pendingDotTop) <= 2) {\n        pendingDotIndex = null;\n        pendingDotTop = null;\n      }\n    });\n  });\n  applyServicesSectionHeight();\n  syncContentFlowOffset();\n  const handleScroll = () => {\n    if (!service || !contentWrap || !servicesSection) return;\n    updateDotsPosition();\n    if (isStaticLayout) {\n      if (dotsWrap) dotsWrap.classList.add(\"is-visible\");\n      return;\n    }\n    const contentRect = contentWrap.getBoundingClientRect();\n    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight || document.documentElement.clientHeight;\n    const isContentVisible = contentRect.bottom > 0 && contentRect.top < viewportHeight;\n    syncContentFlowOffset();\n    const scrollY = window.scrollY || window.pageYOffset;\n    const bounds = getStickyScrollBounds();\n    if (!bounds) return;\n    const { stickyStart, sectionEnd } = bounds;\n    const denom = sectionEnd - stickyStart;\n    if (denom <= 0) return;\n    const progressRaw = (scrollY - stickyStart) / denom;\n    const scrollProgress = clamp(progressRaw, 0, 1);\n    const dotsEnd = getScrollProgressFromImageProgress(1);\n    const showDots = keepDotsVisibleUntilManualScroll && isContentVisible || pendingDotIndex !== null || progressRaw >= 0 && progressRaw <= dotsEnd;\n    if (dotsWrap) dotsWrap.classList.toggle(\"is-visible\", showDots);\n    if (service.classList.contains(\"active\")) return;\n    const imageProgress = getImageProgressFromScrollProgress(scrollProgress);\n    const imageScrollTop = imagesWrap ? (imagesWrap.scrollHeight - imagesWrap.clientHeight) * imageProgress : 0;\n    if (pendingDotIndex !== null) {\n      setActiveIndex(pendingDotIndex, { scrollImage: false });\n      if (imagesWrap) imagesWrap.scrollTop = imageScrollTop;\n      if (pendingDotTop !== null && Math.abs(scrollY - pendingDotTop) <= 2) {\n        pendingDotIndex = null;\n        pendingDotTop = null;\n      }\n      return;\n    }\n    const contentObj = this.scope.content_data();\n    const itemsCount = contentObj ? contentObj.services[getLanguage()].items.length : 4;\n    const fallbackIndex = Math.min(itemsCount - 1, Math.max(0, Math.floor(imageProgress * itemsCount)));\n    const index = imagesWrap ? getClosestImageIndex(imagesWrap, imageScrollTop) : fallbackIndex;\n    setActiveIndex(index, { scrollImage: false });\n    if (imagesWrap) imagesWrap.scrollTop = imageScrollTop;\n  };\n  const handleImagesScroll = () => {\n    if (!service || !imagesWrap) return;\n    if (isStaticLayout) return;\n    if (service.classList.contains(\"active\")) return;\n    if (pendingDotIndex !== null) return;\n    const maxScroll = imagesWrap.scrollHeight - imagesWrap.clientHeight;\n    if (maxScroll <= 0) return;\n    const index = getClosestImageIndex(imagesWrap);\n    setActiveIndex(index, { scrollImage: false });\n  };\n  const onScroll = () => {\n    if (scrollTicking) return;\n    scrollTicking = true;\n    requestAnimationFrame(() => {\n      scrollTicking = false;\n      handleScroll();\n    });\n  };\n  const onResize = () => {\n    isStaticLayout = mobileServicesMedia.matches;\n    rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;\n    if (isStaticLayout) syncServiceScrollLock(false);\n    else if (service && service.classList.contains(\"active\")) syncServiceScrollLock(true);\n    resetManualServiceTouch();\n    applyServicesSectionHeight();\n    contentTopOffset = contentWrap ? parseFloat(getComputedStyle(contentWrap).top) || 0 : 0;\n    if (imagesWrap) imagesWrap.scrollTop = getImageScrollTarget(imagesWrap, activeIndex);\n    pendingDotIndex = null;\n    pendingDotTop = null;\n    syncContentFlowOffset();\n    onScroll();\n  };\n  window.addEventListener(\"scroll\", onScroll, { passive: true });\n  window.addEventListener(\"wheel\", releaseDotsVisibilityHold, { passive: true });\n  window.addEventListener(\"touchmove\", releaseDotsVisibilityHold, { passive: true });\n  window.addEventListener(\"services:dots-visibility-hold\", holdDotsVisible);\n  window.addEventListener(\"resize\", onResize);\n  if (window.visualViewport) window.visualViewport.addEventListener(\"resize\", onResize);\n  document.addEventListener(\"wheel\", onDocumentWheelLock, { passive: false });\n  document.addEventListener(\"touchstart\", onDocumentTouchStartLock, { passive: true });\n  document.addEventListener(\"touchmove\", onDocumentTouchMoveLock, { passive: false });\n  if (service) {\n    service.addEventListener(\"touchstart\", onServiceTouchStart, { passive: true });\n    service.addEventListener(\"touchmove\", onServiceTouchMove, { passive: false });\n    service.addEventListener(\"touchend\", resetManualServiceTouch, { passive: true });\n    service.addEventListener(\"touchcancel\", resetManualServiceTouch, { passive: true });\n  }\n  if (imagesWrap) {\n    imagesWrap.addEventListener(\"scroll\", handleImagesScroll, { passive: true });\n    imagesWrap.addEventListener(\"wheel\", (e) => {\n      if (isStaticLayout) return;\n      e.preventDefault();\n      if (typeof window.__smoothScrollBy === \"function\") window.__smoothScrollBy(e.deltaY);\n      else window.scrollBy({ top: e.deltaY, left: 0, behavior: \"auto\" });\n    }, { passive: false });\n  }\n  if (dots.length > 0) setActiveIndex(0);\n  if (document.body) {\n    syncServiceScrollLock(false);\n    applyPageScrollLock();\n  }\n  updateDotsPosition();\n  onScroll();\n}",
+    "textWave": "function textWave2(text) {\n  const footerP = document.querySelector(\"footer > p\");\n  if (!footerP) return;\n  const source = text || footerP.textContent || \"\";\n  if (!source.trim()) return;\n  footerP.textContent = \"\";\n  const frag = document.createDocumentFragment();\n  let charIndex = 0;\n  const tokens = source.split(/(\\s+)/);\n  tokens.forEach((token) => {\n    if (!token) return;\n    if (/^\\s+$/.test(token)) {\n      frag.appendChild(document.createTextNode(token));\n      return;\n    }\n    const word = document.createElement(\"span\");\n    word.className = \"wave-word\";\n    Array.from(token).forEach((ch) => {\n      const span = document.createElement(\"span\");\n      span.className = \"wave-char\";\n      span.style.setProperty(\"--char-index\", String(charIndex));\n      span.textContent = ch;\n      word.appendChild(span);\n      charIndex += 1;\n    });\n    frag.appendChild(word);\n  });\n  footerP.appendChild(frag);\n  footerP.classList.add(\"is-wave-active\");\n  window.__textWave = textWave2;\n}",
+    "toggleCrispChat": "function toggleCrispChat2() {\n  const overlay = document.getElementById(\"crisp-chat-overlay\");\n  const chatBtn = document.querySelector(\".chatButton\");\n  if (!overlay) return;\n  const isOpen = overlay.classList.toggle(\"is-visible\");\n  if (chatBtn) chatBtn.classList.toggle(\"is-active\", isOpen);\n  document.body.classList.toggle(\"chat-panel-open\", isOpen);\n  if (chatBtn) chatBtn.setAttribute(\"aria-expanded\", String(isOpen));\n  if (isOpen) {\n    overlay.removeAttribute(\"aria-hidden\");\n    overlay.removeAttribute(\"inert\");\n    const iframe = document.getElementById(\"crisp-chat-frame\");\n    if (iframe && iframe.dataset.src && !iframe.src) {\n      iframe.src = iframe.dataset.src;\n    }\n    if (document.body) document.body.dataset.chatScrollLock = \"1\";\n  } else {\n    overlay.setAttribute(\"aria-hidden\", \"true\");\n    overlay.setAttribute(\"inert\", \"\");\n    if (document.body) document.body.dataset.chatScrollLock = \"0\";\n  }\n}",
+    "viewportMetrics": "function viewportMetrics2() {\n}"
+  },
+  "pages": {
+    "/": {
+      "extends": "Page",
+      "onRender": "function(el) {\n    if (el.__initialized) return;\n    el.__initialized = true;\n    el.call(\"appInit\");\n    el.call(\"render\");\n    el.call(\"languageSwitcher\");\n    el.call(\"navbarToggle\");\n    el.call(\"navbarScrollLinks\");\n    el.call(\"contactForm\");\n    el.call(\"loadingIntro\");\n    el.call(\"bannerAnimations\");\n    el.call(\"circleRotation\");\n    el.call(\"depthCarousel\");\n    el.call(\"infiniteCarousel\");\n    el.call(\"scrollSwitcher\");\n    el.call(\"oneTimeScrollReveal\");\n    el.call(\"scrollDepth\");\n    el.call(\"scrollParallax\");\n    el.call(\"scrollOverlayShade\");\n    el.call(\"ongoingScrollMotion\");\n    el.call(\"textWave\");\n  }",
+      "Logo": {
+        "extends": "Logo",
+        "class": "logo",
+        "color": "cream",
+        "width": "fit-content",
+        "lineHeight": ".85em",
+        "fontSize": "4em",
+        "fontWeight": "800",
+        "position": "fixed",
+        "fontFamily": "var(--font-en)",
+        "mixBlendMode": "difference",
+        "zIndex": "15",
+        "Span": {
+          "text": "F"
+        }
+      },
+      "Corner": {
+        "extends": "Corner",
+        "class": "corner",
+        "--corner-size": "1.2em",
+        "width": "var(--corner-size)",
+        "height": "var(--corner-size)"
+      },
+      "Corner_2": {
+        "extends": "Corner2",
+        "class": "corner2",
+        "--corner-size": "1.2em",
+        "width": "var(--corner-size)",
+        "height": "var(--corner-size)"
+      },
+      "Button": {
+        "extends": "MenuButton",
+        "class": "menuButton",
+        "tag": "button",
+        "position": "fixed",
+        "top": "calc(1.05em + var(--app-safe-top, 0px))",
+        "right": "calc(1.05em + var(--app-safe-right, 0px))",
+        "flow": "column",
+        "border": "1px solid rgba(255, 241, 227, 0.45)",
+        "round": ".1em",
+        "background": "transparent",
+        "width": "3em",
+        "height": "3em",
+        "flexFlow": "column",
+        "gap": ".35em",
+        "align": "center center",
+        "cursor": "pointer",
+        "padding": "-",
+        "transition": "border-radius 0.25s var(--ease-io)",
+        "zIndex": "140",
+        "font": "inherit",
+        "Div": {},
+        "Div_1": {}
+      },
+      "LangButton": {
+        "extends": "LangButton",
+        "class": "langButton",
+        "flow": "column",
+        "align": "center",
+        "gap": "-",
+        "maxWidth": "fit-content",
+        "fontSize": ".9em",
+        "Button": {
+          "extends": "Button",
+          "text": "ქარ",
+          "data-lang": "ka",
+          "lang": "ka"
+        },
+        "Button_1": {
+          "extends": "Button",
+          "text": "ENG",
+          "data-lang": "en",
+          "lang": "en"
+        }
+      },
+      "Button_5": {
+        "extends": "ChatButton",
+        "class": "chatButton",
+        "tag": "button",
+        "backdropFilter": "none",
+        "font": "inherit",
+        "background": "none",
+        "border": "none",
+        "cursor": "pointer",
+        "id": "open-chat-btn",
+        "type": "button",
+        "onclick": "window.toggleCrispChat()",
+        "aria-expanded": "false",
+        "aria-label": "Open chat",
+        "Span": {
+          "text": "chat"
+        }
+      },
+      "ChatPanelOverlay": {
+        "extends": "ChatPanelOverlay",
+        "id": "crisp-chat-overlay",
+        "aria-hidden": "true",
+        "inert": "",
+        "Section": {
+          "extends": "Section",
+          "tag": "section",
+          "id": "crisp-chat-panel",
+          "role": "dialog",
+          "aria-modal": "true",
+          "aria-label": "Focus Agency live chat",
+          "Iframe": {
+            "extends": "Iframe",
+            "tag": "iframe",
+            "id": "crisp-chat-frame",
+            "title": "Focus Agency live chat",
+            "data-src": "https://go.crisp.chat/chat/embed/?website_id=f48830e3-9049-4f5f-96bb-e91b246dcd6c",
+            "loading": "eager",
+            "referrerpolicy": "origin"
+          }
+        }
+      },
+      "LangContent": {
+        "extends": "LangContent",
+        "class": "lang-content",
+        "backgroundAttachment": "scroll",
+        "backgroundPosition": "center top",
+        "backgroundSize": "100% auto",
+        "backgroundRepeat": "repeat-y",
+        "transition": "opacity 0.25s ease,\n  letter-spacing 0.25s ease,\n  line-height 0.25s ease",
+        "opacity": "1",
+        "width": "100%",
+        "minWidth": "100%",
+        "minHeight": "var(--app-viewport-height, 100vh)",
+        "background": "#000",
+        "position": "relative",
+        "isolation": "isolate",
+        "animation": "none",
+        "overflowX": "clip",
+        "StarsBg": {
+          "extends": "StarsBg",
+          "class": "starsBg",
+          "aria-hidden": "true"
+        },
+        "Overlay": {
+          "extends": "Overlay",
+          "class": "overlay"
+        },
+        "Overlay2": {
+          "extends": "Overlay2",
+          "class": "overlay_2"
+        },
+        "GlobeFrame": {
+          "extends": "GlobeFrame",
+          "class": "globeFrame",
+          "position": "fixed",
+          "right": "-5em",
+          "bottom": "-5em",
+          "zIndex": "1",
+          "pointerEvents": "none",
+          "transformOrigin": "64% 58%",
+          "aria-hidden": "true",
+          "Img": {
+            "extends": "Img",
+            "tag": "img",
+            "class": "globe",
+            "alt": "",
+            "decoding": "async"
+          }
+        },
+        "Nav": {
+          "extends": "Nav",
+          "class": "navBar",
+          "tag": "nav",
+          "backdropFilter": "none",
+          "flow": "column",
+          "flexFlow": "column",
+          "gap": ".5em",
+          "Link": {
+            "extends": "Link",
+            "href": "#services"
+          },
+          "Link_1": {
+            "extends": "Link",
+            "href": "#about"
+          },
+          "Link_2": {
+            "extends": "Link",
+            "href": "#contact"
+          }
+        },
+        "Section": {
+          "extends": "Section",
+          "class": "banner",
+          "tag": "section",
+          "width": "100%",
+          "maxWidth": "100%",
+          "position": "relative",
+          "background": "transparent",
+          "overflow": "hidden",
+          "Hgroup": {
+            "extends": "Hgroup",
+            "class": "bannerTitle",
+            "tag": "hgroup",
+            "maxWidth": "26em",
+            "position": "relative",
+            "zIndex": "2",
+            "H1": {
+              "extends": "H1",
+              "tag": "h1",
+              "data-banner": "title"
+            },
+            "H4": {
+              "extends": "H4",
+              "tag": "h4",
+              "data-banner": "subtitle"
+            }
+          }
+        },
+        "Section_6": {
+          "extends": "Section",
+          "class": "services",
+          "tag": "section",
+          "width": "90%",
+          "maxWidth": "92em",
+          "padding": "X1",
+          "position": "relative",
+          "margin": "-",
+          "paddingBottom": "Z2",
+          "H2": {
+            "extends": "H2",
+            "tag": "h2",
+            "data-services": "title"
+          },
+          "Content": {
+            "extends": "Content",
+            "class": "content",
+            "id": "services",
+            "Images": {
+              "extends": "Images",
+              "class": "images",
+              "Image": {
+                "extends": "Image",
+                "class": "image"
+              },
+              "Image_1": {
+                "extends": "Image",
+                "class": "image"
+              },
+              "Image_2": {
+                "extends": "Image",
+                "class": "image"
+              },
+              "Image_3": {
+                "extends": "Image",
+                "class": "image"
+              }
+            },
+            "Service": {
+              "extends": "Service",
+              "class": "service",
+              "backdropFilter": "blur(20px) saturate(1.1)",
+              "width": "25em",
+              "height": "15em",
+              "padding": "W2",
+              "round": "var(--radius-l)",
+              "background": "linear-gradient(140deg, rgba(224, 77, 77, .15), rgba(0, 0, 0, 0.2))",
+              "color": "white",
+              "cursor": "pointer",
+              "boxShadow": "0 10px 30px rgba(0, 0, 0, 0.15),\n  inset 0 0 0 0.08em rgba(255, 255, 255, 0.1)",
+              "Hgroup": {
+                "extends": "Hgroup",
+                "H3": {
+                  "extends": "H3",
+                  "tag": "h3",
+                  "text": "social media marketing"
+                },
+                "P": {
+                  "extends": "P",
+                  "tag": "p",
+                  "text": "Content creation and advertising",
+                  "margin": "-"
+                }
+              },
+              "UL": {
+                "extends": "UL",
+                "tag": "ul",
+                "listStyle": "none",
+                "margin": "-",
+                "padding": "-",
+                "flow": "column",
+                "flexWrap": "wrap",
+                "gap": "-",
+                "maxWidth": "100%",
+                "paddingLeft": "-"
+              },
+              "Button": {
+                "extends": "Button",
+                "tag": "button",
+                "font": "inherit",
+                "background": "none",
+                "border": "none",
+                "cursor": "pointer",
+                "type": "button",
+                "Img": {
+                  "extends": "Img",
+                  "src": "arrow.png"
+                },
+                "Img_1": {
+                  "extends": "Img",
+                  "src": "close.png"
+                }
+              }
+            }
+          },
+          "Nav": {
+            "extends": "Nav",
+            "class": "navigationDots",
+            "tag": "nav",
+            "--dot-hit-size": "2.25em",
+            "--dot-visual-size": "1.1em",
+            "--dot-ring-size": "0.12em",
+            "flow": "column",
+            "gap": "-",
+            "align": "center",
+            "width": "fit-content",
+            "aria-label": "Services navigation",
+            "Button": {
+              "class": "dot",
+              "aria-label": "Service 1",
+              "extends": "Button1"
+            },
+            "Button_1": {
+              "class": "dot",
+              "aria-label": "Service 2",
+              "extends": "Button1"
+            },
+            "Button_2": {
+              "class": "dot",
+              "aria-label": "Service 3",
+              "extends": "Button1"
+            },
+            "Button_3": {
+              "class": "dot",
+              "aria-label": "Service 4",
+              "extends": "Button1"
+            }
+          }
+        },
+        "Section_7": {
+          "extends": "Section",
+          "class": "steps",
+          "tag": "section",
+          "position": "relative",
+          "minHeight": "72em",
+          "padding": "X1",
+          "H2": {
+            "extends": "H2",
+            "tag": "h2",
+            "text": "Flow to Work"
+          },
+          "Circle": {
+            "extends": "Circle",
+            "class": "circle",
+            "width": "42em",
+            "height": "42em",
+            "border": ".5px solid cream",
+            "position": "absolute",
+            "top": "50%",
+            "left": "0",
+            "round": "100%",
+            "transform": "translate(-200px, -40%)",
+            "Dot": {
+              "extends": "Dot",
+              "class": "dot dot1",
+              "Hgroup": {
+                "extends": "Hgroup",
+                "H3": {
+                  "extends": "H3",
+                  "tag": "h3",
+                  "text": "01"
+                },
+                "P": {
+                  "extends": "P",
+                  "tag": "p",
+                  "text": "initial consultation",
+                  "margin": "-"
+                }
+              }
+            },
+            "Dot_1": {
+              "extends": "Dot",
+              "class": "dot dot2",
+              "Hgroup": {
+                "extends": "Hgroup",
+                "H3": {
+                  "extends": "H3",
+                  "tag": "h3",
+                  "text": "02"
+                },
+                "P": {
+                  "extends": "P",
+                  "tag": "p",
+                  "text": "Strategy development and implementation",
+                  "margin": "-"
+                }
+              }
+            },
+            "Dot_2": {
+              "extends": "Dot",
+              "class": "dot dot3",
+              "Hgroup": {
+                "extends": "Hgroup",
+                "H3": {
+                  "extends": "H3",
+                  "tag": "h3",
+                  "text": "03"
+                },
+                "P": {
+                  "extends": "P",
+                  "tag": "p",
+                  "text": "Review and final refinement",
+                  "margin": "-"
+                }
+              }
+            }
+          }
+        },
+        "Section_8": {
+          "extends": "Section",
+          "class": "team",
+          "tag": "section",
+          "width": "100%",
+          "background": "transparent",
+          "position": "relative",
+          "padding": "-",
+          "zIndex": "10",
+          "margin": "-",
+          "maxWidth": "1366px",
+          "paddingBottom": "W1",
+          "H2": {
+            "extends": "H2",
+            "tag": "h2",
+            "text": "Our Team"
+          },
+          "Contents": {
+            "extends": "Contents",
+            "class": "contents",
+            "id": "about",
+            "TeamMember": {
+              "extends": "TeamMember",
+              "class": "teamMember",
+              "H6": {
+                "extends": "H6",
+                "tag": "h6",
+                "text": "Founder"
+              },
+              "H5": {
+                "extends": "H5",
+                "tag": "h5",
+                "text": "Giorgi"
+              },
+              "Img": {
+                "extends": "Img",
+                "tag": "img",
+                "display": "block",
+                "maxWidth": "100%",
+                "src": "choni2.webp",
+                "alt": "",
+                "loading": "lazy",
+                "decoding": "async"
+              }
+            },
+            "TeamMember_1": {
+              "extends": "TeamMember",
+              "class": "teamMember",
+              "H6": {
+                "extends": "H6",
+                "tag": "h6",
+                "text": "Project Manager"
+              },
+              "H5": {
+                "extends": "H5",
+                "tag": "h5",
+                "text": "Liza"
+              },
+              "Img": {
+                "extends": "Img",
+                "tag": "img",
+                "display": "block",
+                "maxWidth": "100%",
+                "src": "liza2.webp",
+                "alt": "",
+                "loading": "lazy",
+                "decoding": "async"
+              }
+            },
+            "TeamMember_2": {
+              "extends": "TeamMember",
+              "class": "teamMember",
+              "H6": {
+                "extends": "H6",
+                "tag": "h6",
+                "text": "Graphic Designer"
+              },
+              "H5": {
+                "extends": "H5",
+                "tag": "h5",
+                "text": "Mariami"
+              },
+              "Img": {
+                "extends": "Img",
+                "tag": "img",
+                "display": "block",
+                "maxWidth": "100%",
+                "src": "mariami2.webp",
+                "alt": "",
+                "loading": "lazy",
+                "decoding": "async"
+              }
+            },
+            "TeamMember_3": {
+              "extends": "TeamMember",
+              "class": "teamMember",
+              "H6": {
+                "extends": "H6",
+                "tag": "h6",
+                "text": "Videograph"
+              },
+              "H5": {
+                "extends": "H5",
+                "tag": "h5",
+                "text": "Luka"
+              },
+              "Img": {
+                "extends": "Img",
+                "tag": "img",
+                "display": "block",
+                "maxWidth": "100%",
+                "src": "luka2.webp",
+                "alt": "",
+                "loading": "lazy",
+                "decoding": "async"
+              }
+            }
+          },
+          "NavArrows": {
+            "extends": "NavArrows",
+            "class": "navArrows",
+            "zIndex": "100",
+            "flow": "column",
+            "gap": "-",
+            "Button": {
+              "class": "prev",
+              "aria-label": "Previous team member",
+              "extends": "Button4"
+            },
+            "Button_1": {
+              "class": "next",
+              "aria-label": "Next team member",
+              "extends": "Button4"
+            }
+          },
+          "Button": {
+            "extends": "Button",
+            "class": "more",
+            "text": "know us better"
+          }
+        },
+        "Section_9": {
+          "extends": "Section",
+          "class": "testimonial",
+          "tag": "section",
+          "maxWidth": "fit-content",
+          "margin": "-",
+          "height": "fit-content",
+          "padding": "Z2",
+          "position": "relative",
+          "zIndex": "100",
+          "paddingBottom": "W1",
+          "width": "100%",
+          "Title": {
+            "extends": "Title",
+            "class": "title",
+            "Img": {
+              "src": "quotation-mark.png",
+              "extends": "Img2"
+            },
+            "H3": {
+              "extends": "H3",
+              "tag": "h3",
+              "text": "people talks"
+            }
+          },
+          "TestimonialContent": {
+            "extends": "TestimonialContent",
+            "class": "testimonialContent",
+            "Messages": {
+              "extends": "Messages",
+              "class": "messages",
+              "P": {
+                "extends": "P",
+                "tag": "p",
+                "text": "I had an excellent experience everything was done accurately and on time",
+                "margin": "-",
+                "data-author": "James Harisson"
+              },
+              "P_1": {
+                "extends": "P",
+                "tag": "p",
+                "text": "The team was responsive and execution quality was consistently high.",
+                "margin": "-",
+                "data-author": "Nina Carter"
+              },
+              "P_2": {
+                "extends": "P",
+                "tag": "p",
+                "text": "Strong communication and fast delivery through the whole process.",
+                "margin": "-",
+                "data-author": "Robert Allen"
+              },
+              "P_3": {
+                "extends": "P",
+                "tag": "p",
+                "text": "They understood the brief quickly and improved our results month by month.",
+                "margin": "-",
+                "data-author": "Maria Brown"
+              },
+              "P_4": {
+                "extends": "P",
+                "tag": "p",
+                "text": "Everything was clear, on schedule, and aligned with our business goals.",
+                "margin": "-",
+                "data-author": "David Smith"
+              },
+              "P_5": {
+                "extends": "P",
+                "tag": "p",
+                "text": "Creative ideas with practical implementation and measurable impact.",
+                "margin": "-",
+                "data-author": "Sophia Miller"
+              },
+              "P_6": {
+                "extends": "P",
+                "tag": "p",
+                "text": "Professional workflow, transparent updates, and great final output.",
+                "margin": "-",
+                "data-author": "Alex Johnson"
+              }
+            },
+            "Focus": {
+              "extends": "Focus",
+              "class": "focus",
+              "width": "25em",
+              "height": "15em",
+              "position": "relative",
+              "FocusCorner": {
+                "extends": "FocusCorner"
+              },
+              "FocusCorner_1": {
+                "extends": "FocusCorner"
+              },
+              "FocusCorner_2": {
+                "extends": "FocusCorner"
+              },
+              "FocusCorner_3": {
+                "extends": "FocusCorner"
+              },
+              "H5": {
+                "extends": "H5",
+                "tag": "h5",
+                "text": "James harisson"
+              }
+            }
+          }
+        },
+        "Footer": {
+          "extends": "Footer",
+          "tag": "footer",
+          "width": "100%",
+          "zIndex": "10",
+          "position": "relative",
+          "paddingLeft": "W2",
+          "minHeight": "fit-content",
+          "paddingBottom": "calc(6em + var(--app-fixed-bottom-clearance, 0px))",
+          "--footerGlow": "0",
+          "paddingRight": "W2",
+          "H2": {
+            "extends": "H2",
+            "tag": "h2",
+            "text": "focus agency"
+          },
+          "Form": {
+            "extends": "Form",
+            "tag": "form",
+            "flow": "column",
+            "flexFlow": "column",
+            "maxWidth": "100%",
+            "maxHeight": "fit-content",
+            "position": "relative",
+            "gap": "-",
+            "minWidth": "100%",
+            "padding": "-",
+            "action": "https://formspree.io/f/xqeypeyg",
+            "method": "POST",
+            "id": "contact",
+            "Legend": {
+              "extends": "Legend",
+              "tag": "legend",
+              "text": "have a question?",
+              "fontSize": "1.2em",
+              "color": "rgba(255, 241, 227, .7)",
+              "marginBottom": ".5em",
+              "fontWeight": "300",
+              "margin": "-"
+            },
+            "Input": {
+              "extends": "Input",
+              "tag": "input",
+              "font": "inherit",
+              "border": "1px solid rgba(255, 241, 227, .1)",
+              "fontSize": "1em",
+              "round": "2em",
+              "padding": "-",
+              "color": "cream",
+              "margin": "-",
+              "background": "transparent",
+              "id": "name",
+              "name": "name",
+              "type": "text",
+              "autocomplete": "name",
+              "placeholder": "name"
+            },
+            "Input_2": {
+              "extends": "Input",
+              "tag": "input",
+              "font": "inherit",
+              "border": "1px solid rgba(255, 241, 227, .1)",
+              "fontSize": "1em",
+              "round": "2em",
+              "padding": "-",
+              "color": "cream",
+              "margin": "-",
+              "background": "transparent",
+              "id": "email",
+              "name": "email",
+              "type": "email",
+              "autocomplete": "email",
+              "placeholder": "email",
+              "required": ""
+            },
+            "Textarea": {
+              "extends": "Textarea",
+              "tag": "textarea",
+              "font": "inherit",
+              "minWidth": "28em",
+              "maxWidth": "28em",
+              "padding": "-",
+              "background": "transparent",
+              "border": "1px solid rgba(255, 241, 227, .1)",
+              "round": "2em",
+              "resize": "none",
+              "color": "cream",
+              "id": "message",
+              "name": "message",
+              "rows": "6",
+              "placeholder": "shoot a message",
+              "required": ""
+            },
+            "Button": {
+              "extends": "Button",
+              "tag": "button",
+              "text": "send",
+              "font": "inherit",
+              "background": "none",
+              "border": "none",
+              "cursor": "pointer",
+              "type": "submit"
+            },
+            "P": {
+              "extends": "P",
+              "tag": "p",
+              "margin": "-",
+              "position": "absolute",
+              "left": "0",
+              "bottom": "-2.2em",
+              "color": "rgba(255, 241, 227, .85)",
+              "fontSize": "0.84375em",
+              "paddingLeft": "-",
+              "lineHeight": "1.2",
+              "id": "contact-status",
+              "role": "status",
+              "aria-live": "polite",
+              "hidden": ""
+            }
+          },
+          "Contact": {
+            "extends": "Contact",
+            "class": "contact",
+            "marginLeft": "-",
+            "H5": {
+              "extends": "H5",
+              "tag": "h5",
+              "text": "call us any time"
+            },
+            "P": {
+              "extends": "P",
+              "tag": "p",
+              "text": "+995 595 893 399",
+              "margin": "-"
+            },
+            "H5_2": {
+              "extends": "H5",
+              "tag": "h5",
+              "text": "connect with us by email"
+            },
+            "P_3": {
+              "extends": "P",
+              "tag": "p",
+              "text": "gamarjoba@focusagency.ge",
+              "margin": "-"
+            },
+            "H5_4": {
+              "extends": "H5",
+              "tag": "h5",
+              "text": "Follow us"
+            },
+            "Nav": {
+              "extends": "Nav",
+              "class": "socialLinks",
+              "tag": "nav",
+              "Link": {
+                "Img": {
+                  "src": "facebook.png",
+                  "extends": "Img2"
+                },
+                "extends": "Link3"
+              },
+              "Link_1": {
+                "Img": {
+                  "src": "instagram.png",
+                  "extends": "Img2"
+                },
+                "extends": "Link3"
+              }
+            }
+          },
+          "Address": {
+            "extends": "Address",
+            "class": "address",
+            "position": "relative",
+            "maxWidth": "100%",
+            "padding": "Z2",
+            "marginLeft": "auto",
+            "marginRight": "W2",
+            "marginTop": "-",
+            "paddingRight": "-",
+            "marginBottom": "W1",
+            "paddingTop": "X2",
+            "paddingBottom": "-",
+            "paddingLeft": "-",
+            "minWidth": "100%",
+            "Hgroup": {
+              "extends": "Hgroup",
+              "tag": "hgroup",
+              "H5": {
+                "extends": "H5",
+                "tag": "h5",
+                "text": "you're welcome to visit us"
+              },
+              "P": {
+                "extends": "P",
+                "tag": "p",
+                "margin": "-",
+                "Span": {
+                  "text": "Tbilisi, Saburtalo"
+                },
+                "Span_1": {
+                  "text": "Alexandre Khazbegi street N24 g"
+                }
+              }
+            },
+            "Img": {
+              "src": "street.webp",
+              "extends": "Img2"
+            },
+            "Img_2": {
+              "src": "street2.webp",
+              "extends": "Img2"
+            }
+          },
+          "P": {
+            "extends": "P",
+            "tag": "p",
+            "text": "Our agency was founded with one main purpose — to support growth and success of businesses. Every client is\n        unique to us, which is why we always listen carefully to your needs and create strategies that deliver real\n        results.",
+            "margin": "-"
+          }
+        }
+      }
+    }
+  },
+  "designSystem": {
+    "color": {
+      "black": "rgba(0, 0, 0, 1)",
+      "cream": "rgba(255, 241, 227, 1)",
+      "red": "rgba(224, 77, 77, 1)",
+      "grey": "rgba(80, 78, 78, 1)",
+      "white": "rgba(255, 255, 255, 1)"
+    },
+    "gradient": {},
+    "theme": {
+      "dark": {
+        "background": "black",
+        "color": "cream"
+      }
+    },
+    "font": {
+      "Exo 2": [
+        {
+          "url": "Exo2-Thin.woff2",
+          "fontWeight": "100",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        },
+        {
+          "url": "Exo2-ExtraLight.woff2",
+          "fontWeight": "200",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        },
+        {
+          "url": "Exo2-Light.woff2",
+          "fontWeight": "300",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        },
+        {
+          "url": "Exo2-Regular.woff2",
+          "fontWeight": "400",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        },
+        {
+          "url": "Exo2-Medium.woff2",
+          "fontWeight": "500",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        },
+        {
+          "url": "Exo2-SemiBold.woff2",
+          "fontWeight": "600",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        },
+        {
+          "url": "Exo2-Bold.woff2",
+          "fontWeight": "700",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        },
+        {
+          "url": "Exo2-ExtraBold.woff2",
+          "fontWeight": "800",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        },
+        {
+          "url": "Exo2-Black.woff2",
+          "fontWeight": "900",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        }
+      ],
+      "BPG Square Banner Caps 2013": [
+        {
+          "url": "bpg-square-banner-caps-2013-webfont.woff2",
+          "fontWeight": "400",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        }
+      ],
+      "BPG Square Banner Caps 2013 Safari": [
+        {
+          "url": "bpg-square-banner-caps-2013-webfont.ttf",
+          "fontWeight": "400",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        }
+      ],
+      "BPG Square Banner 2013": [
+        {
+          "url": "bpg-square-banner-2013-webfont.woff2",
+          "fontWeight": "400",
+          "fontStyle": "normal",
+          "fontDisplay": "swap"
+        }
+      ]
+    },
+    "font_family": {},
+    "typography": {
+      "lineHeight": {
+        "tight": "0.9em",
+        "compact": "1.1em",
+        "body": "1.4em"
+      },
+      "letterSpacing": {
+        "tight": "-0.02em",
+        "wide": "0.06em"
+      }
+    },
+    "spacing": {},
+    "timing": {
+      "fast": "0.2s",
+      "med": "0.45s",
+      "slow": "0.9s",
+      "easeOut": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+      "easeIo": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "easeSoft": "cubic-bezier(0.25, 0.1, 0.25, 1)"
+    },
+    "class": {
+      "introActive": {
+        "overflow": "hidden"
+      },
+      "pageScrollLocked": {
+        "overflow": "hidden",
+        "height": "100vh"
+      },
+      "waveChar": {
+        "display": "inline-block",
+        "opacity": "0.25",
+        "transition": "opacity 0.25s ease"
+      },
+      "waveWord": {
+        "display": "inline-block",
+        "whiteSpace": "nowrap"
+      },
+      "waveActive": {
+        "& .waveChar": {
+          "animation": "bannerTitleWave 2.4s linear infinite"
+        }
+      },
+      "waveCharFooter": {
+        "display": "inline-block",
+        "opacity": "0.25",
+        "transition": "opacity 0.25s ease"
+      },
+      "teamReveal": {
+        "opacity": "0",
+        "transform": "translateX(var(--swim-x, 0em)) translateY(calc(1.2em + var(--swim-y, 0em))) rotate(var(--swim-r, 0deg))",
+        "transition": "opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1)"
+      },
+      "teamRevealVisible": {
+        "opacity": "1",
+        "transform": "translateX(var(--swim-x, 0em)) translateY(var(--swim-y, 0em)) rotate(var(--swim-r, 0deg))"
+      },
+      "dataReveal": {
+        "opacity": "0",
+        "transform": "translateY(0.4em)",
+        "filter": "blur(4px)",
+        "transition": "opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease"
+      },
+      "dataRevealVisible": {
+        "opacity": "1",
+        "transform": "translateY(0)",
+        "filter": "blur(0)"
+      },
+      "serviceCard": {
+        "position": "relative"
+      }
+    },
+    "grid": {},
+    "icons": {},
+    "shape": {
+      "s": "0.8em",
+      "m": "1.6em",
+      "l": "2.6em",
+      "round": "999px",
+      "pill": "5em"
+    },
+    "reset": {},
+    "animation": {
+      "starsFieldLoopMobile": {
+        "0%": {
+          "transform": "translate3d(1.5%, 0.8%, 0) scale(1.03)",
+          "opacity": "0.56"
+        },
+        "50%": {
+          "transform": "translate3d(0, 0, 0) scale(1.06)",
+          "opacity": "0.62"
+        },
+        "100%": {
+          "transform": "translate3d(-1.5%, -0.8%, 0) scale(1.09)",
+          "opacity": "0.56"
+        }
+      },
+      "rotateGlobe": {
+        "0%": {
+          "transform": "rotate(0deg) scale(1)"
+        },
+        "50%": {
+          "transform": "rotate(180deg) scale(1.05)"
+        },
+        "100%": {
+          "transform": "rotate(360deg) scale(1)"
+        }
+      },
+      "globeIntroZoomOut": {
+        "0%": {
+          "transform": "translate3d(2vw, 1.5vh, 0) scale(1.2)"
+        },
+        "100%": {
+          "transform": "translate3d(0, 0, 0) scale(1)"
+        }
+      },
+      "footerTextWave": {
+        "0%": {
+          "opacity": "0.22"
+        },
+        "35%": {
+          "opacity": "1"
+        },
+        "100%": {
+          "opacity": "0.22"
+        }
+      },
+      "starsFieldLoop": {
+        "0%": {
+          "transform": "translate3d(6%, 3.2%, 0) scale(1.04)",
+          "opacity": "0.56"
+        },
+        "25%": {
+          "transform": "translate3d(2.4%, 1.4%, 0) scale(1.09)",
+          "opacity": "0.66"
+        },
+        "50%": {
+          "transform": "translate3d(0, 0, 0) scale(1.13)",
+          "opacity": "0.7"
+        },
+        "75%": {
+          "transform": "translate3d(-2.4%, -1.4%, 0) scale(1.17)",
+          "opacity": "0.62"
+        },
+        "100%": {
+          "transform": "translate3d(-6%, -3.2%, 0) scale(1.21)",
+          "opacity": "0.56"
+        }
+      },
+      "starsIntroSharp": {
+        "0%": {
+          "opacity": "0.12",
+          "transform": "translate3d(0, 1.7%, 0) scale(0.42)"
+        },
+        "32%": {
+          "opacity": "0.72",
+          "transform": "translate3d(0.8%, 0.9%, 0) scale(0.86)"
+        },
+        "64%": {
+          "opacity": "0.42",
+          "transform": "translate3d(1.9%, 0.2%, 0) scale(1.1)"
+        },
+        "100%": {
+          "opacity": "0.56",
+          "transform": "translate3d(6%, 3.2%, 0) scale(1.04)"
+        }
+      },
+      "starsTwinkle": {
+        "0%, 100%": {
+          "opacity": "0.25"
+        },
+        "50%": {
+          "opacity": "0.6"
+        }
+      },
+      "quoteShake": {
+        "0%, 100%": {
+          "transform": "translate(0, 0) rotate(0deg)"
+        },
+        "20%": {
+          "transform": "translate(0.04em, -0.03em) rotate(-0.55deg)"
+        },
+        "45%": {
+          "transform": "translate(-0.032em, 0.024em) rotate(0.45deg)"
+        },
+        "70%": {
+          "transform": "translate(0.024em, -0.018em) rotate(-0.35deg)"
+        },
+        "85%": {
+          "transform": "translate(-0.016em, 0.012em) rotate(0.25deg)"
+        }
+      },
+      "messagePeakPulse": {
+        "0%": {
+          "filter": "drop-shadow(0 0 0 rgba(255, 241, 227, 0))",
+          "textShadow": "0 0 0 rgba(255, 241, 227, 0)"
+        },
+        "45%": {
+          "filter": "drop-shadow(0 0 1.2em rgba(255, 241, 227, 0.75))",
+          "textShadow": "0 0 0.9em rgba(255, 241, 227, 0.6)"
+        },
+        "100%": {
+          "filter": "drop-shadow(0 0 0 rgba(255, 241, 227, 0))",
+          "textShadow": "0 0 0 rgba(255, 241, 227, 0)"
+        }
+      },
+      "focusFramePulse": {
+        "0%": {
+          "transform": "translate(-50%, -50%) scale(1)"
+        },
+        "45%": {
+          "transform": "translate(-50%, -50%) scale(0.988)"
+        },
+        "100%": {
+          "transform": "translate(-50%, -50%) scale(1)"
+        }
+      },
+      "focusRingPulse": {
+        "0%": {
+          "opacity": "0",
+          "transform": "scale(0.94)"
+        },
+        "40%": {
+          "opacity": "0.85",
+          "transform": "scale(1)"
+        },
+        "100%": {
+          "opacity": "0",
+          "transform": "scale(1.08)"
+        }
+      },
+      "focusCornerFlash": {
+        "0%": {
+          "opacity": "1",
+          "filter": "drop-shadow(0 0 0 rgba(224, 77, 77, 0))",
+          "background": "red"
+        },
+        "40%": {
+          "opacity": "1",
+          "filter": "drop-shadow(0 0 0.55em rgba(224, 77, 77, 0.9))",
+          "background": "rgba(255, 129, 129, 1)"
+        },
+        "100%": {
+          "opacity": "1",
+          "filter": "drop-shadow(0 0 0 rgba(224, 77, 77, 0))",
+          "background": "red"
+        }
+      },
+      "focusNamePulse": {
+        "0%": {
+          "opacity": "1",
+          "transform": "translateY(0) scale(1)",
+          "textShadow": "0 0 0 rgba(255, 241, 227, 0)"
+        },
+        "45%": {
+          "opacity": "1",
+          "transform": "translateY(0) scale(1.02)",
+          "textShadow": "0 0 0.65em rgba(255, 241, 227, 0.45)"
+        },
+        "100%": {
+          "opacity": "1",
+          "transform": "translateY(0) scale(1)",
+          "textShadow": "0 0 0 rgba(255, 241, 227, 0)"
+        }
+      },
+      "bannerTitleIn": {
+        "0%": {
+          "opacity": "0",
+          "transform": "translateY(0.4em)",
+          "filter": "blur(6px)"
+        },
+        "100%": {
+          "opacity": "1",
+          "transform": "translateY(0)",
+          "filter": "blur(0)"
+        }
+      },
+      "bannerSubtitleIn": {
+        "0%": {
+          "opacity": "0",
+          "transform": "translateY(0.4em)",
+          "filter": "blur(6px)"
+        },
+        "100%": {
+          "opacity": ".4",
+          "transform": "translateY(0)",
+          "filter": "blur(0)"
+        }
+      },
+      "bannerTitleWave": {
+        "0%": {
+          "opacity": "0.22"
+        },
+        "35%": {
+          "opacity": "1"
+        },
+        "100%": {
+          "opacity": "0.22"
+        }
+      },
+      "logoDotPulse": {
+        "0%": {
+          "transform": "scale(1)",
+          "opacity": "0.5"
+        },
+        "50%": {
+          "transform": "scale(1.1)",
+          "opacity": "1"
+        },
+        "100%": {
+          "transform": "scale(1)",
+          "opacity": "0.5"
+        }
+      },
+      "logoPulseStrong": {
+        "0%": {
+          "transform": "translate(-50%, -50%) scale(0.94)",
+          "opacity": "0.6"
+        },
+        "60%": {
+          "transform": "translate(-50%, -50%) scale(1.08)",
+          "opacity": "1"
+        },
+        "100%": {
+          "transform": "translate(-50%, -50%) scale(1)",
+          "opacity": "1"
+        }
+      },
+      "cornerPulseStrongLeft": {
+        "0%": {
+          "opacity": "0",
+          "transform": "translate(-50%, -50%) translate(-2em, 2em) scale(0.92)"
+        },
+        "60%": {
+          "opacity": "1",
+          "transform": "translate(-50%, -50%) translate(-2em, 2em) scale(1.08)"
+        },
+        "100%": {
+          "opacity": "1",
+          "transform": "translate(-50%, -50%) translate(-2em, 2em) scale(1)"
+        }
+      },
+      "cornerPulseStrongRight": {
+        "0%": {
+          "opacity": "0",
+          "transform": "translate(-50%, -50%) translate(2em, -2em) rotate(180deg) scale(0.92)"
+        },
+        "60%": {
+          "opacity": "1",
+          "transform": "translate(-50%, -50%) translate(2em, -2em) rotate(180deg) scale(1.08)"
+        },
+        "100%": {
+          "opacity": "1",
+          "transform": "translate(-50%, -50%) translate(2em, -2em) rotate(180deg) scale(1)"
+        }
+      },
+      "logoMove": {
+        "0%": {
+          "top": "50%",
+          "left": "50%",
+          "transform": "translate(-50%, -50%) scale(1)"
+        },
+        "70%": {
+          "top": "calc(var(--logo-final-top-offset, 0.5em) + var(--app-safe-top, 0px))",
+          "left": "calc(var(--logo-final-left-offset, 0.5em) + var(--app-safe-left, 0px))",
+          "transform": "translate(0, 0) scale(1.02)"
+        },
+        "100%": {
+          "top": "calc(var(--logo-final-top-offset, 0.5em) + var(--app-safe-top, 0px))",
+          "left": "calc(var(--logo-final-left-offset, 0.5em) + var(--app-safe-left, 0px))",
+          "transform": "translate(0, 0) scale(1)"
+        }
+      },
+      "cornerToBottomLeft": {
+        "0%": {
+          "transform": "translate(-50%, -50%) translate(-2em, 2em) rotate(0deg)"
+        },
+        "50%": {
+          "transform": "translate(\n    calc(\n      -50vw +\n      var(--corner-left-offset, var(--corner-final-offset, 20px)) +\n      var(--app-safe-left, 0px)\n    ),\n    calc(\n      50vh -\n      var(--corner-bottom-offset, var(--corner-final-offset, 20px)) -\n      var(--app-fixed-bottom-clearance, 0px) -\n      var(--corner-size, 1.2em)\n    )\n    ) rotate(0deg)"
+        },
+        "100%": {
+          "transform": "translate(\n    calc(\n      -50vw +\n      var(--corner-left-offset, var(--corner-final-offset, 20px)) +\n      var(--app-safe-left, 0px)\n    ),\n    calc(\n      50vh -\n      var(--corner-bottom-offset, var(--corner-final-offset, 20px)) -\n      var(--app-fixed-bottom-clearance, 0px) -\n      var(--corner-size, 1.2em)\n    )\n    ) rotate(0deg)"
+        }
+      },
+      "cornerToTopRight": {
+        "0%": {
+          "transform": "translate(-50%, -50%) translate(2em, -2em) rotate(180deg)",
+          "opacity": "1"
+        },
+        "30%": {
+          "transform": "translate(\n    calc(\n      50vw -\n      var(--corner-right-offset, var(--corner-final-offset, 20px)) -\n      var(--app-safe-right, 0px) -\n      var(--corner-size, 1.2em)\n    ),\n    calc(\n      -50vh +\n      var(--corner-top-offset, var(--corner-final-offset, 20px)) +\n      var(--app-safe-top, 0px)\n    )\n    ) rotate(180deg)",
+          "opacity": "0"
+        },
+        "100%": {
+          "transform": "translate(\n    calc(\n      50vw -\n      var(--corner-right-offset, var(--corner-final-offset, 20px)) -\n      var(--app-safe-right, 0px) -\n      var(--corner-size, 1.2em)\n    ),\n    calc(\n      -50vh +\n      var(--corner-top-offset, var(--corner-final-offset, 20px)) +\n      var(--app-safe-top, 0px)\n    )\n    ) rotate(180deg)",
+          "opacity": "0"
+        }
+      }
+    },
+    "media": {
+      "tabletM": "(max-width: 1180px), (hover: none) and (pointer: coarse)",
+      "screenM": "(max-width: 1680px)",
+      "mobileL": "(max-width: 560px)",
+      "tabletXS": "(max-width: 860px)",
+      "mobileS": "(max-width: 375px)",
+      "tabletS": "(max-width: 1024px)",
+      "tabletL": "(max-width: 1366px)",
+      "tabletXSS": "(max-width: 768px)",
+      "mobileM": "(max-width: 480px)",
+      "mobileXS": "(max-width: 350px)"
+    },
+    "cases": {
+      "@screenM": {
+        "fontSize": "16px"
+      }
+    }
+  },
+  "useReset": true,
+  "useVariable": true,
+  "useFontImport": true,
+  "useDefaultConfig": true,
+  "useDocumentTheme": true,
+  "globalTheme": "dark",
+  "globalScope": {
+    "IMG": {
+      "globe": "globe.webp",
+      "stars": "stars5.webp",
+      "choni": "choni2.webp",
+      "liza": "liza2.webp",
+      "mariami": "mariami2.webp",
+      "luka": "luka2.webp",
+      "quotationMark": "quotation-mark.png",
+      "facebook": "facebook.png",
+      "instagram": "instagram.png",
+      "linkedin": "linkedin.png",
+      "arrow": "arrow.png",
+      "arrowLeft": "arrowLeft.png",
+      "arrowRight": "arrowRight.png",
+      "close": "close.png",
+      "send": "send.png",
+      "media": "media.webp",
+      "analytics": "analytics.webp",
+      "web": "web.webp",
+      "video": "video.webp",
+      "street": "street.webp",
+      "street2": "street2.webp"
+    },
+    "render": "function render2() {\n  const content = window.__focusContent;\n  if (!content) return;\n  const lang = window.__focusLang || localStorage.getItem(\"lang\") || \"en\";\n  const container = document.querySelector(\".lang-content\");\n  const previousLang = window.__focusPreviousLang || lang;\n  const applyTransition = lang !== previousLang;\n  if (applyTransition && container) {\n    container.style.opacity = \"0\";\n  }\n  const applyBannerWave = window.__applyBannerTitleWave;\n  setTimeout(() => {\n    const navLinks = document.querySelectorAll(\".navBar a\");\n    const navKeys = [\"service\", \"about\", \"contact\"];\n    const forceSafariKa = document.body.classList.contains(\"is-safari\") && lang === \"ka\";\n    navLinks.forEach((el, i) => {\n      if (content.navbar[lang] && navKeys[i]) {\n        el.textContent = content.navbar[lang][navKeys[i]];\n      }\n      if (forceSafariKa) {\n        el.style.fontFamily = \"'BPG Square Banner Caps 2013 Safari', 'BPG Square Banner Caps 2013', sans-serif\";\n        el.style.fontWeight = \"400\";\n        el.style.textTransform = \"none\";\n      } else {\n        el.style.removeProperty(\"font-family\");\n        el.style.removeProperty(\"font-weight\");\n        el.style.removeProperty(\"text-transform\");\n      }\n    });\n    const bannerTitle = document.querySelector(\".bannerTitle h1\");\n    const bannerSubtitle = document.querySelector(\".bannerTitle h4\");\n    if (bannerTitle && content.banner[lang]) bannerTitle.textContent = content.banner[lang].title;\n    if (bannerSubtitle && content.banner[lang]) bannerSubtitle.textContent = content.banner[lang].subtitle;\n    if (typeof applyBannerWave === \"function\") applyBannerWave();\n    const servicesTitle = document.querySelector(\".services > h2, .services h2:first-child\");\n    if (servicesTitle && content.services[lang]) servicesTitle.textContent = content.services[lang].title;\n    const serviceItems = content.services[lang] && content.services[lang].items || [];\n    const serviceImages = document.querySelectorAll(\".services .content .images .image\");\n    serviceImages.forEach((imageEl, i) => {\n      const imagePath = serviceItems[i] && serviceItems[i].image;\n      if (!imagePath) return;\n      imageEl.dataset.imageSrc = imagePath;\n      imageEl.style.backgroundImage = \"url('\" + imagePath + \"')\";\n      imageEl.dataset.imageLoaded = \"1\";\n    });\n    if (typeof window.__refreshServiceContent === \"function\") window.__refreshServiceContent();\n    const stepsTitle = document.querySelector(\".steps h2\");\n    if (stepsTitle && content.steps[lang]) stepsTitle.textContent = content.steps[lang].title;\n    const stepsItems = document.querySelectorAll(\".steps .circle .dot\");\n    if (stepsItems.length && content.steps[lang]) {\n      const items = content.steps[lang].items;\n      stepsItems.forEach((itemEl, i) => {\n        const h3 = itemEl.querySelector(\"h3\");\n        const p = itemEl.querySelector(\"p\");\n        if (items[i]) {\n          if (h3) h3.textContent = items[i].number;\n          if (p) p.textContent = items[i].title;\n        }\n      });\n    }\n    const teamTitle = document.querySelector(\".team h2\");\n    if (teamTitle && content.team[lang]) teamTitle.textContent = content.team[lang].title;\n    const moreButton = document.querySelector(\".team .more\");\n    if (moreButton && content.team[lang]) moreButton.textContent = content.team[lang].more;\n    const teamMembers = document.querySelectorAll(\".team .teamMember\");\n    if (teamMembers.length && content.team[lang]) {\n      const members = content.team[lang].members;\n      const forceSafariKaTeam = document.body.classList.contains(\"is-safari\") && lang === \"ka\";\n      teamMembers.forEach((memberEl, i) => {\n        const roleEl = memberEl.querySelector(\"h6\");\n        const nameEl = memberEl.querySelector(\"h5\");\n        const imageEl = memberEl.querySelector(\"img\");\n        if (!members[i]) return;\n        if (roleEl) {\n          roleEl.textContent = members[i].role;\n          if (forceSafariKaTeam) {\n            roleEl.style.fontFamily = \"'BPG Square Banner Caps 2013 Safari', 'BPG Square Banner Caps 2013', sans-serif\";\n            roleEl.style.fontWeight = \"400\";\n            roleEl.style.textTransform = \"none\";\n          } else {\n            roleEl.style.removeProperty(\"font-family\");\n            roleEl.style.removeProperty(\"font-weight\");\n            roleEl.style.removeProperty(\"text-transform\");\n          }\n        }\n        if (nameEl) nameEl.textContent = members[i].name;\n        if (imageEl && members[i].image) imageEl.src = members[i].image;\n      });\n    }\n    const testimonialTitle = document.querySelector(\".testimonial .title h3\");\n    if (testimonialTitle && content.testimonial[lang]) testimonialTitle.textContent = content.testimonial[lang].title;\n    const testimonialMessages = content.testimonial[lang] && content.testimonial[lang].messages;\n    const messagesRoot = document.querySelector(\".testimonial .messages\");\n    if (messagesRoot && testimonialMessages && testimonialMessages.length) {\n      const allParagraphs = Array.from(messagesRoot.querySelectorAll(\"p\"));\n      const hasRealIndex = allParagraphs.some((p) => p.dataset.realIndex !== void 0);\n      if (hasRealIndex) {\n        allParagraphs.forEach((p, i) => {\n          const idxRaw = p.dataset.realIndex;\n          const idx = Number.isFinite(Number(idxRaw)) ? Number(idxRaw) : i;\n          const source = testimonialMessages[idx % testimonialMessages.length];\n          p.textContent = source.text;\n          p.dataset.author = source.author;\n        });\n      } else {\n        allParagraphs.forEach((p, i) => {\n          const source = testimonialMessages[i % testimonialMessages.length];\n          p.textContent = source.text;\n          p.dataset.author = source.author;\n        });\n      }\n      const currentActive = messagesRoot.querySelector(\"p.active\");\n      const focusAuthor = document.querySelector(\".testimonial .focus h5\");\n      if (focusAuthor && currentActive && currentActive.dataset.author) {\n        focusAuthor.textContent = currentActive.dataset.author;\n      } else if (focusAuthor) {\n        focusAuthor.textContent = testimonialMessages[0].author;\n      }\n    }\n    const contactContent = content.contact && content.contact[lang];\n    if (contactContent) {\n      const footerTitle = document.querySelector(\"footer h2\");\n      if (footerTitle) footerTitle.textContent = contactContent.brand;\n      const formLegend = document.querySelector(\"footer form legend\");\n      if (formLegend) formLegend.textContent = contactContent.form.legend;\n      const nameInput = document.querySelector(\"footer form #name\");\n      const emailInput = document.querySelector(\"footer form #email\");\n      const messageInput = document.querySelector(\"footer form #message\");\n      const submitButton = document.querySelector(\"footer form button[type='submit']\");\n      if (nameInput) nameInput.placeholder = contactContent.form.namePlaceholder;\n      if (emailInput) emailInput.placeholder = contactContent.form.emailPlaceholder;\n      if (messageInput) messageInput.placeholder = contactContent.form.messagePlaceholder;\n      if (submitButton) submitButton.textContent = contactContent.form.submit;\n      const contactLabels = document.querySelectorAll(\"footer .contact h5\");\n      if (contactLabels[0]) contactLabels[0].textContent = contactContent.details.phoneLabel;\n      if (contactLabels[1]) contactLabels[1].textContent = contactContent.details.emailLabel;\n      if (contactLabels[2]) contactLabels[2].textContent = contactContent.details.socialLabel;\n      const contactValues = document.querySelectorAll(\"footer .contact p\");\n      if (contactValues[0]) contactValues[0].textContent = contactContent.details.phone;\n      if (contactValues[1]) contactValues[1].textContent = contactContent.details.email;\n      const addressTitle = document.querySelector(\"footer .address hgroup h5\");\n      if (addressTitle) addressTitle.textContent = contactContent.address.title;\n      const addressLines = document.querySelectorAll(\"footer .address hgroup p span\");\n      if (addressLines[0]) addressLines[0].textContent = contactContent.address.line1;\n      if (addressLines[1]) addressLines[1].textContent = contactContent.address.line2;\n      const footerParagraph = document.querySelector(\"footer > p\");\n      if (footerParagraph) {\n        footerParagraph.textContent = contactContent.paragraph;\n        if (typeof window.__textWave === \"function\") window.__textWave(contactContent.paragraph);\n      }\n    }\n    document.body.dataset.lang = lang;\n    window.__focusPreviousLang = lang;\n    if (applyTransition && container) {\n      container.style.opacity = \"1\";\n    }\n  }, applyTransition ? 150 : 0);\n}",
+    "isSafari": null,
+    "isCoarsePointer": null,
+    "content_data": "()=>window.__focusContent"
+  }
+}

@@ -1,7 +1,0 @@
-node_modules/
-.parcel-cache/
-dist/
-.cache/
-*.log
-.DS_Store
-dist-brender

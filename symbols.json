@@ -3,5 +3,8 @@
   "key": "focusagency",
   "bundler": "parcel",
   "brender": true,
-  "useKV": true
+  "useKV": true,
+  "entry": "index.html",
+  "dir": ".",
+  "port": 1234
 }

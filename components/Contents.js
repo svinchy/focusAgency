@@ -1,0 +1,17 @@
+export const Contents = {
+  tag: 'div',
+  display: 'flex',
+  flexDirection: 'row',
+  position: 'relative',
+  zIndex: '4',
+  perspective: '1200px',
+  perspectiveOrigin: 'center center',
+  minHeight: '30em',
+  gap: '0.9em',
+  alignItems: 'center',
+  justifyContent: 'center',
+  overflow: 'visible',
+  width: 'calc(100% + 14em)',
+  maxWidth: '100%',
+  padding: '0',
+};
