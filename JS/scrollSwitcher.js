@@ -224,17 +224,78 @@ export function scrollSwitcher() {
   const servicesSection = document.querySelector(".services");
   const imagesWrap = document.querySelector(".content .images");
   const dotsWrap = document.querySelector(".navigationDots");
+  const mobileServicesMedia = window.matchMedia("(max-width: 1180px), (hover: none) and (pointer: coarse)");
   let scrollTicking = false; // rAF throttle
   let touchStartY = 0;
   let pendingDotIndex = null;
   let pendingDotTop = null;
+  let keepDotsVisibleUntilManualScroll = false;
+  let isStaticLayout = mobileServicesMedia.matches;
+  let manualServiceTouchStartY = 0;
+  let manualServiceScrollStartTop = 0;
+  let manualServiceScrollEl = null;
   let rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   let contentTopOffset = contentWrap
     ? parseFloat(getComputedStyle(contentWrap).top) || 0
     : 0;
   let contentFlowOffset = contentWrap ? contentWrap.offsetTop : 0;
 
-  const isServiceScrollLocked = () => document.body?.dataset.serviceScrollLock === "1";
+  const isServiceScrollLocked = () => (
+    !isStaticLayout &&
+    document.body?.dataset.serviceScrollLock === "1"
+  );
+  const syncServiceScrollLock = (shouldLock) => {
+    if (!document.body) return;
+    document.body.dataset.serviceScrollLock =
+      !isStaticLayout && shouldLock ? "1" : "0";
+  };
+  const holdDotsVisible = () => {
+    keepDotsVisibleUntilManualScroll = true;
+  };
+  const releaseDotsVisibilityHold = () => {
+    keepDotsVisibleUntilManualScroll = false;
+  };
+  const getActiveServiceScrollEl = () => {
+    if (!isStaticLayout || !service?.classList.contains("active")) return null;
+    const scrollEl = service.querySelector(".service-content");
+    if (!scrollEl) return null;
+    if (scrollEl.scrollHeight <= scrollEl.clientHeight + 1) return null;
+    return scrollEl;
+  };
+  const resetManualServiceTouch = () => {
+    manualServiceScrollEl = null;
+    manualServiceTouchStartY = 0;
+    manualServiceScrollStartTop = 0;
+  };
+  const onServiceTouchStart = (e) => {
+    if (!isStaticLayout || !service?.classList.contains("active")) return;
+    if (e.target instanceof Element && e.target.closest("button")) return;
+
+    const touch = e.touches?.[0];
+    const scrollEl = getActiveServiceScrollEl();
+    if (!touch || !scrollEl) {
+      resetManualServiceTouch();
+      return;
+    }
+
+    manualServiceTouchStartY = touch.clientY;
+    manualServiceScrollStartTop = scrollEl.scrollTop;
+    manualServiceScrollEl = scrollEl;
+  };
+  const onServiceTouchMove = (e) => {
+    if (!manualServiceScrollEl) return;
+    const touch = e.touches?.[0];
+    if (!touch) return;
+
+    const maxScroll = Math.max(
+      0,
+      manualServiceScrollEl.scrollHeight - manualServiceScrollEl.clientHeight
+    );
+    const nextTop = manualServiceScrollStartTop + (manualServiceTouchStartY - touch.clientY);
+
+    manualServiceScrollEl.scrollTop = clamp(nextTop, 0, maxScroll);
+    e.preventDefault();
+  };
 
   // Allow native scrolling only when touch/wheel happens inside service-content
   // and that inner container can still scroll in the requested direction.
@@ -288,15 +349,27 @@ export function scrollSwitcher() {
     const body = document.body;
     const html = document.documentElement;
     if (!body || !html) return;
-    const navLock = body.dataset.navScrollLock === "1";
-    const shouldLock = navLock;
+    if (typeof window.syncDocumentScrollLock === "function") {
+      window.syncDocumentScrollLock();
+      return;
+    }
+
+    const shouldLock =
+      body.dataset.navScrollLock === "1" ||
+      body.dataset.chatScrollLock === "1";
 
     body.classList.toggle("page-scroll-locked", shouldLock);
     html.classList.toggle("page-scroll-locked", shouldLock);
   };
 
   const applyServicesSectionHeight = () => {
-    if (!servicesSection) return;
+    if (!servicesSection || !contentWrap) return;
+
+    contentWrap.classList.toggle("is-static", isStaticLayout);
+    if (isStaticLayout) {
+      servicesSection.style.removeProperty("min-height");
+      return;
+    }
 
     const itemsCount = content.services[getLanguage()].items.length;
     const supportsSmallViewportUnit =
@@ -308,6 +381,7 @@ export function scrollSwitcher() {
   };
 
   const getStickyScrollBounds = () => {
+    if (isStaticLayout) return null;
     if (!contentWrap || !servicesSection) return null;
 
     const sectionTop = servicesSection.offsetTop;
@@ -323,6 +397,7 @@ export function scrollSwitcher() {
   };
 
   const syncContentFlowOffset = () => {
+    if (isStaticLayout) return;
     if (!contentWrap || !servicesSection) return;
 
     const contentRect = contentWrap.getBoundingClientRect();
@@ -334,6 +409,11 @@ export function scrollSwitcher() {
   };
 
   const scrollPageToServiceIndex = (index) => {
+    if (isStaticLayout) {
+      setActiveIndex(index, { scrollImage: true, forceScroll: true });
+      return null;
+    }
+
     syncContentFlowOffset();
     const bounds = getStickyScrollBounds();
     if (!bounds) return null;
@@ -367,6 +447,15 @@ export function scrollSwitcher() {
   // Keep dots aligned next to the content container.
   const updateDotsPosition = () => {
     if (!contentWrap || !dotsWrap) return;
+    if (isStaticLayout) {
+      dotsWrap.style.removeProperty("left");
+      dotsWrap.style.removeProperty("right");
+      dotsWrap.style.removeProperty("top");
+      dotsWrap.style.removeProperty("bottom");
+      dotsWrap.style.removeProperty("transform");
+      return;
+    }
+
     const visualViewport = window.visualViewport || null;
     const contentRect = contentWrap.getBoundingClientRect();
     const dotsRect = dotsWrap.getBoundingClientRect();
@@ -380,16 +469,11 @@ export function scrollSwitcher() {
     if (viewportW <= 560) {
       // Mobile fallback: fixed viewport anchor avoids drift/jump from sticky+address-bar viewport changes.
       const centerX = viewportOffsetLeft + viewportW / 2;
-      const layoutHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0);
-      const bottomClearance = visualViewport
-        ? Math.max(0, layoutHeight - (visualViewport.height + visualViewport.offsetTop))
-        : 0;
-      const bottom = bottomClearance + (rootFontSize * 1.1);
 
       dotsWrap.style.left = `${centerX}px`;
       dotsWrap.style.right = "auto";
       dotsWrap.style.top = "auto";
-      dotsWrap.style.bottom = `${bottom}px`;
+      dotsWrap.style.bottom = "calc(1.1em + var(--app-fixed-bottom-clearance, 0px))";
       dotsWrap.style.transform = "translateX(-50%)";
       return;
     }
@@ -411,15 +495,24 @@ export function scrollSwitcher() {
     service.addEventListener("click", (e) => {
       // Keep list interactions/scroll from collapsing the card on touch devices.
       if (e.target.closest(".service-content")) return;
+      if (isStaticLayout && !e.target.closest("button")) return;
       const isActive = service.classList.toggle("active");
       if (isActive && typeof window.__stopSmoothScroll === "function") {
         window.__stopSmoothScroll();
       }
-      document.body.dataset.serviceScrollLock = isActive ? "1" : "0";
+      syncServiceScrollLock(isActive);
       applyPageScrollLock();
+      resetManualServiceTouch();
+      if (typeof window.__queueViewportMetricsSync === "function") {
+        window.__queueViewportMetricsSync();
+      }
       if (isActive) {
         renderService(activeIndex, { updateContent: true });
-        setActiveIndex(activeIndex, { scrollImage: true, forceScroll: true });
+        setActiveIndex(activeIndex, {
+          scrollImage: true,
+          forceScroll: true,
+          imageBehavior: isStaticLayout ? "auto" : "smooth"
+        });
       }
     });
   }
@@ -428,6 +521,19 @@ export function scrollSwitcher() {
     // Dot click switches service.
     dot.addEventListener("click", (e) => {
       e.preventDefault();
+      holdDotsVisible();
+      if (isStaticLayout) {
+        pendingDotIndex = null;
+        pendingDotTop = null;
+        setActiveIndex(i, { scrollImage: true, forceScroll: true });
+        return;
+      }
+      if (service?.classList.contains("active")) {
+        pendingDotIndex = null;
+        pendingDotTop = null;
+        setActiveIndex(i, { scrollImage: true, forceScroll: true });
+        return;
+      }
       pendingDotIndex = i;
       setActiveIndex(i, { scrollImage: false });
       pendingDotTop = scrollPageToServiceIndex(i);
@@ -448,6 +554,17 @@ export function scrollSwitcher() {
   const handleScroll = () => {
     if (!service || !contentWrap || !servicesSection) return;
     updateDotsPosition();
+
+    if (isStaticLayout) {
+      if (dotsWrap) dotsWrap.classList.add("is-visible");
+      return;
+    }
+
+    const contentRect = contentWrap.getBoundingClientRect();
+    const viewportHeight = window.visualViewport
+      ? window.visualViewport.height
+      : (window.innerHeight || document.documentElement.clientHeight);
+    const isContentVisible = contentRect.bottom > 0 && contentRect.top < viewportHeight;
     syncContentFlowOffset();
 
     const scrollY = window.scrollY || window.pageYOffset;
@@ -460,9 +577,10 @@ export function scrollSwitcher() {
     if (denom <= 0) return;
     const progressRaw = (scrollY - progressStart) / denom;
     const scrollProgress = clamp(progressRaw, 0, 1);
-    const dotsStart = getScrollProgressFromImageProgress(0);
     const dotsEnd = getScrollProgressFromImageProgress(1);
-    const showDots = pendingDotIndex !== null || (progressRaw >= dotsStart && progressRaw <= dotsEnd);
+    const showDots = (keepDotsVisibleUntilManualScroll && isContentVisible) ||
+      pendingDotIndex !== null ||
+      (progressRaw >= 0 && progressRaw <= dotsEnd);
     if (dotsWrap) dotsWrap.classList.toggle("is-visible", showDots);
 
     if (service.classList.contains("active")) return;
@@ -500,6 +618,7 @@ export function scrollSwitcher() {
   // Map inner image-scroll progress back to active index.
   const handleImagesScroll = () => {
     if (!service || !imagesWrap) return;
+    if (isStaticLayout) return;
     if (service.classList.contains("active")) return;
     if (pendingDotIndex !== null) return;
 
@@ -522,43 +641,60 @@ export function scrollSwitcher() {
   };
 
   const onResize = () => {
+    isStaticLayout = mobileServicesMedia.matches;
     rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    if (isStaticLayout) {
+      syncServiceScrollLock(false);
+    } else if (service?.classList.contains("active")) {
+      syncServiceScrollLock(true);
+    }
+    resetManualServiceTouch();
     applyServicesSectionHeight();
     contentTopOffset = contentWrap
       ? parseFloat(getComputedStyle(contentWrap).top) || 0
       : 0;
+    if (imagesWrap) {
+      imagesWrap.scrollTop = getImageScrollTarget(imagesWrap, activeIndex);
+    }
+    pendingDotIndex = null;
+    pendingDotTop = null;
     syncContentFlowOffset();
     onScroll();
   };
 
   window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("wheel", releaseDotsVisibilityHold, { passive: true });
+  window.addEventListener("touchmove", releaseDotsVisibilityHold, { passive: true });
+  window.addEventListener("services:dots-visibility-hold", holdDotsVisible);
   window.addEventListener("resize", onResize);
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", onResize);
-    window.visualViewport.addEventListener("scroll", onResize);
   }
   document.addEventListener("wheel", onDocumentWheelLock, { passive: false });
   document.addEventListener("touchstart", onDocumentTouchStartLock, { passive: true });
   document.addEventListener("touchmove", onDocumentTouchMoveLock, { passive: false });
+  if (service) {
+    service.addEventListener("touchstart", onServiceTouchStart, { passive: true });
+    service.addEventListener("touchmove", onServiceTouchMove, { passive: false });
+    service.addEventListener("touchend", resetManualServiceTouch, { passive: true });
+    service.addEventListener("touchcancel", resetManualServiceTouch, { passive: true });
+  }
   if (imagesWrap) {
     imagesWrap.addEventListener("scroll", handleImagesScroll, { passive: true });
-    imagesWrap.addEventListener(
-      "wheel",
-      (e) => {
-        e.preventDefault();
-        if (typeof window.__smoothScrollBy === "function") {
-          window.__smoothScrollBy(e.deltaY);
-        } else {
-          window.scrollBy({ top: e.deltaY, left: 0, behavior: "auto" });
-        }
-      },
-      { passive: false }
-    );
+    imagesWrap.addEventListener("wheel", (e) => {
+      if (isStaticLayout) return;
+      e.preventDefault();
+      if (typeof window.__smoothScrollBy === "function") {
+        window.__smoothScrollBy(e.deltaY);
+      } else {
+        window.scrollBy({ top: e.deltaY, left: 0, behavior: "auto" });
+      }
+    }, { passive: false });
   }
 
   if (dots.length > 0) setActiveIndex(0);
   if (document.body) {
-    document.body.dataset.serviceScrollLock = "0";
+    syncServiceScrollLock(false);
     applyPageScrollLock();
   }
   updateDotsPosition();

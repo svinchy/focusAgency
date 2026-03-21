@@ -61,9 +61,12 @@
     -webkit-backdrop-filter: none !important;
   }
 
-  .services .content .service::before,
-  .services .content .service::after {
+  .services .content .service::before {
     display: none;
+  }
+
+  .services .content .service::after {
+    display: block;
   }
 
   .testimonial .testimonialContent .messages {

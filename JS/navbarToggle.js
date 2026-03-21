@@ -12,8 +12,14 @@ export function navbarToggle() {
     const body = document.body;
     const html = document.documentElement;
     if (!body || !html) return;
-    const navLock = body.dataset.navScrollLock === "1";
-    const shouldLock = navLock;
+    if (typeof window.syncDocumentScrollLock === "function") {
+      window.syncDocumentScrollLock();
+      return;
+    }
+
+    const shouldLock =
+      body.dataset.navScrollLock === "1" ||
+      body.dataset.chatScrollLock === "1";
 
     body.classList.toggle("page-scroll-locked", shouldLock);
     html.classList.toggle("page-scroll-locked", shouldLock);

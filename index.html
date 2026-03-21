@@ -3,7 +3,11 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta
+    name="viewport"
+    id="app-viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
 
   <link rel="stylesheet" href="reset.css">
 
@@ -48,9 +52,104 @@
   <title>Focus Agency - Digital Marketing & Web Development</title>
 
   <script type="text/javascript">
+    window.DEFAULT_VIEWPORT_CONTENT =
+      "width=device-width, initial-scale=1.0, viewport-fit=cover";
+    window.IOS_CHAT_VIEWPORT_CONTENT =
+      window.DEFAULT_VIEWPORT_CONTENT + ", maximum-scale=1";
     window.CRISP_EMBED_URL =
       "https://go.crisp.chat/chat/embed/?website_id=f48830e3-9049-4f5f-96bb-e91b246dcd6c";
     window.__crispChatOpen = false;
+    window.__chatFrozenScrollY = 0;
+
+    window.isAppleTouchDevice = function() {
+      var platform = navigator.platform || "";
+      var userAgent = navigator.userAgent || "";
+      var maxTouchPoints = navigator.maxTouchPoints || 0;
+
+      return /iPhone|iPad|iPod/.test(userAgent)
+        || (platform === "MacIntel" && maxTouchPoints > 1);
+    };
+
+    window.isTouchViewport = function() {
+      return window.matchMedia(
+        "(max-width: 1180px), (hover: none) and (pointer: coarse)"
+      ).matches;
+    };
+
+    window.syncChatBodyFreeze = function() {
+      var body = document.body;
+      if (!body) {
+        return;
+      }
+
+      var shouldFreeze =
+        window.isTouchViewport() &&
+        body.dataset.chatScrollLock === "1";
+
+      if (shouldFreeze) {
+        if (body.dataset.chatBodyFrozen === "1") {
+          return;
+        }
+
+        window.__chatFrozenScrollY = window.scrollY || window.pageYOffset || 0;
+        body.dataset.chatBodyFrozen = "1";
+        body.style.position = "fixed";
+        body.style.top = (-window.__chatFrozenScrollY) + "px";
+        body.style.left = "0";
+        body.style.right = "0";
+        body.style.width = "100%";
+        return;
+      }
+
+      if (body.dataset.chatBodyFrozen !== "1") {
+        return;
+      }
+
+      var restoreY = window.__chatFrozenScrollY || 0;
+      body.dataset.chatBodyFrozen = "0";
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      body.style.width = "";
+
+      window.requestAnimationFrame(function() {
+        window.scrollTo(0, restoreY);
+      });
+    };
+
+    window.syncDocumentScrollLock = function() {
+      var root = document.documentElement;
+      var body = document.body;
+      if (!root || !body) {
+        return;
+      }
+
+      var shouldLock =
+        body.dataset.navScrollLock === "1" ||
+        body.dataset.chatScrollLock === "1";
+
+      root.classList.toggle("page-scroll-locked", shouldLock);
+      body.classList.toggle("page-scroll-locked", shouldLock);
+    };
+
+    window.syncViewportForChat = function(isOpen) {
+      if (!window.isAppleTouchDevice()) {
+        return;
+      }
+
+      var viewportMeta = document.getElementById("app-viewport");
+      if (!viewportMeta) {
+        return;
+      }
+
+      viewportMeta.setAttribute(
+        "content",
+        isOpen
+          ? window.IOS_CHAT_VIEWPORT_CONTENT
+          : window.DEFAULT_VIEWPORT_CONTENT
+      );
+    };
 
     window.updateCrispChatButton = function(isOpen) {
       var root = document.documentElement;
@@ -63,10 +162,18 @@
 
       if (body) {
         body.classList.toggle("chat-panel-open", !!isOpen);
+        body.dataset.chatScrollLock = isOpen ? "1" : "0";
+      }
+
+      window.__crispChatOpen = !!isOpen;
+      window.syncChatBodyFreeze();
+      window.syncDocumentScrollLock();
+      window.syncViewportForChat(!!isOpen);
+      if (typeof window.__queueViewportMetricsSync === "function") {
+        window.__queueViewportMetricsSync();
       }
 
       if (!button) {
-        window.__crispChatOpen = !!isOpen;
         return;
       }
 
@@ -78,8 +185,6 @@
       if (label) {
         label.textContent = isOpen ? "x" : "chat";
       }
-
-      window.__crispChatOpen = !!isOpen;
     };
 
     window.ensureCrispChatFrame = function() {
@@ -131,6 +236,12 @@
     document.addEventListener("DOMContentLoaded", function() {
       var overlay = document.getElementById("crisp-chat-overlay");
       window.ensureCrispChatFrame();
+      if (document.body) {
+        document.body.dataset.chatScrollLock = "0";
+        document.body.dataset.chatBodyFrozen = "0";
+      }
+      window.syncChatBodyFreeze(false);
+      window.syncDocumentScrollLock();
       window.updateCrispChatButton(false);
 
       if (overlay) {
@@ -235,7 +346,7 @@
 
       <h2 class="section-title" data-services="title"></h2>
 
-      <div class="content" id="services">
+      <div class="content reveal-on-scroll" id="services">
         <div class="images">
           <div class="image image-social active"></div>
           <div class="image image-analytics"></div>

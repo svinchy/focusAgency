@@ -81,7 +81,10 @@ body .chatButton.is-active::after {
 
 body .chatPanelOverlay {
   position: fixed;
-  inset: 0;
+  top: var(--app-viewport-offset-top, 0px);
+  right: var(--app-viewport-right-offset, 0px);
+  bottom: var(--app-viewport-bottom-offset, 0px);
+  left: var(--app-viewport-offset-left, 0px);
   z-index: 950;
   display: flex;
   align-items: flex-end;
@@ -91,10 +94,12 @@ body .chatPanelOverlay {
     calc(1.25em + var(--app-safe-right, 0px))
     calc(5.2rem + var(--app-fixed-bottom-clearance, 0px))
     calc(1.25em + var(--app-safe-left, 0px));
-  background: transparent;
+  background-color: transparent;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.24s var(--ease-io);
+  transition:
+    opacity 0.24s var(--ease-io),
+    background-color 0.24s var(--ease-io);
 }
 
 body .chatPanelOverlay[hidden] {
@@ -103,6 +108,17 @@ body .chatPanelOverlay[hidden] {
 
 body .chatPanelOverlay.is-visible {
   opacity: 1;
+  pointer-events: auto;
+  background-color: rgba(8, 6, 6, 0.42);
+}
+
+body.chat-panel-open .logo,
+body.chat-panel-open .corner,
+body.chat-panel-open .corner2,
+body.chat-panel-open .langButton,
+body.chat-panel-open .navBar,
+body.chat-panel-open .menuButton {
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -135,6 +151,9 @@ body .chatPanelFrame {
   height: 100%;
   border: 0;
   background: rgba(17, 17, 17, 1);
+  transition:
+    transform 0.24s var(--ease-io),
+    height 0.24s var(--ease-io);
 }
 
 @media (max-width: 860px) {
@@ -161,24 +180,35 @@ body .chatPanelFrame {
     right: calc(1em + var(--app-safe-right, 0px));
   }
 
+  body.chat-panel-open .chatButton {
+    top: calc(1em + var(--app-safe-top, 0px));
+    right: calc(1em + var(--app-safe-right, 0px));
+    bottom: auto;
+  }
+
   body .chatPanelOverlay {
-    padding:
-      calc(0.6em + var(--app-safe-top, 0px))
-      0
-      calc(4.95rem + var(--app-fixed-bottom-clearance, 0px))
-      0;
+    padding: 0;
     align-items: stretch;
     justify-content: stretch;
-    background: transparent;
+  }
+
+  body .chatPanelOverlay.is-visible {
+    background-color: rgba(17, 17, 17, 1);
   }
 
   body .chatPanel {
     width: 100vw;
-    height: calc(100dvh - (5.55rem + var(--app-fixed-bottom-clearance, 0px)));
+    height: var(--app-visual-viewport-height, 100dvh);
     max-width: none;
-    max-height: calc(100dvh - (5.55rem + var(--app-fixed-bottom-clearance, 0px)));
+    max-height: var(--app-visual-viewport-height, 100dvh);
     border: 0;
-    border-radius: 1.2em 1.2em 0 0;
+    border-radius: 0;
     transform: translateY(1.8em);
+  }
+
+  body.chat-keyboard-open .chatPanelFrame {
+    --chat-keyboard-crop: clamp(7rem, calc(var(--app-keyboard-inset, 0px) * 0.42), 14rem);
+    height: calc(100% + var(--chat-keyboard-crop));
+    transform: translateY(calc(-1 * var(--chat-keyboard-crop)));
   }
 }

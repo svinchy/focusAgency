@@ -24,6 +24,9 @@ export function navbarScrollLinks() {
     const activeServiceCard = document.querySelector(".services .content .service.active");
     if (activeServiceCard) activeServiceCard.classList.remove("active");
     if (document.body) document.body.dataset.serviceScrollLock = "0";
+    if (typeof window.syncDocumentScrollLock === "function") {
+      window.syncDocumentScrollLock();
+    }
   };
 
   const stopNavScrollAnimation = () => {
@@ -90,6 +93,9 @@ export function navbarScrollLinks() {
 
       e.preventDefault();
       releaseServiceScrollLock();
+      if (target.closest(".services")) {
+        window.dispatchEvent(new CustomEvent("services:dots-visibility-hold"));
+      }
 
       window.requestAnimationFrame(() => {
         const top = getCenteredScrollTop(target);
