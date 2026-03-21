@@ -1,0 +1,46 @@
+export const ChatButton = {
+  tag: 'button',
+  fontFamily: 'var(--font-en)',
+  fontWeight: '500',
+  width: '3em',
+  height: '3em',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '0',
+  cursor: 'pointer',
+  background: 'rgba(255, 241, 227, 0.2)',
+  borderRadius: '999px',
+  color: 'rgba(255, 241, 227, 1)',
+  border: '1px solid rgba(255, 241, 227, 0.18)',
+  backdropFilter: 'blur(14px)',
+  position: 'fixed',
+  bottom: 'calc(1.2em + var(--app-fixed-bottom-clearance, 0px))',
+  right: 'calc(1.2em + var(--app-safe-right, 0px))',
+  zIndex: '1000',
+  boxShadow: '0 0 0 rgba(80, 78, 78, 0)',
+  transition: 'background-color 0.28s var(--ease-io), border-color 0.28s var(--ease-io), box-shadow 0.28s var(--ease-io)',
+  font: 'inherit',
+
+  ':hover': {
+    background: 'rgba(80, 78, 78, 0.42)',
+    borderColor: 'rgba(255, 241, 227, 0.26)',
+  },
+
+  '@mobileL': {
+    bottom: 'calc(1em + var(--app-fixed-bottom-clearance, 0px))',
+    right: 'calc(1em + var(--app-safe-right, 0px))',
+  },
+
+  Span: {
+    tag: 'span',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textTransform: 'uppercase',
+    fontSize: '0.8em',
+    letterSpacing: '0.04em',
+    lineHeight: '1',
+    transition: 'letter-spacing 0.28s var(--ease-io), font-size 0.28s var(--ease-io)',
+  },
+};
