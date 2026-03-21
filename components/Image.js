@@ -3,7 +3,7 @@ export const Image = {
   flex: '0 0 100%',
   width: '100%',
   height: '100%',
-  borderRadius: 'calc(var(--radius-l) - 0.5em)',
+  borderRadius: '2.1em',
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center center',
   backgroundSize: 'cover',

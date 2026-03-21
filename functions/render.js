@@ -3,6 +3,13 @@ export const render = function render() {
   const content = window.__focusContent;
   if (!content) return;
 
+  // Resolve file key to CDN URL via context.files
+  const files = this.context && this.context.files;
+  const resolveFile = (key) => {
+    const file = files && files[key];
+    return (file && file.content && file.content.src) || key;
+  };
+
   const lang = window.__focusLang || localStorage.getItem('lang') || 'en';
   const container = document.querySelector('.lang-content');
   const previousLang = window.__focusPreviousLang || lang;
@@ -49,8 +56,9 @@ export const render = function render() {
     serviceImages.forEach((imageEl, i) => {
       const imagePath = serviceItems[i] && serviceItems[i].image;
       if (!imagePath) return;
-      imageEl.dataset.imageSrc = imagePath;
-      imageEl.style.backgroundImage = "url('" + imagePath + "')";
+      const resolvedPath = resolveFile(imagePath);
+      imageEl.dataset.imageSrc = resolvedPath;
+      imageEl.style.backgroundImage = "url('" + resolvedPath + "')";
       imageEl.dataset.imageLoaded = '1';
     });
     if (typeof window.__refreshServiceContent === 'function') window.__refreshServiceContent();
@@ -98,7 +106,7 @@ export const render = function render() {
           }
         }
         if (nameEl) nameEl.textContent = members[i].name;
-        if (imageEl && members[i].image) imageEl.src = members[i].image;
+        if (imageEl && members[i].image) imageEl.src = resolveFile(members[i].image);
       });
     }
 

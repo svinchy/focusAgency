@@ -1,12 +1,11 @@
 export const Corner = {
   tag: 'div',
-  '--corner-size': '1.2em',
-  width: 'var(--corner-size)',
-  height: 'var(--corner-size)',
+  width: '1.2em',
+  height: '1.2em',
   position: 'fixed',
   zIndex: '5',
-  bottom: 'calc(var(--corner-bottom-offset, var(--corner-final-offset)) + var(--app-fixed-bottom-clearance, 0px))',
-  left: 'calc(var(--corner-left-offset, var(--corner-final-offset)) + var(--app-safe-left, 0px))',
+  bottom: '20px',
+  left: '20px',
   transition: 'opacity 1.6s ease, top 1.2s ease, left 1.2s ease, right 1.2s ease, bottom 1.2s ease, transform 1.2s ease',
 
   ':before': {
@@ -52,17 +51,20 @@ export const Corner = {
   'body.intro-corners-move &': {
     animation: 'cornerToBottomLeft 3s cubic-bezier(0.16, 1, 0.3, 1) both',
   },
+
+  // Chat panel / nav open states
+  'body.chat-panel-open &': { opacity: '0', pointerEvents: 'none' },
+  'body.is-nav-open &': { opacity: '0', pointerEvents: 'none' },
 };
 
 export const Corner2 = {
   tag: 'div',
-  '--corner-size': '1.2em',
-  width: 'var(--corner-size)',
-  height: 'var(--corner-size)',
+  width: '1.2em',
+  height: '1.2em',
   position: 'fixed',
   zIndex: '5',
-  top: 'calc(var(--corner-top-offset, var(--corner-final-offset)) + var(--app-safe-top, 0px))',
-  right: 'calc(var(--corner-right-offset, var(--corner-final-offset)) + var(--app-safe-right, 0px))',
+  top: '20px',
+  right: '20px',
   transform: 'rotate(180deg)',
   transition: 'opacity 1.6s ease, top 1.2s ease, left 1.2s ease, right 1.2s ease, bottom 1.2s ease, transform 1.2s ease',
 
@@ -108,4 +110,8 @@ export const Corner2 = {
   'body.intro-corners-move &': {
     animation: 'cornerToTopRight 3s cubic-bezier(0.16, 1, 0.3, 1) both',
   },
+
+  // Chat panel / nav open states
+  'body.chat-panel-open &': { opacity: '0', pointerEvents: 'none' },
+  'body.is-nav-open &': { opacity: '0', pointerEvents: 'none' },
 };

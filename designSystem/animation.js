@@ -151,7 +151,7 @@ export default {
     '0%': {
       opacity: '1',
       filter: 'drop-shadow(0 0 0 rgba(224, 77, 77, 0))',
-      background: 'red',
+      background: 'var(--red)',
     },
     '40%': {
       opacity: '1',
@@ -161,7 +161,7 @@ export default {
     '100%': {
       opacity: '1',
       filter: 'drop-shadow(0 0 0 rgba(224, 77, 77, 0))',
-      background: 'red',
+      background: 'var(--red)',
     },
   },
   focusNamePulse: {

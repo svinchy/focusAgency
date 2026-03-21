@@ -2,15 +2,20 @@ export const Content = {
   tag: 'div',
   marginTop: '1.6em',
   width: '100%',
-  height: 'calc(var(--app-viewport-height, 100vh) - 25em)',
+  height: 'calc(100vh - 25em)',
   position: 'sticky',
   top: '11em',
   zIndex: '10',
-  borderRadius: 'var(--radius-l)',
+  borderRadius: '2.6em',
   overflow: 'hidden',
   border: '1px solid rgba(255, 241, 227, 0.15)',
+  '@media (max-height: 1200px)': { height: 'calc(100vh - 20em)', top: '10em' },
+  '@media (max-height: 1024px)': { height: 'calc(100vh - 18em)', top: '9em' },
+  '@media (max-height: 900px)': { height: 'calc(100vh - 13.5em)', top: '6.5em' },
+  '@media (max-height: 650px)': { height: 'calc(100vh - 12em)', top: '5.5em' },
+  '@media (max-height: 500px)': { height: 'calc(100vh - 11em)', top: '5.5em' },
 
-  ':before': {
+  '::before': {
     content: "''",
     position: 'absolute',
     width: '100%',

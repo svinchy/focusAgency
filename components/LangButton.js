@@ -12,6 +12,10 @@ export const LangButton = {
   fontSize: '.9em',
   transition: 'transform 0.3s var(--ease-io), opacity 0.22s ease',
 
+  // Nav open / chat panel open states
+  'body.is-nav-open &': { opacity: '0', pointerEvents: 'none' },
+  'body.chat-panel-open &': { opacity: '0', pointerEvents: 'none' },
+
   '@tabletM': {
     right: '0.5em',
   },
@@ -46,7 +50,7 @@ export const LangBtn = {
   '&.active': { transform: 'rotate(90deg) scale(1.15)' },
 
   '&[data-lang="ka"]': {
-    fontFamily: 'var(--font-ka-cap)',
+    fontFamily: "'BPG Square Banner Caps 2013', sans-serif",
     fontStyle: 'normal',
     fontWeight: '400',
     textTransform: 'none',
@@ -54,7 +58,7 @@ export const LangBtn = {
     marginBottom: '-0.5em',
   },
   '&:last-child': {
-    fontFamily: 'var(--font-en)',
+    fontFamily: "'Exo 2', sans-serif",
     fontWeight: '600',
     fontSize: '.9em',
   },

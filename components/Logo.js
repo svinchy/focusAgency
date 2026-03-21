@@ -6,11 +6,11 @@ export const Logo = {
   fontSize: '4em',
   fontWeight: '800',
   position: 'fixed',
-  fontFamily: 'var(--font-en)',
+  fontFamily: "'Exo 2', sans-serif",
   mixBlendMode: 'difference',
   zIndex: '15',
-  top: 'calc(2em + var(--app-safe-top, 0px))',
-  left: 'calc(2em + var(--app-safe-left, 0px))',
+  top: '2em',
+  left: '2em',
 
   ':after': {
     content: "''",
@@ -20,7 +20,7 @@ export const Logo = {
     right: '-0.12em',
     width: '0.3em',
     height: '0.3em',
-    background: 'red',
+    background: 'var(--red)',
   },
 
   Span: {
@@ -51,9 +51,15 @@ export const Logo = {
     animation: 'logoMove 2.8s cubic-bezier(0.16, 1, 0.3, 1) both',
   },
 
+  // Chat panel open state
+  'body.chat-panel-open &': { opacity: '0', pointerEvents: 'none' },
+
+  // Nav open state
+  'body.is-nav-open &': { zIndex: '130', mixBlendMode: 'normal' },
+
   '@mobileL': {
     fontSize: '3.5em',
-    top: 'calc(var(--logo-final-top-offset) + var(--app-safe-top, 0px))',
-    left: 'calc(var(--logo-final-left-offset) + var(--app-safe-left, 0px))',
+    top: '0.5em',
+    left: '0.5em',
   },
 };

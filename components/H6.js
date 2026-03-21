@@ -4,6 +4,6 @@ export const H6 = {
   margin: '0',
   textTransform: 'uppercase',
   fontSize: '0.75em',
-  letterSpacing: 'var(--tracking-wide)',
-  fontFamily: 'var(--font-ka-cap)',
+  letterSpacing: '0.06em',
+  fontFamily: "'BPG Square Banner Caps 2013', sans-serif",
 };

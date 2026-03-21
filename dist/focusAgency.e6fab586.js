@@ -177,7 +177,7 @@
 
   // Only insert newRequire.load when it is actually used.
   // The code in this file is linted against ES5, so dynamic import is not allowed.
-  function $parcel$resolve(url) {  url = importMap[url] || url;  return import.meta.resolve(distDir + url);}newRequire.resolve = $parcel$resolve;
+  // INSERT_LOAD_HERE
 
   Object.defineProperty(newRequire, 'root', {
     get: function () {
@@ -207,11 +207,11 @@
       });
     }
   }
-})({"cKkju":[function(require,module,exports,__globalThis) {
+})({"g1Fy0":[function(require,module,exports,__globalThis) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
-var HMR_SERVER_PORT = 3110;
+var HMR_SERVER_PORT = 1234;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "439701173a9199ea";
 var HMR_USE_SSE = false;
@@ -4068,8 +4068,10 @@ parcelHelpers.export(exports, "checkEventFunctions", ()=>checkEventFunctions);
 parcelHelpers.export(exports, "filterAttributesByTagName", ()=>filterAttributesByTagName);
 parcelHelpers.export(exports, "executeAttr", ()=>executeAttr);
 parcelHelpers.export(exports, "resolvePropValue", ()=>resolvePropValue);
+parcelHelpers.export(exports, "resolveFileSource", ()=>resolveFileSource);
 parcelHelpers.export(exports, "ATTR_TRANSFORMS", ()=>ATTR_TRANSFORMS);
 parcelHelpers.export(exports, "applyAttrTransforms", ()=>applyAttrTransforms);
+parcelHelpers.export(exports, "extractConditionalAttrs", ()=>extractConditionalAttrs);
 var _utils = require("@domql/utils");
 'use strict';
 const ARIA_ROLES = [
@@ -5032,7 +5034,17 @@ const DOM_EVENTS = [
     'onfullscreenchange',
     'onfullscreenerror'
 ];
+// Convert camelCase aria/data attrs to kebab-case: ariaLabel → aria-label, dataTestId → data-test-id
+const camelToAttr = (key)=>{
+    if (key.startsWith('aria') && key.length > 4 && key.charCodeAt(4) >= 65 && key.charCodeAt(4) <= 90) return 'aria-' + key.charAt(4).toLowerCase() + key.slice(5).replace(/([A-Z])/g, (m)=>'-' + m.toLowerCase());
+    if (key.startsWith('data') && key.length > 4 && key.charCodeAt(4) >= 65 && key.charCodeAt(4) <= 90) return 'data-' + key.charAt(4).toLowerCase() + key.slice(5).replace(/([A-Z])/g, (m)=>'-' + m.toLowerCase());
+    return null;
+};
 const checkAttributeByTagName = (tag, attribute)=>{
+    // aria-* and data-* are valid on all elements
+    if (attribute.startsWith('aria-') || attribute.startsWith('data-')) return true;
+    // camelCase aria/data attrs
+    if (camelToAttr(attribute)) return true;
     if (Object.prototype.hasOwnProperty.call(HTML_ATTRIBUTES, tag)) {
         const attributes = HTML_ATTRIBUTES[tag];
         return attributes.includes(attribute) || attributes.includes('default');
@@ -5050,9 +5062,25 @@ const filterAttributesByTagName = (tag, props, cssProps)=>{
     const filteredObject = {};
     for(const key in props)if (Object.prototype.hasOwnProperty.call(props, key)) {
         if (cssProps && key in cssProps) continue;
+        // aria: { label: 'foo', expanded: true } → aria-label, aria-expanded
+        if (key === 'aria' && props[key] && typeof props[key] === 'object') {
+            for(const ariaKey in props[key])if ((0, _utils.isDefined)(props[key][ariaKey])) filteredObject['aria-' + ariaKey] = props[key][ariaKey];
+            continue;
+        }
+        // data: { testId: 'foo' } → data-test-id
+        if (key === 'data' && props[key] && typeof props[key] === 'object') {
+            for(const dataKey in props[key])if ((0, _utils.isDefined)(props[key][dataKey])) {
+                const kebab = dataKey.replace(/([A-Z])/g, (m)=>'-' + m.toLowerCase());
+                filteredObject['data-' + kebab] = props[key][dataKey];
+            }
+            continue;
+        }
         const isAttribute = checkAttributeByTagName(tag, key);
         const isEvent = checkEventFunctions(key);
-        if ((0, _utils.isDefined)(props[key]) && (isAttribute || isEvent)) filteredObject[key] = props[key];
+        if ((0, _utils.isDefined)(props[key]) && (isAttribute || isEvent)) {
+            const attrName = camelToAttr(key) || key;
+            filteredObject[attrName] = props[key];
+        }
     }
     return filteredObject;
 };
@@ -5067,11 +5095,25 @@ const resolvePropValue = (el, value)=>{
     if ((0, _utils.isString)(resolved) && resolved.includes('{{')) resolved = el.call('replaceLiteralsWithObjectFields', resolved);
     return resolved;
 };
+const resolveFileSource = (el, value)=>{
+    let src = (el.props.preSrc || '') + (resolvePropValue(el, value) || '');
+    if (!src) return;
+    try {
+        new URL(src);
+        return src;
+    } catch (e) {} // absolute URL — passthrough
+    const { context } = el;
+    if (!context.files) return src;
+    const fileSrc = src.startsWith('/files/') ? src.slice(7) : src;
+    const file = context.files[src] || context.files[fileSrc];
+    if (file && file.content) return file.content.src;
+    return src;
+};
 const ATTR_TRANSFORMS = {
-    src: (el)=>resolvePropValue(el, el.props.src),
+    src: (el)=>resolveFileSource(el, el.props.src),
     href: (el)=>resolvePropValue(el, el.props.href),
     action: (el)=>resolvePropValue(el, el.props.action),
-    poster: (el)=>resolvePropValue(el, el.props.poster),
+    poster: (el)=>resolveFileSource(el, el.props.poster),
     data: (el)=>resolvePropValue(el, el.props.data)
 };
 const applyAttrTransforms = (element)=>{
@@ -5081,6 +5123,76 @@ const applyAttrTransforms = (element)=>{
     for(const attr in ATTR_TRANSFORMS)if (props[attr] !== undefined && checkAttributeByTagName(tag, attr)) {
         const val = ATTR_TRANSFORMS[attr](element);
         if (val !== undefined) result[attr] = val;
+    }
+    return result;
+};
+/**
+ * Resolve a case value from context.cases.
+ * Returns true/false, or undefined if case is not defined.
+ */ const resolveCase = (caseKey, element)=>{
+    const caseFn = element.context?.cases?.[caseKey];
+    if (caseFn === undefined) return undefined;
+    if ((0, _utils.isFunction)(caseFn)) return caseFn.call(element, element);
+    return !!caseFn;
+};
+/**
+ * Evaluate whether a conditional prefix key is active.
+ * Supports $ (global cases), . (truthy), ! (falsy) prefixes.
+ */ const evaluateCondition = (prefix, caseKey, element)=>{
+    if (prefix === '$') {
+        let result = resolveCase(caseKey, element);
+        if (result === undefined) result = !!element.props?.[caseKey];
+        return result;
+    }
+    // . and ! prefixes: check props/state/element first, then context.cases
+    let isTruthy = element.props[caseKey] === true || element.state[caseKey] || element[caseKey];
+    if (!isTruthy) {
+        const caseResult = resolveCase(caseKey, element);
+        if (caseResult !== undefined) isTruthy = caseResult;
+    }
+    return prefix === '.' ? !!isTruthy : !isTruthy;
+};
+const CONDITIONAL_PREFIXES = new Set([
+    '$',
+    '.',
+    '!'
+]);
+const extractConditionalAttrs = (props, tag, cssProps)=>{
+    const result = {};
+    const addConditionalAttr = (attrName, attrVal, prefix, caseKey)=>{
+        const capturedVal = attrVal;
+        result[attrName] = (el)=>{
+            if (!evaluateCondition(prefix, caseKey, el)) return undefined;
+            return (0, _utils.isFunction)(capturedVal) ? capturedVal(el) : capturedVal;
+        };
+    };
+    for(const key in props){
+        const prefix = key.charAt(0);
+        if (!CONDITIONAL_PREFIXES.has(prefix)) continue;
+        const block = props[key];
+        if (!block || typeof block !== 'object') continue;
+        const caseKey = key.slice(1);
+        for(const attrKey in block){
+            if (cssProps && attrKey in cssProps) continue;
+            // aria: { label: 'foo' } inside conditional block
+            if (attrKey === 'aria' && block[attrKey] && typeof block[attrKey] === 'object') {
+                for(const ariaKey in block[attrKey])addConditionalAttr('aria-' + ariaKey, block[attrKey][ariaKey], prefix, caseKey);
+                continue;
+            }
+            // data: { testId: 'foo' } inside conditional block
+            if (attrKey === 'data' && block[attrKey] && typeof block[attrKey] === 'object') {
+                for(const dataKey in block[attrKey]){
+                    const kebab = dataKey.replace(/([A-Z])/g, (m)=>'-' + m.toLowerCase());
+                    addConditionalAttr('data-' + kebab, block[attrKey][dataKey], prefix, caseKey);
+                }
+                continue;
+            }
+            const isAttribute = checkAttributeByTagName(tag, attrKey);
+            const isEvent = checkEventFunctions(attrKey);
+            if (!isAttribute && !isEvent) continue;
+            const attrName = camelToAttr(attrKey) || attrKey;
+            addConditionalAttr(attrName, block[attrKey], prefix, caseKey);
+        }
     }
     return result;
 };
@@ -5162,7 +5274,8 @@ const usePropsAsCSS = (sourceObj, element, opts)=>{
             if (!isProd && (0, _utils.isObject)(obj[key])) obj[key].label = key;
         } else if ((0, _defaults.DEFAULT_CSS_PROPERTIES_LIST).has(key)) {
             // they can be grouped
-            const result = (0, _utils.exec)(value, element);
+            let result = (0, _utils.exec)(value, element);
+            if (typeof result === 'string' && result.charCodeAt(0) === 45 && result.charCodeAt(1) === 45) result = `var(${result})`;
             setToObj(key, {
                 [key]: result
             });
@@ -7478,24 +7591,34 @@ const isGoogleFontsUrl = (url)=>url && (url.includes('fonts.googleapis.com') || 
 const setFontImport = (url)=>`@import url('${url}');`;
 const setInCustomFontMedia = (str)=>`@font-face { ${str} }`;
 const setCustomFont = (name, url, weight, options = {})=>{
-    const format = getFontFormat(url);
-    const formatStr = format ? ` format('${format}')` : '';
+    const urls = Array.isArray(url) ? url : [
+        url
+    ];
+    const srcList = urls.map((u)=>{
+        const format = getFontFormat(u);
+        const formatStr = format ? ` format('${format}')` : '';
+        return `url('${u}')${formatStr}`;
+    }).join(',\n       ');
     return `
   font-family: '${name}';
-  font-style: normal;${weight ? `
+  font-style: ${options.fontStyle || 'normal'};${weight ? `
   font-weight: ${weight};` : ''}${options.fontStretch ? `
   font-stretch: ${options.fontStretch};` : ''}${options.fontDisplay ? `
   font-display: ${options.fontDisplay};` : ''}
-  src: url('${url}')${formatStr};`;
+  src: ${srcList};`;
 };
 const setCustomFontMedia = (name, url, weight, options)=>`@font-face {${setCustomFont(name, url, weight, options)}
 }`;
 const getFontFaceEach = (name, weights, files)=>{
     const keys = Object.keys(weights);
     return keys.map((key)=>{
-        const { url, fontWeight } = weights[key];
-        const resolvedUrl = resolveFileUrl(url, files) || url;
-        return setCustomFont(name, resolvedUrl, fontWeight);
+        const { url, fontWeight, fontStyle, fontDisplay, fontStretch } = weights[key];
+        const resolvedUrl = Array.isArray(url) ? url.map((u)=>resolveFileUrl(u, files) || u) : resolveFileUrl(url, files) || url;
+        return setCustomFont(name, resolvedUrl, fontWeight, {
+            fontStyle,
+            fontDisplay,
+            fontStretch
+        });
     });
 };
 const getFontFace = (LIBRARY)=>{
@@ -7513,8 +7636,12 @@ const getFontFaceEachString = (name, weights, files)=>{
     }
     const isArr = weights[0];
     if (isArr) return getFontFaceEach(name, weights, files).map(setInCustomFontMedia);
-    const url = resolveFileUrl(weights.url, files) || weights.url;
-    return setCustomFontMedia(name, url);
+    const url = Array.isArray(weights.url) ? weights.url.map((u)=>resolveFileUrl(u, files) || u) : resolveFileUrl(weights.url, files) || weights.url;
+    return setCustomFontMedia(name, url, weights.fontWeight, {
+        fontStyle: weights.fontStyle,
+        fontDisplay: weights.fontDisplay,
+        fontStretch: weights.fontStretch
+    });
 };
 const getFontFaceString = (LIBRARY, files)=>{
     const keys = Object.keys(LIBRARY);
@@ -8663,6 +8790,7 @@ const setActiveConfig = (newConfig)=>{
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "reset", ()=>reset);
+parcelHelpers.export(exports, "vars", ()=>vars);
 var _sequenceJs = require("./sequence.js");
 parcelHelpers.exportAll(_sequenceJs, exports);
 var _unitJs = require("./unit.js");
@@ -8691,8 +8819,6 @@ var _documentJs = require("./document.js");
 parcelHelpers.exportAll(_documentJs, exports);
 var _responsiveJs = require("./responsive.js");
 parcelHelpers.exportAll(_responsiveJs, exports);
-var _casesJs = require("./cases.js");
-parcelHelpers.exportAll(_casesJs, exports);
 var _animationJs = require("./animation.js");
 parcelHelpers.exportAll(_animationJs, exports);
 var _svgJs = require("./svg.js");
@@ -8705,8 +8831,9 @@ var _classJs = require("./class.js");
 parcelHelpers.exportAll(_classJs, exports);
 'use strict';
 const reset = {};
+const vars = {};
 
-},{"./sequence.js":"igh4M","./unit.js":"2a8qI","./typography.js":"8muOe","./font.js":"dNJjJ","./font-family.js":"2hHtC","./media.js":"5kxPh","./spacing.js":"9Jd52","./color.js":"hZXOs","./theme.js":"knFcy","./shadow.js":"bB6Wf","./icons.js":"l44fN","./timing.js":"eiTGx","./document.js":"7Devp","./responsive.js":"bJmpG","./cases.js":"7syQy","./animation.js":"3H8Ed","./svg.js":"9aRZ6","./templates.js":"a8Uc6","./grid.js":"1GyaI","./class.js":"8yUbV","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"igh4M":[function(require,module,exports,__globalThis) {
+},{"./sequence.js":"igh4M","./unit.js":"2a8qI","./typography.js":"8muOe","./font.js":"dNJjJ","./font-family.js":"2hHtC","./media.js":"5kxPh","./spacing.js":"9Jd52","./color.js":"hZXOs","./theme.js":"knFcy","./shadow.js":"bB6Wf","./icons.js":"l44fN","./timing.js":"eiTGx","./document.js":"7Devp","./responsive.js":"bJmpG","./animation.js":"3H8Ed","./svg.js":"9aRZ6","./templates.js":"a8Uc6","./grid.js":"1GyaI","./class.js":"8yUbV","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"igh4M":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "sequence", ()=>sequence);
@@ -8984,13 +9111,6 @@ const devices = {
         768
     ]
 };
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"7syQy":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "cases", ()=>cases);
-'use strict';
-const cases = {};
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"3H8Ed":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -9706,8 +9826,12 @@ const setFont = (val, key)=>{
         });
     } else if (val[0]) fontFace = (0, _utils1.getFontFaceEach)(key, val, CONFIG.files);
     else {
-        const url = (0, _utils1.resolveFileUrl)(val.url, CONFIG.files) || val.url;
-        fontFace = (0, _utils1.setCustomFontMedia)(key, url);
+        const url = Array.isArray(val.url) ? val.url.map((u)=>(0, _utils1.resolveFileUrl)(u, CONFIG.files) || u) : (0, _utils1.resolveFileUrl)(val.url, CONFIG.files) || val.url;
+        fontFace = (0, _utils1.setCustomFontMedia)(key, url, val.fontWeight, {
+            fontStyle: val.fontStyle,
+            fontDisplay: val.fontDisplay,
+            fontStretch: val.fontStretch
+        });
     }
     return {
         var: CSSvar,
@@ -10444,11 +10568,14 @@ var _factoryJs = require("./factory.js"); // eslint-disable-line no-unused-vars
 var _system = require("./system");
 var _utils = require("@domql/utils");
 'use strict';
-const setCases = (val, key)=>{
-    if ((0, _utils.isFunction)(val)) return val();
+const setVars = (val, key)=>{
+    const CONFIG = (0, _factoryJs.getActiveConfig)();
+    const { CSS_VARS } = CONFIG;
+    const varName = key.startsWith('--') ? key : `--${key}`;
+    CSS_VARS[varName] = val;
     return val;
 };
-const setSameValue = (val, key)=>val;
+const asIs = (val)=>val;
 const VALUE_TRANSFORMERS = {
     color: (0, _system.setColor),
     gradient: (0, _system.setGradient),
@@ -10457,21 +10584,21 @@ const VALUE_TRANSFORMERS = {
     fontfamily: (0, _system.setFontFamily),
     theme: (0, _system.setTheme),
     icons: (0, _system.setSvgIcon),
-    semantic_icons: setSameValue,
-    semanticicons: setSameValue,
+    semantic_icons: asIs,
+    semanticicons: asIs,
     svg: (0, _system.setSVG),
-    svg_data: setSameValue,
-    typography: setSameValue,
-    cases: setCases,
+    svg_data: asIs,
+    typography: asIs,
     shadow: (0, _system.setShadow),
-    spacing: setSameValue,
-    media: setSameValue,
-    grid: setSameValue,
-    class: setSameValue,
-    timing: setSameValue,
-    reset: setSameValue,
-    unit: setSameValue,
-    animation: setSameValue
+    spacing: asIs,
+    media: asIs,
+    grid: asIs,
+    class: asIs,
+    timing: asIs,
+    reset: asIs,
+    unit: asIs,
+    animation: asIs,
+    vars: setVars
 };
 const setValue = (factoryName, value, key)=>{
     const CONFIG = (0, _factoryJs.getActiveConfig)();
@@ -11387,6 +11514,7 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "applyTrueProps", ()=>applyTrueProps);
 parcelHelpers.export(exports, "transformersByPrefix", ()=>transformersByPrefix);
+var _utils = require("@domql/utils");
 var _executors = require("./executors");
 'use strict';
 /**
@@ -11415,11 +11543,18 @@ const applySelectorProps = (key, selectorProps, element)=>{
         [selectorKey]: (0, _executors.useCssInProps)(selectorProps, element)
     };
 };
-// Conditional applicators
+// Resolve a case value from context.cases
+const resolveCase = (caseKey, element)=>{
+    const caseFn = element.context?.cases?.[caseKey];
+    if (caseFn === undefined) return undefined;
+    if ((0, _utils.isFunction)(caseFn)) return caseFn.call(element, element);
+    return !!caseFn;
+};
+// $ prefix: Global cases from context.cases
 const applyCaseProps = (key, selectorProps, element)=>{
-    const { cases: CASES } = element.context?.designSystem || {};
     const caseKey = key.slice(1);
-    const isCaseTrue = !CASES?.[caseKey] && !element.props[caseKey];
+    let isCaseTrue = resolveCase(caseKey, element);
+    if (isCaseTrue === undefined) isCaseTrue = !!element.props?.[caseKey];
     if (!isCaseTrue) return;
     return (0, _executors.useCssInProps)(selectorProps, element);
 };
@@ -11428,15 +11563,25 @@ const applyVariableProps = (key, selectorVal, element)=>{
         [key]: selectorVal
     };
 };
+// . prefix: Truthy conditional (props/state first, then context.cases)
 const applyConditionalCaseProps = (key, selectorProps, element)=>{
     const caseKey = key.slice(1);
-    const isCaseTrue = element.props[caseKey] === true || element.state[caseKey] || element[caseKey];
+    let isCaseTrue = element.props[caseKey] === true || element.state[caseKey] || element[caseKey];
+    if (!isCaseTrue) {
+        const caseResult = resolveCase(caseKey, element);
+        if (caseResult !== undefined) isCaseTrue = caseResult;
+    }
     if (!isCaseTrue) return;
     return (0, _executors.useCssInProps)(selectorProps, element);
 };
+// ! prefix: Falsy conditional (props/state first, then context.cases)
 const applyConditionalFalsyProps = (key, selectorProps, element)=>{
     const caseKey = key.slice(1);
-    const isCaseTrue = element.props[caseKey] === true || element.state[caseKey] || element[caseKey];
+    let isCaseTrue = element.props[caseKey] === true || element.state[caseKey] || element[caseKey];
+    if (!isCaseTrue) {
+        const caseResult = resolveCase(caseKey, element);
+        if (caseResult !== undefined) isCaseTrue = caseResult;
+    }
     if (isCaseTrue) return;
     return (0, _executors.useCssInProps)(selectorProps, element);
 };
@@ -11460,7 +11605,7 @@ const transformersByPrefix = {
     '!': applyConditionalFalsyProps
 };
 
-},{"./executors":"4An0X","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jdbrS":[function(require,module,exports,__globalThis) {
+},{"@domql/utils":"1zA6L","./executors":"4An0X","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jdbrS":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "DEFAULT_CONFIG", ()=>DEFAULT_CONFIG);
@@ -11498,7 +11643,6 @@ const DEFAULT_CONFIG = {
         }
     },
     devices: {},
-    cases: {},
     class: {},
     svg: {},
     grid: {},
@@ -11864,28 +12008,15 @@ const Gutter = {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Img", ()=>Img);
-var _attrsInProps = require("attrs-in-props");
 'use strict';
 const Img = {
     tag: 'img',
     attr: {
-        src: (el)=>{
-            const { props, context } = el;
-            let src = (props.preSrc || '') + (0, _attrsInProps.resolvePropValue)(el, props.src);
-            let isUrl;
-            try {
-                isUrl = new URL(src);
-            } catch (e) {} // expected: src is not an absolute URL, treating as relative path
-            if (isUrl) return src;
-            const fileSrc = src && src.startsWith('/files/') ? src.slice(7) : src;
-            const file = context.files && (context.files[src] || context.files[fileSrc]);
-            if (file) return file.content && file.content.src;
-        },
         title: ({ props })=>props.title || props.alt
     }
 };
 
-},{"attrs-in-props":"h6NBV","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8yqox":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8yqox":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Form", ()=>Form);
@@ -13438,9 +13569,12 @@ const EXCLUDED_ATTRS = new Set([
 const applyPropsAsAttrs = (element)=>{
     const { tag, props, context } = element;
     if (!tag || !props) return;
-    const autoAttrs = (0, _attrsInProps.filterAttributesByTagName)(tag, props, context?.cssPropsRegistry);
+    const cssProps = context?.cssPropsRegistry;
+    const autoAttrs = (0, _attrsInProps.filterAttributesByTagName)(tag, props, cssProps);
+    const conditionalAttrs = (0, _attrsInProps.extractConditionalAttrs)(props, tag, cssProps);
     const filtered = {};
     for(const key in autoAttrs)if (!EXCLUDED_ATTRS.has(key)) filtered[key] = autoAttrs[key];
+    for(const key in conditionalAttrs)if (!EXCLUDED_ATTRS.has(key)) filtered[key] = conditionalAttrs[key];
     let hasFiltered = false;
     for(const _k in filtered){
         hasFiltered = true;
@@ -17925,6 +18059,8 @@ const prepareContext = async (app, context = {})=>{
     context.designSystem = scratcDesignSystem;
     context.registry = registry;
     context.emotion = emotion;
+    // Set up context.cases from context-level cases (defined in symbols/cases.js)
+    if (!context.cases) context.cases = {};
     const state = (0, _prepareJs.prepareState)(app, context);
     context.state = state;
     context.pages = (0, _prepareJs.preparePages)(app, context);
@@ -23209,6 +23345,8 @@ var _indexJs2 = require("./pages/index.js");
 var _indexJsDefault = parcelHelpers.interopDefault(_indexJs2);
 var _indexJs3 = require("./designSystem/index.js");
 var _indexJsDefault1 = parcelHelpers.interopDefault(_indexJs3);
+var _indexJs4 = require("./files/index.js");
+var _indexJsDefault2 = parcelHelpers.interopDefault(_indexJs4);
 var _configJs = require("./config.js");
 var _configJsDefault = parcelHelpers.interopDefault(_configJs);
 exports.default = {
@@ -23218,10 +23356,11 @@ exports.default = {
     functions: _indexJs1,
     pages: (0, _indexJsDefault.default),
     designSystem: (0, _indexJsDefault1.default),
+    files: (0, _indexJsDefault2.default),
     ...(0, _configJsDefault.default)
 };
 
-},{"./state.js":"b0uzo","./dependencies.js":"fYYyS","./components/index.js":"laHG6","./functions/index.js":"gqYSP","./pages/index.js":"baDdn","./designSystem/index.js":"lS3JP","./config.js":"jNdS5","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"b0uzo":[function(require,module,exports,__globalThis) {
+},{"./state.js":"b0uzo","./dependencies.js":"fYYyS","./components/index.js":"laHG6","./functions/index.js":"gqYSP","./pages/index.js":"baDdn","./designSystem/index.js":"lS3JP","./files/index.js":"dTkK6","./config.js":"jNdS5","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"b0uzo":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 exports.default = {};
@@ -23242,6 +23381,8 @@ var _hgroupJs = require("./Hgroup.js");
 parcelHelpers.exportAll(_hgroupJs, exports);
 var _button1Js = require("./Button1.js");
 parcelHelpers.exportAll(_button1Js, exports);
+var _navDotJs = require("./NavDot.js");
+parcelHelpers.exportAll(_navDotJs, exports);
 var _imgJs = require("./Img.js");
 parcelHelpers.exportAll(_imgJs, exports);
 var _teamMemberJs = require("./TeamMember.js");
@@ -23250,6 +23391,10 @@ var _img2Js = require("./Img2.js");
 parcelHelpers.exportAll(_img2Js, exports);
 var _navJs = require("./Nav.js");
 parcelHelpers.exportAll(_navJs, exports);
+var _navBarJs = require("./NavBar.js");
+parcelHelpers.exportAll(_navBarJs, exports);
+var _navLinkJs = require("./NavLink.js");
+parcelHelpers.exportAll(_navLinkJs, exports);
 var _button4Js = require("./Button4.js");
 parcelHelpers.exportAll(_button4Js, exports);
 var _link3Js = require("./Link3.js");
@@ -23333,7 +23478,7 @@ parcelHelpers.exportAll(_addressJs, exports);
 var _iframeJs = require("./Iframe.js");
 parcelHelpers.exportAll(_iframeJs, exports);
 
-},{"./Link.js":"78RQJ","./Button.js":"jctoM","./Hgroup.js":"31M0t","./Button1.js":"2oXVq","./Img.js":"5BENi","./TeamMember.js":"O60NN","./Img2.js":"9FhYW","./Nav.js":"jrvWf","./Button4.js":"cDolK","./Link3.js":"72hpH","./FocusCorner.js":"9fgeb","./Logo.js":"oDTEK","./Corner.js":"33TDE","./MenuButton.js":"bIvEz","./LangButton.js":"hAPIc","./ChatButton.js":"lo3ss","./ChatPanelOverlay.js":"cllGX","./LangContent.js":"8lUC0","./StarsBg.js":"edtKj","./Overlay.js":"f6WGu","./GlobeFrame.js":"v40Fh","./Section.js":"fxIja","./H1.js":"imFvv","./H2.js":"5J749","./H3.js":"e8mSz","./H4.js":"bSqI4","./H5.js":"83BOC","./H6.js":"1VysY","./P.js":"cxNfT","./Content.js":"uzDfR","./Images.js":"6IIBR","./Image.js":"2trJ0","./Service.js":"dNz5B","./Circle.js":"1RjUS","./Dot.js":"3hGCQ","./NavArrows.js":"axqZi","./Contents.js":"a9PBe","./Title.js":"4eTz4","./TestimonialContent.js":"jRGUZ","./Messages.js":"5zvzM","./Focus.js":"5Da5V","./Footer.js":"9DxID","./Form.js":"asgHx","./Legend.js":"7Tt7V","./Input.js":"7FjUb","./Textarea.js":"cJffi","./Contact.js":"3b8Xp","./Address.js":"199zs","./Iframe.js":"2cjoe","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"78RQJ":[function(require,module,exports,__globalThis) {
+},{"./Link.js":"78RQJ","./Button.js":"jctoM","./Hgroup.js":"31M0t","./Button1.js":"2oXVq","./NavDot.js":"1FSLK","./Img.js":"5BENi","./TeamMember.js":"O60NN","./Img2.js":"9FhYW","./Nav.js":"jrvWf","./NavBar.js":"9NyJp","./NavLink.js":"9uqHB","./Button4.js":"cDolK","./Link3.js":"72hpH","./FocusCorner.js":"9fgeb","./Logo.js":"oDTEK","./Corner.js":"33TDE","./MenuButton.js":"bIvEz","./LangButton.js":"hAPIc","./ChatButton.js":"lo3ss","./ChatPanelOverlay.js":"cllGX","./LangContent.js":"8lUC0","./StarsBg.js":"edtKj","./Overlay.js":"f6WGu","./GlobeFrame.js":"v40Fh","./Section.js":"fxIja","./H1.js":"imFvv","./H2.js":"5J749","./H3.js":"e8mSz","./H4.js":"bSqI4","./H5.js":"83BOC","./H6.js":"1VysY","./P.js":"cxNfT","./Content.js":"uzDfR","./Images.js":"6IIBR","./Image.js":"2trJ0","./Service.js":"dNz5B","./Circle.js":"1RjUS","./Dot.js":"3hGCQ","./NavArrows.js":"axqZi","./Contents.js":"a9PBe","./Title.js":"4eTz4","./TestimonialContent.js":"jRGUZ","./Messages.js":"5zvzM","./Focus.js":"5Da5V","./Footer.js":"9DxID","./Form.js":"asgHx","./Legend.js":"7Tt7V","./Input.js":"7FjUb","./Textarea.js":"cJffi","./Contact.js":"3b8Xp","./Address.js":"199zs","./Iframe.js":"2cjoe","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"78RQJ":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Link", ()=>Link);
@@ -23380,6 +23525,56 @@ const Button1 = {
     type: 'button'
 };
 
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"1FSLK":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "NavDot", ()=>NavDot);
+const NavDot = {
+    extends: 'Button1',
+    tag: 'button',
+    position: 'relative',
+    width: 'var(--dot-hit-size, 0.9em)',
+    height: 'var(--dot-hit-size, 0.9em)',
+    minWidth: 'var(--dot-hit-size, 0.9em)',
+    maxWidth: 'var(--dot-hit-size, 0.9em)',
+    margin: '0',
+    padding: '0',
+    border: 'none',
+    borderRadius: '999px',
+    display: 'grid',
+    placeItems: 'center',
+    background: 'transparent',
+    appearance: 'none',
+    cursor: 'pointer',
+    touchAction: 'manipulation',
+    '::before': {
+        content: "''",
+        width: 'var(--dot-visual-size, 0.9em)',
+        height: 'var(--dot-visual-size, 0.9em)',
+        borderRadius: '100%',
+        opacity: '0.8',
+        display: 'block',
+        background: 'rgba(255, 241, 227, 0.35)',
+        boxShadow: 'inset 0 0 0 var(--dot-ring-size, 0.12em) rgba(0, 0, 0, 0.2)',
+        transition: 'transform var(--dur-fast) var(--ease-io), box-shadow var(--dur-fast) var(--ease-io), background var(--dur-fast) var(--ease-io), opacity var(--dur-fast) var(--ease-io)'
+    },
+    ':focus-visible': {
+        outline: '0.12em solid rgba(255, 241, 227, 0.7)',
+        outlineOffset: '0.08em'
+    },
+    '@media (hover: hover) and (pointer: fine)': {
+        ':hover::before': {
+            opacity: '1',
+            transform: 'scale(1.2)'
+        }
+    },
+    '&.active::before': {
+        background: '#E44646',
+        boxShadow: '0 0 0 var(--dot-ring-size, 0.12em) rgba(228, 70, 70, 0.35)',
+        transform: 'scale(1)'
+    }
+};
+
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5BENi":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -23400,31 +23595,155 @@ const TeamMember = {
     minWidth: '20em',
     maxWidth: '20em',
     height: '25em',
-    border: '1px solid rgba(255, 241, 227, .5)',
-    position: 'relative',
+    border: '1px solid rgba(255, 241, 227, 0.2)',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
     round: '2em',
     overflow: 'hidden',
+    opacity: '0.55',
+    transform: 'scale(0.86) translateZ(-40px)',
+    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
+    transition: 'opacity 0.2s var(--ease-io), box-shadow 0.24s var(--ease-io), border-color 0.24s var(--ease-io)',
+    willChange: 'transform',
+    '&.active': {
+        opacity: '1',
+        transform: 'scale(1) translateZ(0)',
+        borderColor: 'rgba(255, 241, 227, 0.75)',
+        boxShadow: '0 30px 60px rgba(0, 0, 0, 0.35)'
+    },
+    '::after': {
+        content: "''",
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        background: 'linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%)',
+        zIndex: '2',
+        pointerEvents: 'none',
+        opacity: '0.85',
+        transition: 'opacity 0.22s var(--ease-io)'
+    },
+    '&.active::after': {
+        opacity: '1'
+    },
+    H6: {
+        fontSize: '1em',
+        padding: '0 0 0 1.35em',
+        fontWeight: '400',
+        maxWidth: 'fit-content',
+        color: 'rgba(255, 241, 227, 0.7)',
+        position: 'absolute',
+        zIndex: '3',
+        top: '1em',
+        textTransform: 'uppercase',
+        opacity: '0',
+        transition: 'opacity 0.22s var(--ease-io), transform 0.22s var(--ease-io)'
+    },
+    '&.active H6': {
+        opacity: '1'
+    },
+    H5: {
+        fontSize: '2.2em',
+        maxWidth: '2em',
+        lineHeight: '1em',
+        position: 'absolute',
+        bottom: '1em',
+        left: '1em',
+        zIndex: '3',
+        fontWeight: '900',
+        opacity: '0',
+        transition: 'opacity 0.22s var(--ease-io), transform 0.22s var(--ease-io)'
+    },
+    '&.active H5': {
+        opacity: '1'
+    },
+    Img: {
+        position: 'absolute',
+        bottom: '0',
+        width: '100%',
+        height: '90%',
+        objectFit: 'cover',
+        zIndex: '1',
+        transform: 'scale(0.9)',
+        transition: 'transform 0.6s var(--ease-soft)',
+        display: 'block',
+        maxWidth: '100%'
+    },
+    '&.active Img': {
+        transform: 'scale(1)'
+    },
+    '@media (max-width: 560px)': {
+        transform: 'scale(0.9) translateZ(-20px)'
+    },
+    '@media (max-width: 480px)': {
+        minWidth: '75%',
+        maxWidth: '75%'
+    },
+    '@media (max-width: 375px)': {
+        minWidth: '85%',
+        maxWidth: '85%'
+    },
+    '@media (max-width: 350px)': {
+        minWidth: '90%',
+        maxWidth: '90%',
+        height: '21em'
+    },
     Nav: {
         extends: 'Nav',
         class: 'socialLinks',
         tag: 'nav',
-        flow: 'column',
-        gap: '-',
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '0',
         minWidth: 'fit-content',
         maxWidth: 'fit-content',
+        position: 'absolute',
+        zIndex: '3',
+        top: '1.2em',
+        right: '1.5em',
         Link: {
+            extends: 'Link3',
+            display: 'flex',
+            minWidth: '2em',
+            maxWidth: '2em',
+            minHeight: '2em',
+            maxHeight: '2em',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
             Img: {
-                src: './IMAGE/facebook.png',
-                extends: 'Img2'
-            },
-            extends: 'Link3'
+                src: 'facebook.png',
+                extends: 'Img2',
+                objectFit: 'contain',
+                width: '100%',
+                height: '100%',
+                display: 'block',
+                opacity: '0.7',
+                maxWidth: '100%'
+            }
         },
         Link_1: {
+            extends: 'Link3',
+            display: 'flex',
+            minWidth: '2em',
+            maxWidth: '2em',
+            minHeight: '2em',
+            maxHeight: '2em',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
             Img: {
-                src: './IMAGE/linkedin.png',
-                extends: 'Img2'
-            },
-            extends: 'Link3'
+                src: 'linkedin.png',
+                extends: 'Img2',
+                objectFit: 'contain',
+                width: '100%',
+                height: '100%',
+                display: 'block',
+                opacity: '0.7',
+                maxWidth: '100%'
+            }
         }
     }
 };
@@ -23456,6 +23775,158 @@ const Nav = {
     maxWidth: 'fit-content'
 };
 
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"9NyJp":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "NavBar", ()=>NavBar);
+const NavBar = {
+    tag: 'nav',
+    position: 'absolute',
+    top: '7em',
+    right: '8em',
+    zIndex: '5',
+    flow: 'column',
+    gap: '.5em',
+    minWidth: 'fit-content',
+    maxWidth: 'fit-content',
+    backdropFilter: 'none',
+    'body[data-lang="ka"] &': {
+        gap: '.9em'
+    },
+    // Hide when chat panel is open
+    'body.chat-panel-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
+    },
+    // Mobile: full-screen overlay, initially hidden (slides in from right)
+    '@tabletM': {
+        position: 'fixed',
+        top: '0',
+        right: '0',
+        bottom: '0',
+        left: '0',
+        minWidth: '100vw',
+        minHeight: '100dvh',
+        display: 'flex',
+        flexFlow: 'column',
+        gap: '1em',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+        padding: '7.5em 4em 4em 4em',
+        background: 'linear-gradient(180deg, rgba(8, 5, 8, 0.98) 0%, rgba(8, 5, 8, 1) 100%)',
+        backdropFilter: 'blur(10px)',
+        zIndex: '120',
+        transform: 'translateX(105%)',
+        opacity: '0',
+        visibility: 'hidden',
+        pointerEvents: 'none',
+        transition: 'transform 0.38s var(--ease-io), opacity 0.28s ease, backdrop-filter 0.28s ease, background 0.28s ease',
+        '&.is-open': {
+            transform: 'translateX(0)',
+            opacity: '1',
+            visibility: 'visible',
+            pointerEvents: 'auto',
+            background: 'linear-gradient(180deg, rgba(8, 5, 8, 0.98) 0%, rgba(8, 5, 8, 1) 100%)',
+            backdropFilter: 'blur(16px)'
+        }
+    },
+    '@mobileL': {
+        padding: '6.25em 2.5em 2.5em 2.5em'
+    }
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"9uqHB":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "NavLink", ()=>NavLink);
+const NavLink = {
+    extends: 'Link',
+    tag: 'a',
+    textDecoration: 'none',
+    fontSize: '1.1em',
+    lineHeight: '.8em',
+    color: 'cream',
+    cursor: 'pointer',
+    fontWeight: '400',
+    padding: '.3em 1em',
+    opacity: '0.5',
+    borderRadius: '3em',
+    background: 'rgba(224, 77, 77, 0)',
+    transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), padding 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease, font-weight 0.5s ease, border-radius 0.5s ease, opacity 0.5s ease',
+    ':hover': {
+        textTransform: 'capitalize',
+        opacity: '1',
+        background: 'rgba(224, 77, 77, 1)',
+        fontWeight: '900',
+        padding: '1em 1.3em',
+        transform: 'scale(1.2)'
+    },
+    'body[data-lang="ka"] &': {
+        fontFamily: "'BPG Square Banner Caps 2013', sans-serif",
+        fontStyle: 'normal',
+        fontWeight: '400',
+        textTransform: 'none',
+        fontSynthesis: 'none',
+        fontSize: '.9em',
+        '@tabletM': {
+            fontSize: '3.5em',
+            fontWeight: '400'
+        },
+        '@mobileL': {
+            fontSize: '2.7em'
+        },
+        '@mobileS': {
+            fontSize: '2.5em'
+        }
+    },
+    'body[data-lang="ka"] &:hover': {
+        fontWeight: '400',
+        textTransform: 'none'
+    },
+    // Mobile: large link text, initially hidden until nav opens
+    '@tabletM': {
+        width: 'fit-content',
+        fontSize: '5em',
+        lineHeight: '1em',
+        fontWeight: '900',
+        borderRadius: '0',
+        padding: '0',
+        opacity: '0',
+        transform: 'translateX(0.7em)',
+        filter: 'blur(3px)',
+        transition: 'transform 0.42s var(--ease-io), opacity 0.32s ease, filter 0.32s ease',
+        ':hover': {
+            textTransform: 'none',
+            opacity: '1',
+            background: 'rgba(224, 77, 77, 0)',
+            fontWeight: '700',
+            padding: '0',
+            transform: 'translateX(-0.08em)'
+        }
+    },
+    '@mobileL': {
+        fontSize: '3em'
+    },
+    '@mobileS': {
+        fontSize: '3.5em'
+    },
+    // When parent nav is open (mobile) — links become visible
+    '.is-open &': {
+        opacity: '0.95',
+        transform: 'translateX(0)',
+        filter: 'blur(0)'
+    },
+    '.is-open &:nth-child(1)': {
+        transitionDelay: '0.08s'
+    },
+    '.is-open &:nth-child(2)': {
+        transitionDelay: '0.14s'
+    },
+    '.is-open &:nth-child(3)': {
+        transitionDelay: '0.2s'
+    }
+};
+
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"cDolK":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -23464,13 +23935,40 @@ const Button4 = {
     extends: 'Button',
     tag: 'button',
     font: 'inherit',
-    background: 'none',
+    backgroundColor: 'rgba(224, 77, 77, 0.95)',
+    boxShadow: '0 5px 10px rgba(224, 77, 77, 0.35)',
     border: 'none',
     cursor: 'pointer',
     type: 'button',
+    backdropFilter: 'blur(20px)',
+    width: '2em',
+    height: '2em',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '100%',
+    transition: 'transform 1s ease',
+    '&.prev': {
+        width: '3.6em',
+        height: '3.6em'
+    },
+    '&.next': {
+        width: '4.2em',
+        height: '4.2em'
+    },
+    '&.prev:hover': {
+        transform: 'scale(1.05) translateX(0.25em)'
+    },
+    '&.next:hover': {
+        transform: 'scale(1.05) translateX(-0.25em)'
+    },
     Img: {
-        src: './IMAGE/arrow.png',
-        extends: 'Img2'
+        src: 'arrow.png',
+        extends: 'Img2',
+        width: '1.5em',
+        height: 'auto',
+        maxWidth: 'none',
+        transition: 'transform 0.3s var(--ease-io)'
     }
 };
 
@@ -23495,40 +23993,44 @@ const FocusCorner = {
     width: '1.25em',
     height: '1.25em',
     position: 'absolute',
-    ':before': {
+    '::before': {
         content: "''",
         position: 'absolute',
-        width: '0.15em',
+        bottom: '0',
+        left: '0',
+        width: '2px',
         height: '100%',
         background: 'var(--red)',
-        borderRadius: '2px'
+        borderRadius: '5px'
     },
-    ':after': {
+    '::after': {
         content: "''",
         position: 'absolute',
+        bottom: '0',
+        left: '0',
         width: '100%',
-        height: '0.15em',
-        background: 'var(--red)',
-        borderRadius: '2px'
+        height: '2px',
+        borderRadius: '5px',
+        background: 'var(--red)'
     },
     '&:nth-child(1)': {
         top: '0',
-        left: '0'
+        left: '0',
+        transform: 'rotate(90deg)'
     },
     '&:nth-child(2)': {
         top: '0',
         right: '0',
-        transform: 'rotate(90deg)'
+        transform: 'rotate(180deg)'
     },
     '&:nth-child(3)': {
         bottom: '0',
-        right: '0',
-        transform: 'rotate(180deg)'
+        left: '0'
     },
     '&:nth-child(4)': {
         bottom: '0',
-        left: '0',
-        transform: 'rotate(270deg)'
+        right: '0',
+        transform: 'rotate(-90deg)'
     }
 };
 
@@ -23544,11 +24046,11 @@ const Logo = {
     fontSize: '4em',
     fontWeight: '800',
     position: 'fixed',
-    fontFamily: 'var(--font-en)',
+    fontFamily: "'Exo 2', sans-serif",
     mixBlendMode: 'difference',
     zIndex: '15',
-    top: 'calc(2em + var(--app-safe-top, 0px))',
-    left: 'calc(2em + var(--app-safe-left, 0px))',
+    top: '2em',
+    left: '2em',
     ':after': {
         content: "''",
         position: 'absolute',
@@ -23557,7 +24059,7 @@ const Logo = {
         right: '-0.12em',
         width: '0.3em',
         height: '0.3em',
-        background: 'red'
+        background: 'var(--red)'
     },
     Span: {
         tag: 'span',
@@ -23585,10 +24087,20 @@ const Logo = {
     'body.intro-corners-move &': {
         animation: 'logoMove 2.8s cubic-bezier(0.16, 1, 0.3, 1) both'
     },
+    // Chat panel open state
+    'body.chat-panel-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
+    },
+    // Nav open state
+    'body.is-nav-open &': {
+        zIndex: '130',
+        mixBlendMode: 'normal'
+    },
     '@mobileL': {
         fontSize: '3.5em',
-        top: 'calc(var(--logo-final-top-offset) + var(--app-safe-top, 0px))',
-        left: 'calc(var(--logo-final-left-offset) + var(--app-safe-left, 0px))'
+        top: '0.5em',
+        left: '0.5em'
     }
 };
 
@@ -23599,13 +24111,12 @@ parcelHelpers.export(exports, "Corner", ()=>Corner);
 parcelHelpers.export(exports, "Corner2", ()=>Corner2);
 const Corner = {
     tag: 'div',
-    '--corner-size': '1.2em',
-    width: 'var(--corner-size)',
-    height: 'var(--corner-size)',
+    width: '1.2em',
+    height: '1.2em',
     position: 'fixed',
     zIndex: '5',
-    bottom: 'calc(var(--corner-bottom-offset, var(--corner-final-offset)) + var(--app-fixed-bottom-clearance, 0px))',
-    left: 'calc(var(--corner-left-offset, var(--corner-final-offset)) + var(--app-safe-left, 0px))',
+    bottom: '20px',
+    left: '20px',
     transition: 'opacity 1.6s ease, top 1.2s ease, left 1.2s ease, right 1.2s ease, bottom 1.2s ease, transform 1.2s ease',
     ':before': {
         content: "''",
@@ -23648,17 +24159,25 @@ const Corner = {
     },
     'body.intro-corners-move &': {
         animation: 'cornerToBottomLeft 3s cubic-bezier(0.16, 1, 0.3, 1) both'
+    },
+    // Chat panel / nav open states
+    'body.chat-panel-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
+    },
+    'body.is-nav-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
     }
 };
 const Corner2 = {
     tag: 'div',
-    '--corner-size': '1.2em',
-    width: 'var(--corner-size)',
-    height: 'var(--corner-size)',
+    width: '1.2em',
+    height: '1.2em',
     position: 'fixed',
     zIndex: '5',
-    top: 'calc(var(--corner-top-offset, var(--corner-final-offset)) + var(--app-safe-top, 0px))',
-    right: 'calc(var(--corner-right-offset, var(--corner-final-offset)) + var(--app-safe-right, 0px))',
+    top: '20px',
+    right: '20px',
     transform: 'rotate(180deg)',
     transition: 'opacity 1.6s ease, top 1.2s ease, left 1.2s ease, right 1.2s ease, bottom 1.2s ease, transform 1.2s ease',
     ':before': {
@@ -23701,6 +24220,15 @@ const Corner2 = {
     },
     'body.intro-corners-move &': {
         animation: 'cornerToTopRight 3s cubic-bezier(0.16, 1, 0.3, 1) both'
+    },
+    // Chat panel / nav open states
+    'body.chat-panel-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
+    },
+    'body.is-nav-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
     }
 };
 
@@ -23711,8 +24239,8 @@ parcelHelpers.export(exports, "MenuButton", ()=>MenuButton);
 const MenuButton = {
     tag: 'button',
     position: 'fixed',
-    top: 'calc(1.5em + var(--app-safe-top, 0px))',
-    right: 'calc(1.5em + var(--app-safe-right, 0px))',
+    top: '1.05em',
+    right: '1.05em',
     display: 'none',
     border: '1px solid rgba(255, 241, 227, 0.45)',
     borderRadius: '.1em',
@@ -23728,10 +24256,19 @@ const MenuButton = {
     transition: 'border-radius 0.25s var(--ease-io)',
     zIndex: '140',
     font: 'inherit',
+    // Chat panel / nav open states
+    'body.chat-panel-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
+    },
+    'body.is-nav-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
+    },
     '@tabletM': {
         display: 'flex',
-        top: 'calc(1.05em + var(--app-safe-top, 0px))',
-        right: 'calc(1.05em + var(--app-safe-right, 0px))'
+        top: '1.05em',
+        right: '1.05em'
     },
     Div: {
         tag: 'div',
@@ -23752,6 +24289,18 @@ const MenuButton = {
         transition: 'transform 0.35s var(--ease-io), opacity 0.35s var(--ease-io), width 0.35s var(--ease-io), align-self 0.35s var(--ease-io)',
         width: '1em',
         alignSelf: 'flex-end'
+    },
+    '&.is-active': {
+        borderRadius: '100%'
+    },
+    '&.is-active div:first-child': {
+        transform: 'translateY(.26em) rotate(45deg) scale(.85)',
+        alignSelf: 'center'
+    },
+    '&.is-active div:last-child': {
+        transform: 'translateY(-.26em) rotate(-45deg) scale(.85)',
+        alignSelf: 'center',
+        width: '1.5em'
     }
 };
 
@@ -23773,6 +24322,15 @@ const LangButton = {
     maxWidth: 'fit-content',
     fontSize: '.9em',
     transition: 'transform 0.3s var(--ease-io), opacity 0.22s ease',
+    // Nav open / chat panel open states
+    'body.is-nav-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
+    },
+    'body.chat-panel-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
+    },
     '@tabletM': {
         right: '0.5em'
     },
@@ -23810,7 +24368,7 @@ const LangBtn = {
         transform: 'rotate(90deg) scale(1.15)'
     },
     '&[data-lang="ka"]': {
-        fontFamily: 'var(--font-ka-cap)',
+        fontFamily: "'BPG Square Banner Caps 2013', sans-serif",
         fontStyle: 'normal',
         fontWeight: '400',
         textTransform: 'none',
@@ -23818,7 +24376,7 @@ const LangBtn = {
         marginBottom: '-0.5em'
     },
     '&:last-child': {
-        fontFamily: 'var(--font-en)',
+        fontFamily: "'Exo 2', sans-serif",
         fontWeight: '600',
         fontSize: '.9em'
     }
@@ -23830,7 +24388,7 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ChatButton", ()=>ChatButton);
 const ChatButton = {
     tag: 'button',
-    fontFamily: 'var(--font-en)',
+    fontFamily: "'Exo 2', sans-serif",
     fontWeight: '500',
     width: '3em',
     height: '3em',
@@ -23845,8 +24403,8 @@ const ChatButton = {
     border: '1px solid rgba(255, 241, 227, 0.18)',
     backdropFilter: 'blur(14px)',
     position: 'fixed',
-    bottom: 'calc(1.2em + var(--app-fixed-bottom-clearance, 0px))',
-    right: 'calc(1.2em + var(--app-safe-right, 0px))',
+    bottom: '1.2em',
+    right: '1.2em',
     zIndex: '1000',
     boxShadow: '0 0 0 rgba(80, 78, 78, 0)',
     transition: 'background-color 0.28s var(--ease-io), border-color 0.28s var(--ease-io), box-shadow 0.28s var(--ease-io)',
@@ -23855,9 +24413,57 @@ const ChatButton = {
         background: 'rgba(80, 78, 78, 0.42)',
         borderColor: 'rgba(255, 241, 227, 0.26)'
     },
+    '&.is-active': {
+        background: 'rgba(44, 44, 44, 0.96)',
+        borderColor: 'rgba(255, 241, 227, 0.22)',
+        boxShadow: '0 0 1.15em rgba(0, 0, 0, 0.34)'
+    },
+    '&.is-active:hover': {
+        background: 'rgba(52, 52, 52, 0.98)'
+    },
+    '&.is-active span': {
+        opacity: '0',
+        letterSpacing: '0'
+    },
+    '&.is-active::before': {
+        content: "''",
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: '1.05em',
+        height: '0.17em',
+        background: 'currentColor',
+        borderRadius: '999px',
+        pointerEvents: 'none',
+        transform: 'translate(-50%, -50%) rotate(45deg)'
+    },
+    '&.is-active::after': {
+        content: "''",
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: '1.05em',
+        height: '0.17em',
+        background: 'currentColor',
+        borderRadius: '999px',
+        pointerEvents: 'none',
+        transform: 'translate(-50%, -50%) rotate(-45deg)'
+    },
+    // Nav open state
+    'body.is-nav-open &': {
+        opacity: '0',
+        pointerEvents: 'none'
+    },
     '@mobileL': {
         bottom: 'calc(1em + var(--app-fixed-bottom-clearance, 0px))',
         right: 'calc(1em + var(--app-safe-right, 0px))'
+    },
+    'body.chat-panel-open &': {
+        '@mobileL': {
+            top: 'calc(1em + var(--app-safe-top, 0px))',
+            right: 'calc(1em + var(--app-safe-right, 0px))',
+            bottom: 'auto'
+        }
     },
     Span: {
         tag: 'span',
@@ -23898,6 +24504,17 @@ const ChatPanelOverlay = {
         opacity: '1',
         pointerEvents: 'auto',
         backgroundColor: 'rgba(8, 6, 6, 0.42)'
+    },
+    '@media (max-width: 860px)': {
+        padding: 'calc(0.9em + var(--app-safe-top, 0px)) calc(0.9em + var(--app-safe-right, 0px)) calc(4.8rem + var(--app-fixed-bottom-clearance, 0px)) calc(0.9em + var(--app-safe-left, 0px))'
+    },
+    '@media (max-width: 560px)': {
+        padding: '0',
+        alignItems: 'stretch',
+        justifyContent: 'stretch',
+        '&.is-visible': {
+            backgroundColor: 'rgba(17, 17, 17, 1)'
+        }
     }
 };
 const ChatPanel = {
@@ -23908,7 +24525,7 @@ const ChatPanel = {
     maxHeight: 'calc(100dvh - 2.5rem)',
     overflow: 'hidden',
     border: '1px solid rgba(255, 241, 227, 0.12)',
-    borderRadius: 'var(--radius-m)',
+    borderRadius: '1.6em',
     background: 'rgba(17, 17, 17, 0.98)',
     boxShadow: '0 1.6em 5em rgba(0, 0, 0, 0.42)',
     opacity: '0',
@@ -23918,6 +24535,20 @@ const ChatPanel = {
     '.is-visible &': {
         opacity: '1',
         transform: 'translateY(0) scale(1)'
+    },
+    '@media (max-width: 860px)': {
+        maxWidth: 'calc(100vw - 1.8rem)',
+        maxHeight: 'calc(100dvh - 1.8rem)',
+        borderRadius: '1.2em'
+    },
+    '@media (max-width: 560px)': {
+        width: '100vw',
+        height: 'var(--app-visual-viewport-height)',
+        maxWidth: 'none',
+        maxHeight: 'var(--app-visual-viewport-height)',
+        border: '0',
+        borderRadius: '0',
+        transform: 'translateY(1.8em)'
     }
 };
 const ChatPanelFrame = {
@@ -23926,7 +24557,15 @@ const ChatPanelFrame = {
     width: '100%',
     height: '100%',
     border: '0',
-    background: 'rgba(17, 17, 17, 1)'
+    background: 'rgba(17, 17, 17, 1)',
+    transition: 'transform 0.24s var(--ease-io), height 0.24s var(--ease-io)',
+    'body.chat-keyboard-open &': {
+        '@mobileL': {
+            '--chat-keyboard-crop': 'clamp(7rem, calc(var(--app-keyboard-inset, 0px) * 0.42), 14rem)',
+            height: 'calc(100% + var(--chat-keyboard-crop))',
+            transform: 'translateY(calc(-1 * var(--chat-keyboard-crop)))'
+        }
+    }
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8lUC0":[function(require,module,exports,__globalThis) {
@@ -23939,7 +24578,7 @@ const LangContent = {
     opacity: '1',
     width: '100%',
     minWidth: '100%',
-    minHeight: 'var(--app-viewport-height, 100vh)',
+    minHeight: '100vh',
     background: '#000',
     position: 'relative',
     isolation: 'isolate',
@@ -23956,35 +24595,29 @@ const StarsBg = {
     top: '0',
     left: '0',
     width: '100%',
-    height: 'var(--app-visual-viewport-height, var(--app-viewport-height, 100vh))',
+    height: '100vh',
     zIndex: '1',
     pointerEvents: 'none',
     overflow: 'hidden',
     contain: 'paint',
-    ':before': {
-        content: "''",
+    Img: {
+        tag: 'img',
+        src: 'stars5.webp',
+        alt: '',
         position: 'absolute',
-        inset: '-8%',
-        background: "url('./IMAGE/stars5.webp') no-repeat center",
-        backgroundSize: 'cover',
+        top: '-8%',
+        left: '-8%',
+        width: '116%',
+        height: '116%',
+        objectFit: 'cover',
         transformOrigin: 'center center',
         willChange: 'transform, opacity',
         opacity: '0.62',
         transform: 'translate3d(-1.8%, -1.2%, 0) scale(1.1)',
-        animation: 'starsFieldLoop 18s linear infinite alternate'
-    },
-    ':after': {
-        content: "''",
-        position: 'absolute',
-        inset: '-8%',
-        background: "url('./IMAGE/stars5.webp') no-repeat center",
-        backgroundSize: 'cover',
-        transformOrigin: 'center center',
-        willChange: 'transform, opacity',
-        display: 'none'
-    },
-    'body.intro-active &:before': {
-        animation: 'starsIntroSharp 2.6s linear both, starsFieldLoop 18s linear infinite alternate 2.6s'
+        animation: 'starsFieldLoop 18s linear infinite alternate',
+        'body.intro-active &': {
+            animation: 'starsIntroSharp 2.6s linear both, starsFieldLoop 18s linear infinite alternate 2.6s'
+        }
     }
 };
 
@@ -24039,7 +24672,16 @@ const GlobeFrame = {
     bottom: '-5em',
     zIndex: '1',
     pointerEvents: 'none',
-    transformOrigin: '64% 58%'
+    transformOrigin: '64% 58%',
+    'body.intro-active &': {
+        transform: 'translate3d(2vw, 1.5vh, 0) scale(1.2)'
+    },
+    'body.intro-globe-zoom &': {
+        animation: 'globeIntroZoomOut var(--globe-intro-zoom-duration, 1.05s) cubic-bezier(0.22, 1, 0.36, 1) forwards'
+    },
+    'body.intro-finished &': {
+        transform: 'translate3d(0, 0, 0) scale(1)'
+    }
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"fxIja":[function(require,module,exports,__globalThis) {
@@ -24060,7 +24702,7 @@ const H1 = {
     tag: 'h1',
     fontSize: '6em',
     fontWeight: '900',
-    lineHeight: 'var(--lh-tight)',
+    lineHeight: '0.9em',
     margin: '0'
 };
 
@@ -24072,8 +24714,8 @@ const H2 = {
     tag: 'h2',
     fontSize: '2em',
     fontWeight: '900',
-    lineHeight: 'var(--lh-tight)',
-    letterSpacing: 'var(--tracking-tight)',
+    lineHeight: '0.9em',
+    letterSpacing: '-0.02em',
     margin: '0'
 };
 
@@ -24117,8 +24759,8 @@ const H6 = {
     margin: '0',
     textTransform: 'uppercase',
     fontSize: '0.75em',
-    letterSpacing: 'var(--tracking-wide)',
-    fontFamily: 'var(--font-ka-cap)'
+    letterSpacing: '0.06em',
+    fontFamily: "'BPG Square Banner Caps 2013', sans-serif"
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"cxNfT":[function(require,module,exports,__globalThis) {
@@ -24128,7 +24770,7 @@ parcelHelpers.export(exports, "P", ()=>P);
 const P = {
     tag: 'p',
     margin: '0',
-    lineHeight: 'var(--lh-body)'
+    lineHeight: '1.4em'
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"uzDfR":[function(require,module,exports,__globalThis) {
@@ -24139,14 +24781,34 @@ const Content = {
     tag: 'div',
     marginTop: '1.6em',
     width: '100%',
-    height: 'calc(var(--app-viewport-height, 100vh) - 25em)',
+    height: 'calc(100vh - 25em)',
     position: 'sticky',
     top: '11em',
     zIndex: '10',
-    borderRadius: 'var(--radius-l)',
+    borderRadius: '2.6em',
     overflow: 'hidden',
     border: '1px solid rgba(255, 241, 227, 0.15)',
-    ':before': {
+    '@media (max-height: 1200px)': {
+        height: 'calc(100vh - 20em)',
+        top: '10em'
+    },
+    '@media (max-height: 1024px)': {
+        height: 'calc(100vh - 18em)',
+        top: '9em'
+    },
+    '@media (max-height: 900px)': {
+        height: 'calc(100vh - 13.5em)',
+        top: '6.5em'
+    },
+    '@media (max-height: 650px)': {
+        height: 'calc(100vh - 12em)',
+        top: '5.5em'
+    },
+    '@media (max-height: 500px)': {
+        height: 'calc(100vh - 11em)',
+        top: '5.5em'
+    },
+    '::before': {
         content: "''",
         position: 'absolute',
         width: '100%',
@@ -24192,7 +24854,7 @@ const Image = {
     flex: '0 0 100%',
     width: '100%',
     height: '100%',
-    borderRadius: 'calc(var(--radius-l) - 0.5em)',
+    borderRadius: '2.1em',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center center',
     backgroundSize: 'cover',
@@ -24214,7 +24876,147 @@ const Service = {
     touchAction: 'manipulation',
     transition: 'width var(--dur-slow) var(--ease-io), height var(--dur-slow) var(--ease-io), transform var(--dur-slow) var(--ease-soft), box-shadow var(--dur-slow) var(--ease-soft)',
     willChange: 'transform',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    '& li': {
+        lineHeight: '1.1em',
+        padding: '1em 1.3em',
+        borderRadius: '3em',
+        opacity: '0',
+        transform: 'translateY(0.35em) scale(0.88)',
+        filter: 'blur(1.5px)',
+        transition: 'opacity 0.3s var(--ease-io), transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), filter 0.28s var(--ease-io)',
+        background: 'rgba(0, 0, 0, 0.5)'
+    },
+    '&.active li': {
+        opacity: '1',
+        transform: 'translateY(0) scale(1)',
+        filter: 'blur(0)',
+        transitionDelay: '0.55s'
+    },
+    '::before': {
+        content: "''",
+        position: 'absolute',
+        inset: '0',
+        borderRadius: 'inherit',
+        background: 'radial-gradient(120% 120% at 20% 0%, rgba(255, 255, 255, 0.5), transparent 45%)',
+        opacity: '0',
+        transition: 'opacity var(--dur-med) var(--ease-io)',
+        pointerEvents: 'none'
+    },
+    '::after': {
+        content: "''",
+        position: 'absolute',
+        inset: '0',
+        borderRadius: 'inherit',
+        pointerEvents: 'none',
+        opacity: '0',
+        zIndex: '4',
+        transition: 'opacity var(--dur-med) var(--ease-io)',
+        background: `linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.94) 0%,
+    rgba(0, 0, 0, 0.72) 1.5em,
+    rgba(0, 0, 0, 0.36) 4.2em,
+    rgba(0, 0, 0, 0) 8.2em
+    ),
+    linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.96) 0%,
+    rgba(0, 0, 0, 0.76) 1.8em,
+    rgba(0, 0, 0, 0.42) 4.8em,
+    rgba(0, 0, 0, 0) 9.2em
+    )`
+    },
+    ':hover': {
+        transform: 'perspective(1000px) translateY(-8px) rotateX(6deg) rotateY(-6deg)'
+    },
+    ':hover::before': {
+        opacity: '0.6'
+    },
+    '& .icon-arrow': {
+        opacity: '1',
+        transform: 'rotate(0deg) scale(1)',
+        transition: 'opacity var(--dur-med) var(--ease-io), transform var(--dur-med) var(--ease-io)'
+    },
+    '& .icon-close': {
+        opacity: '0',
+        transform: 'rotate(180deg) scale(0.85)',
+        transition: 'opacity var(--dur-med) var(--ease-io), transform var(--dur-med) var(--ease-io)'
+    },
+    '&.active .icon-arrow': {
+        opacity: '0',
+        transform: 'rotate(-180deg) scale(0.85)'
+    },
+    '&.active .icon-close': {
+        opacity: '1',
+        transform: 'rotate(180deg) scale(1)',
+        width: '1.85em'
+    },
+    '&.active': {
+        width: 'calc(100% - 2em)',
+        height: 'calc(100% - 2em)',
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '0',
+        paddingTop: '0',
+        paddingBottom: '0',
+        touchAction: 'pan-y',
+        boxShadow: '0 30px 70px rgba(0, 0, 0, 0.2)'
+    },
+    '&.active::after': {
+        opacity: '1'
+    },
+    '&.active:hover': {
+        transform: 'perspective(1000px) translateY(2px) rotateX(-2deg) rotateY(2deg)'
+    },
+    '&.active hgroup': {
+        position: 'absolute',
+        top: '1.55em',
+        left: '1.7em',
+        right: '5.2em',
+        zIndex: '5',
+        pointerEvents: 'none'
+    },
+    '&.active hgroup h3': {
+        transform: 'scale(0.7)',
+        transformOrigin: 'top left'
+    },
+    '&.active hgroup p': {
+        opacity: '0',
+        transform: 'translateY(0.5em)'
+    },
+    '&.active .service-content': {
+        opacity: '1',
+        transform: 'translateY(0) scale(1)',
+        filter: 'blur(0)',
+        position: 'relative',
+        zIndex: '6',
+        pointerEvents: 'auto',
+        flex: '1 1 auto',
+        minHeight: '0',
+        maxHeight: 'none',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        minWidth: '100%',
+        maxWidth: '100%',
+        width: '100%',
+        height: '100%',
+        marginTop: '0',
+        paddingTop: '9.2em',
+        paddingBottom: '4.8em',
+        paddingLeft: '1.7em',
+        paddingRight: '0.35em',
+        boxSizing: 'border-box',
+        overscrollBehavior: 'contain',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y',
+        transitionDelay: '0.55s'
+    },
+    '&.active .service-content::-webkit-scrollbar': {
+        display: 'none'
+    }
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"1RjUS":[function(require,module,exports,__globalThis) {
@@ -24225,12 +25027,13 @@ const Circle = {
     tag: 'div',
     width: '42em',
     height: '42em',
-    border: '.5px solid rgba(255, 241, 227, 0.5)',
+    border: '.5px solid rgba(255, 241, 227, 1)',
     position: 'absolute',
     borderRadius: '100%',
-    transform: 'translate(-200px, -40%) rotate(var(--steps-rot, 0deg))',
-    transformOrigin: 'center center',
-    transition: 'none'
+    transform: 'translate(-240px, -35%) rotate(var(--steps-rot, 0deg))',
+    transformOrigin: '50% 50%',
+    zIndex: '2',
+    willChange: 'transform'
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"3hGCQ":[function(require,module,exports,__globalThis) {
@@ -24240,13 +25043,10 @@ parcelHelpers.export(exports, "Dot", ()=>Dot);
 const Dot = {
     tag: 'div',
     position: 'absolute',
-    width: '0.7em',
-    height: '0.7em',
-    background: 'rgba(255, 241, 227, 1)',
-    borderRadius: '100%',
-    top: '50%',
-    left: '100%',
-    transform: 'translate(-50%, -50%)'
+    width: '1.2em',
+    height: '1.2em',
+    backgroundColor: 'rgba(255, 241, 227, 1)',
+    borderRadius: '100%'
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"axqZi":[function(require,module,exports,__globalThis) {
@@ -24256,9 +25056,8 @@ parcelHelpers.export(exports, "NavArrows", ()=>NavArrows);
 const NavArrows = {
     tag: 'div',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     gap: '0',
-    position: 'absolute',
     zIndex: '100'
 };
 
@@ -24271,11 +25070,17 @@ const Contents = {
     display: 'flex',
     flexDirection: 'row',
     position: 'relative',
+    zIndex: '4',
     perspective: '1200px',
     perspectiveOrigin: 'center center',
-    minHeight: '26em',
+    minHeight: '30em',
+    gap: '0.9em',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    overflow: 'visible',
+    width: 'calc(100% + 14em)',
+    maxWidth: '100%',
+    padding: '0'
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4eTz4":[function(require,module,exports,__globalThis) {
@@ -24309,12 +25114,41 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Messages", ()=>Messages);
 const Messages = {
     tag: 'div',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.5em',
+    height: '45em',
+    minHeight: '0',
     overflow: 'hidden',
-    height: '15em',
-    position: 'relative'
+    position: 'relative',
+    willChange: 'transform',
+    padding: '0 1.8em',
+    boxSizing: 'border-box',
+    maskImage: 'linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.9) 14%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0.9) 86%, transparent 100%)',
+    '& .messagesTrack': {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '4em',
+        willChange: 'transform'
+    },
+    '& p': {
+        fontSize: '1.2em',
+        maxWidth: '15em',
+        fontWeight: '300',
+        width: '100%',
+        boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+        lineHeight: '1.35em',
+        opacity: '0.3',
+        transform: 'scale(0.92)',
+        transformOrigin: 'center center',
+        transition: 'none',
+        margin: '0'
+    },
+    '& p.active': {
+        fontWeight: 'inherit'
+    },
+    '& p.is-pulse': {
+        animation: 'messagePeakPulse 0.38s ease-out'
+    }
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5Da5V":[function(require,module,exports,__globalThis) {
@@ -24323,12 +25157,53 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Focus", ()=>Focus);
 const Focus = {
     tag: 'div',
-    position: 'relative',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    zIndex: '2',
     width: '25em',
     height: '15em',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    '::after': {
+        content: "''",
+        position: 'absolute',
+        inset: '-0.7em',
+        border: '1px solid rgba(224, 77, 77, 0.45)',
+        borderRadius: '0.2em',
+        opacity: '0',
+        pointerEvents: 'none'
+    },
+    '&.is-pulse': {
+        animation: 'focusFramePulse 0.52s ease-out'
+    },
+    '&.is-pulse::after': {
+        animation: 'focusRingPulse 0.52s ease-out'
+    },
+    '&.is-pulse .focusCorner::before': {
+        animation: 'focusCornerFlash 0.52s ease-out'
+    },
+    '&.is-pulse .focusCorner::after': {
+        animation: 'focusCornerFlash 0.52s ease-out'
+    },
+    H5: {
+        position: 'relative',
+        zIndex: '1',
+        transition: 'none',
+        '::before': {
+            content: "''",
+            position: 'absolute',
+            inset: '-0.35em -0.8em',
+            zIndex: '-1',
+            background: 'radial-gradient(65% 80% at 50% 50%, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0) 100%)',
+            pointerEvents: 'none'
+        },
+        '&.is-pulse': {
+            animation: 'focusNamePulse 0.52s ease-out'
+        }
+    }
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"9DxID":[function(require,module,exports,__globalThis) {
@@ -24340,11 +25215,18 @@ const Footer = {
     width: '100%',
     zIndex: '10',
     position: 'relative',
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: '3em',
-    padding: '4em 7em'
+    paddingLeft: '7em',
+    minHeight: 'fit-content',
+    '@media (max-width: 1280px)': {
+        paddingLeft: '5.5em'
+    },
+    '@media (max-width: 768px)': {
+        paddingLeft: '3.5em'
+    },
+    '@media (max-width: 480px)': {
+        paddingLeft: '2em',
+        paddingRight: '2em'
+    }
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"asgHx":[function(require,module,exports,__globalThis) {
@@ -24426,7 +25308,18 @@ const Contact = {
     tag: 'div',
     display: 'flex',
     flexDirection: 'column',
-    gap: '1.5em'
+    gap: '1.5em',
+    H5: {
+        color: 'rgba(255, 241, 227, 0.5)',
+        marginBottom: '0.5em',
+        fontWeight: '300',
+        fontSize: '1.1em'
+    },
+    P: {
+        fontSize: '1.2em',
+        color: 'rgba(255, 241, 227, 0.85)',
+        marginBottom: '2em'
+    }
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"199zs":[function(require,module,exports,__globalThis) {
@@ -24501,13 +25394,131 @@ parcelHelpers.exportAll(_textWaveJs, exports);
 var _toggleCrispChatJs = require("./toggleCrispChat.js");
 parcelHelpers.exportAll(_toggleCrispChatJs, exports);
 
-},{"./appInit.js":"aDtxb","./appFlags.js":"2zWq0","./viewportMetrics.js":"aRNgf","./render.js":"3Qwv4","./languageSwitcher.js":"bEV60","./navbarToggle.js":"dJKfd","./navbarScrollLinks.js":"lsNoS","./contactForm.js":"9mo3m","./bannerAnimations.js":"eFemp","./circleRotation.js":"5aKac","./depthCarousel.js":"ayEER","./infiniteCarousel.js":"946k0","./scrollSwitcher.js":"7UvzU","./loadingIntro.js":"axLmJ","./oneTimeScrollReveal.js":"l2wjp","./scrollDepth.js":"28pfE","./scrollParallax.js":"4xWDf","./scrollOverlayShade.js":"fdYps","./ongoingScrollMotion.js":"2wkjp","./textWave.js":"ifDhH","./toggleCrispChat.js":"cWZlp","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./images.js":"5xYNS"}],"aDtxb":[function(require,module,exports,__globalThis) {
+},{"./images.js":"5xYNS","./appInit.js":"aDtxb","./appFlags.js":"2zWq0","./viewportMetrics.js":"aRNgf","./render.js":"3Qwv4","./languageSwitcher.js":"bEV60","./navbarToggle.js":"dJKfd","./navbarScrollLinks.js":"lsNoS","./contactForm.js":"9mo3m","./bannerAnimations.js":"eFemp","./circleRotation.js":"5aKac","./depthCarousel.js":"ayEER","./infiniteCarousel.js":"946k0","./scrollSwitcher.js":"7UvzU","./loadingIntro.js":"axLmJ","./oneTimeScrollReveal.js":"l2wjp","./scrollDepth.js":"28pfE","./scrollParallax.js":"4xWDf","./scrollOverlayShade.js":"fdYps","./ongoingScrollMotion.js":"2wkjp","./textWave.js":"ifDhH","./toggleCrispChat.js":"cWZlp","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5xYNS":[function(require,module,exports,__globalThis) {
+// Static image file keys — resolved via context.files at runtime
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "IMG", ()=>IMG);
+const IMG = {
+    globe: 'globe.webp',
+    stars: 'stars5.webp',
+    choni: 'choni2.webp',
+    liza: 'liza2.webp',
+    mariami: 'mariami2.webp',
+    luka: 'luka2.webp',
+    quotationMark: 'quotation-mark.png',
+    facebook: 'facebook.png',
+    instagram: 'instagram.png',
+    linkedin: 'linkedin.png',
+    arrow: 'arrow.png',
+    arrowLeft: 'arrowLeft.png',
+    arrowRight: 'arrowRight.png',
+    close: 'close.png',
+    send: 'send.png',
+    media: 'media.webp',
+    analytics: 'analytics.webp',
+    web: 'web.webp',
+    video: 'video.webp',
+    street: 'street.webp',
+    street2: 'street2.webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"aDtxb":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "appInit", ()=>appInit);
 var _imagesJs = require("./images.js");
 var _renderJs = require("./render.js");
 const appInit = function appInit() {
+    // Inject global body-state CSS that DOMQL cannot generate from components
+    (function injectBodyStateCSS() {
+        const style = document.createElement('style');
+        style.textContent = [
+            // === Body base styles (reset.js rules not generated by DOMQL) ===
+            'body{background:#000!important;color:rgba(255,241,227,1)!important;font-family:var(--font-en);font-size:18px;line-height:1.4em;letter-spacing:-0.01em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;position:relative;width:100%;min-height:var(--app-viewport-height,100vh)}',
+            '@media(max-width:1680px){body{font-size:16px}}',
+            // === DOMQL atomic class overrides (incorrect hash class values) ===
+            '.menuButton{display:none!important}',
+            '@media(max-width:1180px),(hover:none)and(pointer:coarse){.menuButton{display:flex!important}}',
+            '.navBar{gap:.5em!important}',
+            '.navBar a{font-weight:400!important}',
+            '.bannerTitle h1{font-family:"Exo 2",sans-serif!important}',
+            '.teamMember h6{font-family:inherit!important}',
+            'footer{padding-bottom:calc(6em + var(--app-fixed-bottom-clearance,0px))!important}',
+            'footer input::placeholder,footer textarea::placeholder{color:rgba(255,241,227,.3)}',
+            'footer input:focus,footer textarea:focus{outline:none}',
+            '.logo{z-index:1600!important}',
+            // === Logo intro states (body.X & not generated by DOMQL) ===
+            'body.intro-active .logo{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1600;color:transparent;transition:none}',
+            'body.intro-active .logo::after{animation:logoDotPulse 1s ease-in-out infinite}',
+            'body.intro-reveal .logo{color:rgba(255,241,227,1);animation:logoPulseStrong .9s ease-out 1 both}',
+            'body.intro-corners-move .logo{animation:logoMove 2.8s cubic-bezier(.16,1,.3,1) both}',
+            'body.is-nav-open .logo{z-index:130!important;mix-blend-mode:normal}',
+            // Intro states for child elements
+            'body.intro-active .globeFrame{transform:translate3d(2vw,1.5vh,0) scale(1.2)}',
+            'body.intro-globe-zoom .globeFrame{animation:globeIntroZoomOut var(--globe-intro-zoom-duration,1.05s) cubic-bezier(.22,1,.36,1) forwards}',
+            'body.intro-finished .globeFrame{transform:translate3d(0,0,0) scale(1)}',
+            'body.intro-active .corner{position:fixed;top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);z-index:1600;opacity:0;transition-property:opacity;transition-duration:.6s;transition-timing-function:ease}',
+            'body.intro-corners .corner{opacity:1;transform:translate(-50%,-50%) translate(-2em,2em);animation:cornerPulseStrongLeft .9s ease-out 1 both}',
+            'body.intro-corners-move .corner{animation:cornerToBottomLeft 3s cubic-bezier(.16,1,.3,1) both}',
+            'body.intro-active .corner2{position:fixed;top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%) rotate(180deg);z-index:1600;opacity:0;transition-property:opacity;transition-duration:.6s;transition-timing-function:ease}',
+            'body.intro-corners .corner2{opacity:1;transform:translate(-50%,-50%) translate(2em,-2em) rotate(180deg);animation:cornerPulseStrongRight .9s ease-out 1 both}',
+            'body.intro-corners-move .corner2{animation:cornerToTopRight 3s cubic-bezier(.16,1,.3,1) both}',
+            // Overlay during intro
+            'body::before,body::after{content:"";position:fixed;inset:0;z-index:1500;pointer-events:none;opacity:0;transition:opacity 1s ease}',
+            'body::before{background:rgba(0,0,0,1)}',
+            'body::after{background:radial-gradient(circle at center,rgba(0,0,0,.16) 0%,rgba(0,0,0,.42) 100%)}',
+            'body.intro-overlay::before,body.intro-overlay::after{opacity:1}',
+            'body.intro-fade::before,body.intro-fade::after{opacity:0}',
+            'body.intro-active:not(.intro-finished){overflow:hidden!important}',
+            // Chat panel open state (all viewports)
+            'body.chat-panel-open .corner,body.chat-panel-open .corner2{opacity:0!important;pointer-events:none!important}',
+            'body.chat-panel-open .langButton{opacity:0;pointer-events:none}',
+            'body.chat-panel-open .navBar{opacity:0;pointer-events:none}',
+            'body.chat-panel-open .menuButton{opacity:0;pointer-events:none}',
+            'body.chat-panel-open .logo{opacity:0;pointer-events:none}',
+            // Nav open and chat panel states at <=1180px
+            '@media(max-width:1180px){body.is-nav-open .langButton,body.is-nav-open .chatButton,body.is-nav-open .corner,body.is-nav-open .corner2{opacity:0!important;pointer-events:none!important}body.is-nav-open .logo{z-index:130;mix-blend-mode:normal}}',
+            // Language-based font switching
+            'body[data-lang="en"]{font-family:var(--font-en)}',
+            'body[data-lang="ka"]{font-family:var(--font-ka-body)}',
+            // Georgian language overrides for components (body[data-lang="ka"] & ancestor selector not supported by DOMQL)
+            'body[data-lang="ka"] .navBar{gap:.9em}',
+            'body[data-lang="ka"] .navBar a{font-family:"BPG Square Banner Caps 2013",sans-serif;font-style:normal;font-weight:400;text-transform:none;font-synthesis:none;-webkit-font-smoothing:antialiased;font-size:.9em}',
+            'body[data-lang="ka"] .navBar a:hover{font-weight:400;text-transform:none}',
+            '@media(max-width:1180px){body[data-lang="ka"] .navBar a{font-size:3.5em;font-weight:400}}',
+            '@media(max-width:560px){body[data-lang="ka"] .navBar a{font-size:2.7em}}',
+            '@media(max-width:375px){body[data-lang="ka"] .navBar a{font-size:2.5em}}',
+            'body[data-lang="ka"] .banner .bannerTitle h1{font-size:6.5em}',
+            '@media(max-width:768px){body[data-lang="ka"] .banner .bannerTitle h1{font-size:4.5em}}',
+            '@media(max-width:560px){body[data-lang="ka"] .banner .bannerTitle h1{font-size:4.35em}}',
+            '@media(max-width:480px){body[data-lang="ka"] .banner .bannerTitle h1{font-size:3.65em}}',
+            '@media(max-width:390px){body[data-lang="ka"] .banner .bannerTitle h1{font-size:3.1em}}',
+            '@media(max-width:320px){body[data-lang="ka"] .banner .bannerTitle h1{font-size:2.6em}}',
+            'body[data-lang="ka"] .services h2{font-size:7em;max-width:7em;line-height:1em}',
+            '@media(max-width:1280px){body[data-lang="ka"] .services h2{font-size:6em;max-width:7.1em}}',
+            '@media(max-width:1024px){body[data-lang="ka"] .services h2{font-size:5.1em;max-width:7.2em}}',
+            '@media(max-width:860px){body[data-lang="ka"] .services h2{font-size:4.3em;max-width:7.25em}}',
+            '@media(max-width:768px){body[data-lang="ka"] .services h2{font-size:3.9em;max-width:7.3em}}',
+            '@media(max-width:560px){body[data-lang="ka"] .services h2{font-size:3.2em;max-width:7.35em}}',
+            '@media(max-width:480px){body[data-lang="ka"] .services h2{font-size:2.8em;max-width:7.4em}}',
+            '@media(max-width:390px){body[data-lang="ka"] .services h2{font-size:2.45em;max-width:7.45em}}',
+            '@media(max-width:320px){body[data-lang="ka"] .services h2{font-size:2.1em;max-width:7.5em}}',
+            'body[data-lang="ka"] .service hgroup h3{font-family:"BPG Square Banner Caps 2013",sans-serif;font-style:normal;font-weight:400;text-transform:none;font-synthesis:none;-webkit-font-smoothing:antialiased;line-height:1em}',
+            'body[data-lang="ka"] .service hgroup p{max-width:13em}',
+            'body[data-lang="ka"] .circle .dot hgroup h3{font-family:var(--font-en)}',
+            'body[data-lang="ka"] .circle .dot hgroup p{min-width:12em}',
+            'body[data-lang="ka"] .team h2{line-height:1em}',
+            'body[data-lang="ka"] .teamMember h6{font-family:"BPG Square Banner Caps 2013",sans-serif;padding:.25em 0 0 1.35em}',
+            'body[data-lang="ka"] .testimonial .title img{margin-bottom:3.5em}',
+            'body[data-lang="ka"] footer h2{font-family:"Exo 2",sans-serif}',
+            // Stars intro animation
+            'body.intro-active .starsBg img{animation:starsIntroSharp 2.6s linear both,starsFieldLoop 18s linear infinite alternate 2.6s}',
+            // Chat button mobile (560px)
+            '@media(max-width:560px){.chatButton{bottom:calc(1em + var(--app-fixed-bottom-clearance,0px));right:calc(1em + var(--app-safe-right,0px))}body.chat-panel-open .chatButton{top:calc(1em + var(--app-safe-top,0px));right:calc(1em + var(--app-safe-right,0px));bottom:auto}body.chat-keyboard-open #crisp-chat-overlay iframe{--chat-keyboard-crop:clamp(7rem,calc(var(--app-keyboard-inset,0px) * .42),14rem);height:calc(100% + var(--chat-keyboard-crop));transform:translateY(calc(-1 * var(--chat-keyboard-crop)))}}'
+        ].join('\n');
+        document.head.appendChild(style);
+    })();
     // Import content data inline (no imports allowed between project files)
     const content = {
         navbar: {
@@ -24952,20 +25963,26 @@ const appInit = function appInit() {
     // Set initial lang on body
     document.body.dataset.lang = window.__focusLang;
     window.scrollTo(0, 0);
-    // Set static image srcs (DOMQL does not render src as HTML attr)
+    // Resolve file key to CDN URL via context.files
+    const files = this.context && this.context.files;
+    const resolveFile = (key)=>{
+        const file = files && files[key];
+        return file && file.content && file.content.src || key;
+    };
+    // Set static image srcs via resolved file URLs
     const setStaticImages = ()=>{
         const globeImg = document.querySelector('.globe');
-        if (globeImg) globeImg.src = (0, _imagesJs.IMG).globe;
+        if (globeImg) globeImg.src = resolveFile((0, _imagesJs.IMG).globe);
         // Quotation mark
         const quoteImg = document.querySelector('.testimonial [key="Img"]');
-        if (quoteImg) quoteImg.src = (0, _imagesJs.IMG).quotationMark;
+        if (quoteImg) quoteImg.src = resolveFile((0, _imagesJs.IMG).quotationMark);
         // Footer street images
         const streetImgs = document.querySelectorAll('.address img');
         [
             (0, _imagesJs.IMG).street,
             (0, _imagesJs.IMG).street2
         ].forEach((src, i)=>{
-            if (streetImgs[i]) streetImgs[i].src = src;
+            if (streetImgs[i]) streetImgs[i].src = resolveFile(src);
         });
         // Footer nav social icons (facebook, instagram)
         const footerNavImgs = document.querySelectorAll('footer nav img');
@@ -24973,7 +25990,7 @@ const appInit = function appInit() {
             (0, _imagesJs.IMG).facebook,
             (0, _imagesJs.IMG).instagram
         ].forEach((src, i)=>{
-            if (footerNavImgs[i]) footerNavImgs[i].src = src;
+            if (footerNavImgs[i]) footerNavImgs[i].src = resolveFile(src);
         });
         // Team member social icons (facebook, linkedin)
         document.querySelectorAll('.teamMember').forEach((member)=>{
@@ -24982,12 +25999,12 @@ const appInit = function appInit() {
                 (0, _imagesJs.IMG).facebook,
                 (0, _imagesJs.IMG).linkedin
             ].forEach((src, i)=>{
-                if (navImgs[i]) navImgs[i].src = src;
+                if (navImgs[i]) navImgs[i].src = resolveFile(src);
             });
         });
         // Service card button arrows
         document.querySelectorAll('.service button img').forEach((img, i)=>{
-            img.src = i % 2 === 0 ? (0, _imagesJs.IMG).arrow : (0, _imagesJs.IMG).close;
+            img.src = resolveFile(i % 2 === 0 ? (0, _imagesJs.IMG).arrow : (0, _imagesJs.IMG).close);
         });
         // Nav arrows (team carousel prev/next)
         const navArrowImgs = document.querySelectorAll('.navArrows button img');
@@ -24995,7 +26012,7 @@ const appInit = function appInit() {
             (0, _imagesJs.IMG).arrowLeft,
             (0, _imagesJs.IMG).arrowRight
         ].forEach((src, i)=>{
-            if (navArrowImgs[i]) navArrowImgs[i].src = src;
+            if (navArrowImgs[i]) navArrowImgs[i].src = resolveFile(src);
         });
     };
     setStaticImages();
@@ -25022,99 +26039,7 @@ const appInit = function appInit() {
     };
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./images.js":"5xYNS","./render.js":"3Qwv4"}],"5xYNS":[function(require,module,exports,__globalThis) {
-// Static image assets — Parcel bundles these via new URL() and gives hashed URLs
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "IMG", ()=>IMG);
-const IMG = {
-    globe: new URL(require("8f821d72e2dea705")).href,
-    stars: new URL(require("a9c72cfbfab7b4a2")).href,
-    choni: new URL(require("901550753997d927")).href,
-    liza: new URL(require("259f52ba926a8c81")).href,
-    mariami: new URL(require("4d57e2f8b8d75caf")).href,
-    luka: new URL(require("fa2fd5eb60c35d1f")).href,
-    quotationMark: new URL(require("505366a5d36b54d9")).href,
-    facebook: new URL(require("87c296b637b00af5")).href,
-    instagram: new URL(require("c79be921b26372dc")).href,
-    linkedin: new URL(require("dc50c31046ecf1ed")).href,
-    arrow: new URL(require("9823bcbc4c84b6eb")).href,
-    arrowLeft: new URL(require("b6659d7a4c598036")).href,
-    arrowRight: new URL(require("9d64742d50356d09")).href,
-    close: new URL(require("300979d1fd29e742")).href,
-    send: new URL(require("8ededf3d4fe80c6e")).href,
-    media: new URL(require("2a3fd4a9f98a60eb")).href,
-    analytics: new URL(require("829847c4c6f1fbf2")).href,
-    web: new URL(require("99470f517af69363")).href,
-    video: new URL(require("ee6c1564b2743408")).href,
-    street: new URL(require("36a03a3d006072aa")).href,
-    street2: new URL(require("d373aaacfc656f74")).href
-};
-
-},{"8f821d72e2dea705":"3EdA6","a9c72cfbfab7b4a2":"bjNyH","901550753997d927":"djOOG","259f52ba926a8c81":"h6zAS","4d57e2f8b8d75caf":"idiPq","fa2fd5eb60c35d1f":"JQv6a","505366a5d36b54d9":"fCeQf","87c296b637b00af5":"1sx3c","c79be921b26372dc":"8S17F","dc50c31046ecf1ed":"fX202","9823bcbc4c84b6eb":"fZtL7","b6659d7a4c598036":"75RpV","9d64742d50356d09":"cVd2h","300979d1fd29e742":"jXNdg","8ededf3d4fe80c6e":"kmcSq","2a3fd4a9f98a60eb":"lwwXs","829847c4c6f1fbf2":"isQYy","99470f517af69363":"iVJaD","ee6c1564b2743408":"l9Sy4","36a03a3d006072aa":"ezjS7","d373aaacfc656f74":"i0e4n","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"3EdA6":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("globe.d44e13ab.webp") + "?" + Date.now();
-
-},{}],"bjNyH":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("stars5.00e1c4d3.webp") + "?" + Date.now();
-
-},{}],"djOOG":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("choni2.9d585242.webp") + "?" + Date.now();
-
-},{}],"h6zAS":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("liza2.b7dd93bd.webp") + "?" + Date.now();
-
-},{}],"idiPq":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("mariami2.286a2b17.webp") + "?" + Date.now();
-
-},{}],"JQv6a":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("luka2.102fd810.webp") + "?" + Date.now();
-
-},{}],"fCeQf":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("quotation-mark.6352efca.png") + "?" + Date.now();
-
-},{}],"1sx3c":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("facebook.308cf6ba.png") + "?" + Date.now();
-
-},{}],"8S17F":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("instagram.cbf3d09f.png") + "?" + Date.now();
-
-},{}],"fX202":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("linkedin.24eb5a5e.png") + "?" + Date.now();
-
-},{}],"fZtL7":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("arrow.472c8928.png") + "?" + Date.now();
-
-},{}],"75RpV":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("arrowLeft.17b97651.png") + "?" + Date.now();
-
-},{}],"cVd2h":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("arrowRight.1d2fdc7a.png") + "?" + Date.now();
-
-},{}],"jXNdg":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("close.0ba63f2d.png") + "?" + Date.now();
-
-},{}],"kmcSq":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("send.f6bf058e.png") + "?" + Date.now();
-
-},{}],"lwwXs":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("media.74b2e559.webp") + "?" + Date.now();
-
-},{}],"isQYy":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("analytics.fa05f4a4.webp") + "?" + Date.now();
-
-},{}],"iVJaD":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("web.2c58f1cd.webp") + "?" + Date.now();
-
-},{}],"l9Sy4":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("video.e87c6816.webp") + "?" + Date.now();
-
-},{}],"ezjS7":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("street.d519da63.webp") + "?" + Date.now();
-
-},{}],"i0e4n":[function(require,module,exports,__globalThis) {
-module.exports = module.bundle.resolve("street2.2fd395bc.webp") + "?" + Date.now();
-
-},{}],"3Qwv4":[function(require,module,exports,__globalThis) {
+},{"./images.js":"5xYNS","./render.js":"3Qwv4","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"3Qwv4":[function(require,module,exports,__globalThis) {
 // content data is stored in window.__focusContent set by appInit
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -25122,6 +26047,12 @@ parcelHelpers.export(exports, "render", ()=>render);
 const render = function render() {
     const content = window.__focusContent;
     if (!content) return;
+    // Resolve file key to CDN URL via context.files
+    const files = this.context && this.context.files;
+    const resolveFile = (key)=>{
+        const file = files && files[key];
+        return file && file.content && file.content.src || key;
+    };
     const lang = window.__focusLang || localStorage.getItem('lang') || 'en';
     const container = document.querySelector('.lang-content');
     const previousLang = window.__focusPreviousLang || lang;
@@ -25163,8 +26094,9 @@ const render = function render() {
         serviceImages.forEach((imageEl, i)=>{
             const imagePath = serviceItems[i] && serviceItems[i].image;
             if (!imagePath) return;
-            imageEl.dataset.imageSrc = imagePath;
-            imageEl.style.backgroundImage = "url('" + imagePath + "')";
+            const resolvedPath = resolveFile(imagePath);
+            imageEl.dataset.imageSrc = resolvedPath;
+            imageEl.style.backgroundImage = "url('" + resolvedPath + "')";
             imageEl.dataset.imageLoaded = '1';
         });
         if (typeof window.__refreshServiceContent === 'function') window.__refreshServiceContent();
@@ -25210,7 +26142,7 @@ const render = function render() {
                     }
                 }
                 if (nameEl) nameEl.textContent = members[i].name;
-                if (imageEl && members[i].image) imageEl.src = members[i].image;
+                if (imageEl && members[i].image) imageEl.src = resolveFile(members[i].image);
             });
         }
         // Testimonial
@@ -26792,24 +27724,45 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "scrollParallax", ()=>scrollParallax);
 const scrollParallax = function scrollParallax() {
-    const addressImgs = document.querySelectorAll('footer .address img');
-    if (!addressImgs.length) return;
+    const footer = document.querySelector('footer');
+    if (!footer) return;
+    const images = Array.from(footer.querySelectorAll('.address img'));
+    if (!images.length) return;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
     let ticking = false;
+    const clamp = (v, min, max)=>Math.max(min, Math.min(max, v));
+    const update = ()=>{
+        const rect = footer.getBoundingClientRect();
+        const vh = window.innerHeight || 1;
+        const y = window.scrollY || window.pageYOffset || 0;
+        const progress = clamp((vh - rect.top) / (vh + rect.height), 0, 1);
+        const centerDelta = (rect.top + rect.height * 0.5 - vh * 0.5) / vh;
+        const glow = clamp(1 - Math.abs(centerDelta) * 1.7, 0, 1);
+        footer.style.setProperty('--footerGlow', glow.toFixed(3));
+        images.forEach((img, i)=>{
+            const dir = i % 2 === 0 ? -1 : 1;
+            const baseY = (-centerDelta * (i === 0 ? 2.8 : 2.1) + (progress - 0.5) * 0.5) * 12;
+            const baseX = dir * (0.5 - progress) * 6;
+            const phase = y * 0.008 + i * 1.35;
+            const swimX = Math.sin(phase) * 5.5;
+            const swimY = Math.cos(phase * 0.88) * 7.5;
+            const tilt = Math.sin(phase * 0.6) * 1.4;
+            const scale = 1 + Math.cos(phase * 0.52) * 0.01;
+            img.style.transform = 'translate3d(' + (baseX + swimX).toFixed(2) + 'px, ' + (baseY + swimY).toFixed(2) + 'px, 0) ' + 'rotate(' + tilt.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')';
+        });
+        ticking = false;
+    };
     const onScroll = ()=>{
         if (ticking) return;
         ticking = true;
-        requestAnimationFrame(()=>{
-            ticking = false;
-            const scrollY = window.scrollY || window.pageYOffset;
-            addressImgs.forEach((img, i)=>{
-                const factor = i % 2 === 0 ? 0.12 : -0.08;
-                img.style.transform = 'translateY(' + scrollY * factor + 'px)';
-            });
-        });
+        requestAnimationFrame(update);
     };
     window.addEventListener('scroll', onScroll, {
         passive: true
     });
+    window.addEventListener('resize', onScroll);
+    onScroll();
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"fdYps":[function(require,module,exports,__globalThis) {
@@ -26983,54 +27936,21 @@ const main = {
     Logo: {
         extends: 'Logo',
         class: 'logo',
-        color: 'cream',
-        width: 'fit-content',
-        lineHeight: '.85em',
-        fontSize: '4em',
-        fontWeight: '800',
-        position: 'fixed',
-        fontFamily: 'var(--font-en)',
-        mixBlendMode: 'difference',
-        zIndex: '15',
         Span: {
             text: 'F'
         }
     },
     Corner: {
         extends: 'Corner',
-        class: 'corner',
-        '--corner-size': '1.2em',
-        width: 'var(--corner-size)',
-        height: 'var(--corner-size)'
+        class: 'corner'
     },
     Corner_2: {
         extends: 'Corner2',
-        class: 'corner2',
-        '--corner-size': '1.2em',
-        width: 'var(--corner-size)',
-        height: 'var(--corner-size)'
+        class: 'corner2'
     },
     Button: {
         extends: 'MenuButton',
         class: 'menuButton',
-        tag: 'button',
-        position: 'fixed',
-        top: 'calc(1.05em + var(--app-safe-top, 0px))',
-        right: 'calc(1.05em + var(--app-safe-right, 0px))',
-        flow: 'column',
-        border: '1px solid rgba(255, 241, 227, 0.45)',
-        round: '.1em',
-        background: 'transparent',
-        width: '3em',
-        height: '3em',
-        flexFlow: 'column',
-        gap: '.35em',
-        align: 'center center',
-        cursor: 'pointer',
-        padding: '-',
-        transition: 'border-radius 0.25s var(--ease-io)',
-        zIndex: '140',
-        font: 'inherit',
         Div: {},
         Div_1: {}
     },
@@ -27043,13 +27963,13 @@ const main = {
         maxWidth: 'fit-content',
         fontSize: '.9em',
         Button: {
-            extends: 'Button',
+            extends: 'LangBtn',
             text: "\u10E5\u10D0\u10E0",
             'data-lang': 'ka',
             lang: 'ka'
         },
         Button_1: {
-            extends: 'Button',
+            extends: 'LangBtn',
             text: 'ENG',
             'data-lang': 'en',
             lang: 'en'
@@ -27058,12 +27978,6 @@ const main = {
     Button_5: {
         extends: 'ChatButton',
         class: 'chatButton',
-        tag: 'button',
-        backdropFilter: 'none',
-        font: 'inherit',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
         id: 'open-chat-btn',
         type: 'button',
         onclick: 'window.toggleCrispChat()',
@@ -27109,7 +28023,7 @@ const main = {
         opacity: '1',
         width: '100%',
         minWidth: '100%',
-        minHeight: 'var(--app-viewport-height, 100vh)',
+        minHeight: '100vh',
         background: '#000',
         position: 'relative',
         isolation: 'isolate',
@@ -27147,23 +28061,18 @@ const main = {
             }
         },
         Nav: {
-            extends: 'Nav',
+            extends: 'NavBar',
             class: 'navBar',
-            tag: 'nav',
-            backdropFilter: 'none',
-            flow: 'column',
-            flexFlow: 'column',
-            gap: '.5em',
             Link: {
-                extends: 'Link',
+                extends: 'NavLink',
                 href: '#services'
             },
             Link_1: {
-                extends: 'Link',
+                extends: 'NavLink',
                 href: '#about'
             },
             Link_2: {
-                extends: 'Link',
+                extends: 'NavLink',
                 href: '#contact'
             }
         },
@@ -27173,6 +28082,8 @@ const main = {
             tag: 'section',
             width: '100%',
             maxWidth: '100%',
+            height: '100vh',
+            minHeight: '100vh',
             position: 'relative',
             background: 'transparent',
             overflow: 'hidden',
@@ -27180,18 +28091,102 @@ const main = {
                 extends: 'Hgroup',
                 class: 'bannerTitle',
                 tag: 'hgroup',
-                maxWidth: '26em',
-                position: 'relative',
-                zIndex: '2',
+                maxWidth: '28em',
+                position: 'absolute',
+                top: '15em',
+                left: '13em',
+                zIndex: '4',
+                '@media (max-width: 1366px) and (max-height: 768px)': {
+                    top: '10em'
+                },
+                '@media (max-height: 500px)': {
+                    top: '8em'
+                },
+                '@media (max-width: 1190px)': {
+                    left: '11em'
+                },
+                '@media (max-width: 860px)': {
+                    left: '7em'
+                },
+                '@media (max-width: 768px)': {
+                    top: '11em',
+                    left: '8em'
+                },
+                '@media (max-width: 560px)': {
+                    top: '11.2em',
+                    left: '5em',
+                    right: '1.2em'
+                },
+                '@media (max-width: 480px)': {
+                    top: '10.4em',
+                    left: '3.2em',
+                    right: '1em'
+                },
+                '@media (max-width: 390px)': {
+                    top: '9.8em',
+                    left: '2.5em'
+                },
+                '@media (max-width: 320px)': {
+                    top: '9.2em',
+                    left: '2em',
+                    right: '0.7em'
+                },
                 H1: {
                     extends: 'H1',
                     tag: 'h1',
-                    'data-banner': 'title'
+                    'data-banner': 'title',
+                    lineHeight: '0.78em',
+                    maxWidth: '3em',
+                    letterSpacing: '-0.03em',
+                    fontFamily: "'Exo 2', sans-serif",
+                    marginBottom: '0.5em',
+                    'body[data-lang="ka"] &': {
+                        fontSize: '6.5em'
+                    },
+                    '@media (max-width: 768px)': {
+                        fontSize: '5em',
+                        'body[data-lang="ka"] &': {
+                            fontSize: '4.5em'
+                        }
+                    },
+                    '@media (max-width: 560px)': {
+                        fontSize: '4.85em',
+                        'body[data-lang="ka"] &': {
+                            fontSize: '4.35em'
+                        }
+                    },
+                    '@media (max-width: 480px)': {
+                        fontSize: '4.15em',
+                        'body[data-lang="ka"] &': {
+                            fontSize: '3.65em'
+                        }
+                    },
+                    '@media (max-width: 390px)': {
+                        fontSize: '3.6em',
+                        maxWidth: '4em',
+                        'body[data-lang="ka"] &': {
+                            fontSize: '3.1em'
+                        }
+                    },
+                    '@media (max-width: 320px)': {
+                        fontSize: '3.1em',
+                        'body[data-lang="ka"] &': {
+                            fontSize: '2.6em'
+                        }
+                    }
                 },
                 H4: {
                     extends: 'H4',
                     tag: 'h4',
-                    'data-banner': 'subtitle'
+                    'data-banner': 'subtitle',
+                    fontSize: '1em',
+                    maxWidth: '15em',
+                    lineHeight: '1.4em',
+                    letterSpacing: '0.06em',
+                    marginLeft: '0.25em',
+                    '@media (max-width: 480px)': {
+                        fontSize: '0.9em'
+                    }
                 }
             }
         },
@@ -27199,39 +28194,92 @@ const main = {
             extends: 'Section',
             class: 'services',
             tag: 'section',
-            width: '90%',
+            width: '80%',
             maxWidth: '92em',
-            padding: 'X1',
+            padding: '8em 0 22em 0',
             position: 'relative',
-            margin: '-',
-            paddingBottom: 'Z2',
+            margin: '0 auto',
             H2: {
                 extends: 'H2',
                 tag: 'h2',
-                'data-services': 'title'
+                'data-services': 'title',
+                fontWeight: '900',
+                fontSize: '9em',
+                maxWidth: '5em',
+                lineHeight: '0.9em',
+                letterSpacing: '-0.02em',
+                padding: '2.2em 0 3em 0',
+                opacity: '0',
+                transform: 'translateY(0.8em)',
+                filter: 'blur(6px)',
+                transition: 'opacity 0.3s var(--ease-io), transform 0.3s var(--ease-io), filter 0.3s var(--ease-io)',
+                '&.is-visible': {
+                    opacity: '1',
+                    transform: 'translateY(0)',
+                    filter: 'blur(0)'
+                },
+                '@media (max-width: 1280px)': {
+                    fontSize: '7.6em',
+                    maxWidth: '5.1em'
+                },
+                '@media (max-width: 1024px)': {
+                    fontSize: '6.4em',
+                    maxWidth: '5.2em'
+                }
             },
             Content: {
                 extends: 'Content',
                 class: 'content',
                 id: 'services',
+                '@media (max-width: 1180px), (hover: none) and (pointer: coarse)': {
+                    position: 'relative',
+                    top: 'auto'
+                },
+                '&.reveal-on-scroll': {
+                    opacity: '0',
+                    transform: 'translateY(2.8em)',
+                    transition: 'opacity 0.52s var(--ease-io) 0.08s, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.08s'
+                },
+                '&.reveal-on-scroll.is-visible': {
+                    opacity: '1',
+                    transform: 'translateY(0)'
+                },
                 Images: {
                     extends: 'Images',
                     class: 'images',
+                    '@media (max-width: 1180px), (hover: none) and (pointer: coarse)': {
+                        pointerEvents: 'none'
+                    },
+                    '&.is-static': {
+                        overflow: 'hidden'
+                    },
                     Image: {
                         extends: 'Image',
-                        class: 'image'
+                        class: 'image',
+                        '@media (max-width: 1180px), (hover: none) and (pointer: coarse)': {
+                            backgroundAttachment: 'scroll'
+                        }
                     },
                     Image_1: {
                         extends: 'Image',
-                        class: 'image'
+                        class: 'image',
+                        '@media (max-width: 1180px), (hover: none) and (pointer: coarse)': {
+                            backgroundAttachment: 'scroll'
+                        }
                     },
                     Image_2: {
                         extends: 'Image',
-                        class: 'image'
+                        class: 'image',
+                        '@media (max-width: 1180px), (hover: none) and (pointer: coarse)': {
+                            backgroundAttachment: 'scroll'
+                        }
                     },
                     Image_3: {
                         extends: 'Image',
-                        class: 'image'
+                        class: 'image',
+                        '@media (max-width: 1180px), (hover: none) and (pointer: coarse)': {
+                            backgroundAttachment: 'scroll'
+                        }
                     }
                 },
                 Service: {
@@ -27240,8 +28288,8 @@ const main = {
                     backdropFilter: 'blur(20px) saturate(1.1)',
                     width: '25em',
                     height: '15em',
-                    padding: 'W2',
-                    round: 'var(--radius-l)',
+                    padding: '2.5em 2em 2em 2em',
+                    round: '2.6em',
                     background: 'linear-gradient(140deg, rgba(224, 77, 77, .15), rgba(0, 0, 0, 0.2))',
                     color: 'white',
                     cursor: 'pointer',
@@ -27252,42 +28300,89 @@ const main = {
                         H3: {
                             extends: 'H3',
                             tag: 'h3',
-                            text: 'social media marketing'
+                            text: 'social media marketing',
+                            fontSize: '2.5em',
+                            fontWeight: '900',
+                            maxWidth: '7.5em',
+                            lineHeight: 'var(--lh-tight)',
+                            letterSpacing: 'var(--tracking-tight)',
+                            textTransform: 'uppercase',
+                            color: 'rgba(255, 241, 227, 0.75)',
+                            'body[data-lang="ka"] &': {
+                                fontFamily: "'BPG Square Banner Caps 2013', sans-serif",
+                                fontStyle: 'normal',
+                                fontWeight: '400',
+                                textTransform: 'none',
+                                fontSynthesis: 'none',
+                                WebkitFontSmoothing: 'antialiased',
+                                lineHeight: '1em'
+                            }
                         },
                         P: {
                             extends: 'P',
                             tag: 'p',
                             text: 'Content creation and advertising',
-                            margin: '-'
+                            margin: '-',
+                            fontSize: '1.15em',
+                            maxWidth: '12em',
+                            lineHeight: 'var(--lh-compact)',
+                            paddingTop: '1.6em',
+                            color: 'rgba(255, 241, 227, 0.5)',
+                            'body[data-lang="ka"] &': {
+                                maxWidth: '13em'
+                            }
                         }
                     },
                     UL: {
                         extends: 'UL',
                         tag: 'ul',
+                        class: 'service-content',
                         listStyle: 'none',
-                        margin: '-',
-                        padding: '-',
-                        flow: 'column',
+                        margin: '1.5em 0 0 0',
+                        padding: '0',
+                        display: 'flex',
                         flexWrap: 'wrap',
-                        gap: '-',
+                        gap: '1em',
                         maxWidth: '100%',
-                        paddingLeft: '-'
+                        paddingLeft: '0'
                     },
                     Button: {
                         extends: 'Button',
                         tag: 'button',
                         font: 'inherit',
-                        background: 'none',
+                        background: 'rgba(224, 77, 77, 0.95)',
                         border: 'none',
                         cursor: 'pointer',
                         type: 'button',
+                        width: '3.7em',
+                        height: '3.7em',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: '100%',
+                        position: 'absolute',
+                        bottom: '.85em',
+                        right: '.85em',
+                        overflow: 'hidden',
+                        zIndex: '10',
+                        boxShadow: '0 10px 20px rgba(224, 77, 77, 0.35)',
                         Img: {
                             extends: 'Img',
-                            src: '/IMAGE/arrow.png'
+                            src: 'arrow.png',
+                            class: 'icon-arrow',
+                            width: '1.5em',
+                            position: 'absolute',
+                            inset: '0',
+                            margin: 'auto'
                         },
                         Img_1: {
                             extends: 'Img',
-                            src: '/IMAGE/close.png'
+                            src: 'close.png',
+                            class: 'icon-close',
+                            width: '1.5em',
+                            position: 'absolute',
+                            inset: '0',
+                            margin: 'auto'
                         }
                     }
                 }
@@ -27296,33 +28391,71 @@ const main = {
                 extends: 'Nav',
                 class: 'navigationDots',
                 tag: 'nav',
-                '--dot-hit-size': '2.25em',
-                '--dot-visual-size': '1.1em',
+                '--dot-hit-size': '0.9em',
+                '--dot-visual-size': '0.9em',
                 '--dot-ring-size': '0.12em',
-                flow: 'column',
-                gap: '-',
-                align: 'center',
+                position: 'fixed',
+                top: '50%',
+                left: '0',
+                right: 'auto',
+                transform: 'translateY(-50%)',
+                zIndex: '30',
+                opacity: '0',
+                pointerEvents: 'none',
+                transition: 'opacity 0.16s ease-in-out',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.9em',
+                alignItems: 'center',
                 width: 'fit-content',
                 'aria-label': 'Services navigation',
+                '&.is-visible': {
+                    opacity: '1',
+                    pointerEvents: 'auto',
+                    transition: 'opacity 0.2s ease-in-out'
+                },
+                '@media (max-width: 1180px), (hover: none) and (pointer: coarse)': {
+                    position: 'relative',
+                    left: 'auto',
+                    right: 'auto',
+                    top: 'auto',
+                    bottom: 'auto',
+                    transform: 'none',
+                    width: 'fit-content',
+                    margin: '20px auto 0',
+                    zIndex: '12',
+                    opacity: '1',
+                    pointerEvents: 'auto',
+                    flexFlow: 'row',
+                    gap: '0.22em'
+                },
+                '@media (max-width: 1024px)': {
+                    '--dot-hit-size': '2.1em',
+                    '--dot-visual-size': '1em'
+                },
+                '@media (max-width: 560px)': {
+                    '--dot-hit-size': '2.25em',
+                    '--dot-visual-size': '1.1em'
+                },
                 Button: {
                     class: 'dot',
                     'aria-label': 'Service 1',
-                    extends: 'Button1'
+                    extends: 'NavDot'
                 },
                 Button_1: {
                     class: 'dot',
                     'aria-label': 'Service 2',
-                    extends: 'Button1'
+                    extends: 'NavDot'
                 },
                 Button_2: {
                     class: 'dot',
                     'aria-label': 'Service 3',
-                    extends: 'Button1'
+                    extends: 'NavDot'
                 },
                 Button_3: {
                     class: 'dot',
                     'aria-label': 'Service 4',
-                    extends: 'Button1'
+                    extends: 'NavDot'
                 }
             }
         },
@@ -27331,75 +28464,158 @@ const main = {
             class: 'steps',
             tag: 'section',
             position: 'relative',
-            minHeight: '72em',
-            padding: 'X1',
+            minHeight: '100em',
+            padding: '9em 0 8em 0',
             H2: {
                 extends: 'H2',
                 tag: 'h2',
-                text: 'Flow to Work'
+                text: 'Flow to Work',
+                position: 'absolute',
+                right: '3em',
+                top: '1em',
+                fontSize: '5em',
+                zIndex: '2',
+                fontWeight: '900',
+                maxWidth: '4.6em',
+                textAlign: 'right',
+                lineHeight: '0.9em',
+                letterSpacing: '-0.02em',
+                color: 'rgba(255, 241, 227, 1)',
+                willChange: 'transform',
+                '@media (max-width: 1366px)': {
+                    right: '2em'
+                },
+                '@media (max-width: 1024px)': {
+                    right: '1em'
+                },
+                '@media (max-width: 560px)': {
+                    fontSize: '3.5em'
+                },
+                '@media (max-width: 350px)': {
+                    fontSize: '3.2em'
+                }
+            },
+            '@media (max-width: 768px)': {
+                minHeight: '80em'
+            },
+            '@media (max-width: 480px)': {
+                minHeight: '72em'
             },
             Circle: {
                 extends: 'Circle',
                 class: 'circle',
-                width: '42em',
-                height: '42em',
-                border: '.5px solid cream',
-                position: 'absolute',
                 top: '50%',
                 left: '0',
-                round: '100%',
-                transform: 'translate(-200px, -40%)',
+                '@media (max-width: 1024px)': {
+                    transform: 'translate(-300px, -35%) rotate(var(--steps-rot, 0deg))'
+                },
+                '@media (max-width: 860px)': {
+                    transform: 'translate(-350px, -35%) rotate(var(--steps-rot, 0deg))'
+                },
+                '@media (max-width: 768px)': {
+                    fontSize: '0.87em'
+                },
+                '@media (max-width: 560px)': {
+                    fontSize: '0.8em'
+                },
+                '@media (max-width: 480px)': {
+                    transform: 'translate(-300px, -35%) rotate(var(--steps-rot, 0deg))',
+                    fontSize: '0.7em'
+                },
+                '@media (max-width: 390px)': {
+                    fontSize: '0.65em'
+                },
+                '@media (max-width: 350px)': {
+                    transform: 'translate(-250px, -35%) rotate(var(--steps-rot, 0deg))',
+                    fontSize: '0.63em'
+                },
                 Dot: {
                     extends: 'Dot',
                     class: 'dot dot1',
+                    right: '7em',
+                    top: '4em',
                     Hgroup: {
                         extends: 'Hgroup',
+                        margin: '-10em 0 0 5em',
+                        color: 'rgba(255, 241, 227, 1)',
                         H3: {
                             extends: 'H3',
                             tag: 'h3',
-                            text: '01'
+                            text: '01',
+                            fontSize: '5em',
+                            fontWeight: '900'
                         },
                         P: {
                             extends: 'P',
                             tag: 'p',
                             text: 'initial consultation',
-                            margin: '-'
+                            margin: '2em 0 0 3em',
+                            fontSize: '1.5em',
+                            letterSpacing: '-0.03em',
+                            minWidth: '10em',
+                            lineHeight: '1.1em',
+                            fontWeight: '300',
+                            color: 'rgba(255, 241, 227, 1)'
                         }
                     }
                 },
                 Dot_1: {
                     extends: 'Dot',
                     class: 'dot dot2',
+                    right: '-0.5em',
+                    top: '22em',
                     Hgroup: {
                         extends: 'Hgroup',
+                        margin: '-10em 0 0 5em',
+                        color: 'rgba(255, 241, 227, 1)',
                         H3: {
                             extends: 'H3',
                             tag: 'h3',
-                            text: '02'
+                            text: '02',
+                            fontSize: '5em',
+                            fontWeight: '900'
                         },
                         P: {
                             extends: 'P',
                             tag: 'p',
                             text: 'Strategy development and implementation',
-                            margin: '-'
+                            margin: '2em 0 0 3em',
+                            fontSize: '1.5em',
+                            letterSpacing: '-0.03em',
+                            minWidth: '10em',
+                            lineHeight: '1.1em',
+                            fontWeight: '300',
+                            color: 'rgba(255, 241, 227, 1)'
                         }
                     }
                 },
                 Dot_2: {
                     extends: 'Dot',
                     class: 'dot dot3',
+                    right: '10em',
+                    bottom: '2.2em',
                     Hgroup: {
                         extends: 'Hgroup',
+                        margin: '-5em 0 0 12em',
+                        color: 'rgba(255, 241, 227, 1)',
                         H3: {
                             extends: 'H3',
                             tag: 'h3',
-                            text: '03'
+                            text: '03',
+                            fontSize: '5em',
+                            fontWeight: '900'
                         },
                         P: {
                             extends: 'P',
                             tag: 'p',
                             text: 'Review and final refinement',
-                            margin: '-'
+                            margin: '2em 0 0 3em',
+                            fontSize: '1.5em',
+                            letterSpacing: '-0.03em',
+                            minWidth: '10em',
+                            lineHeight: '1.1em',
+                            fontWeight: '300',
+                            color: 'rgba(255, 241, 227, 1)'
                         }
                     }
                 }
@@ -27412,20 +28628,50 @@ const main = {
             width: '100%',
             background: 'transparent',
             position: 'relative',
-            padding: '-',
+            padding: '0 0 20em 0',
             zIndex: '10',
-            margin: '-',
+            margin: '0 auto',
             maxWidth: '1366px',
-            paddingBottom: 'W1',
+            '@media (max-width: 860px)': {
+                paddingBottom: '5em'
+            },
             H2: {
                 extends: 'H2',
                 tag: 'h2',
-                text: 'Our Team'
+                text: 'Our Team',
+                fontSize: '5.5em',
+                maxWidth: '2em',
+                lineHeight: '0.8em',
+                fontWeight: '900',
+                position: 'relative',
+                zIndex: '4',
+                padding: '0 0 3em 2.5em',
+                color: 'rgba(255, 241, 227, 0.5)',
+                'body[data-lang="ka"] &': {
+                    lineHeight: '1em'
+                },
+                '@media (max-width: 1024px)': {
+                    fontSize: '4.5em',
+                    padding: '0 0 3em 1.5em'
+                },
+                '@media (max-width: 560px)': {
+                    fontSize: '3.5em',
+                    padding: '0 0 2em 1em'
+                }
             },
             Contents: {
                 extends: 'Contents',
                 class: 'contents',
                 id: 'about',
+                '&.reveal-on-scroll': {
+                    opacity: '0',
+                    transform: 'translateX(var(--swim-x, 0em)) translateY(calc(1.2em + var(--team-parallax-y, 0em) + var(--swim-y, 0em))) rotate(var(--swim-r, 0deg))',
+                    transition: 'opacity 0.7s var(--ease-io) 0.1s, transform 0.7s var(--ease-io) 0.1s'
+                },
+                '&.reveal-on-scroll.is-visible': {
+                    opacity: '1',
+                    transform: 'translateX(var(--swim-x, 0em)) translateY(calc(var(--team-parallax-y, 0em) + var(--swim-y, 0em))) rotate(var(--swim-r, 0deg))'
+                },
                 TeamMember: {
                     extends: 'TeamMember',
                     class: 'teamMember',
@@ -27444,7 +28690,7 @@ const main = {
                         tag: 'img',
                         display: 'block',
                         maxWidth: '100%',
-                        src: './IMAGE/choni2.webp',
+                        src: 'choni2.webp',
                         alt: '',
                         loading: 'lazy',
                         decoding: 'async'
@@ -27468,7 +28714,7 @@ const main = {
                         tag: 'img',
                         display: 'block',
                         maxWidth: '100%',
-                        src: './IMAGE/liza2.webp',
+                        src: 'liza2.webp',
                         alt: '',
                         loading: 'lazy',
                         decoding: 'async'
@@ -27492,7 +28738,7 @@ const main = {
                         tag: 'img',
                         display: 'block',
                         maxWidth: '100%',
-                        src: './IMAGE/mariami2.webp',
+                        src: 'mariami2.webp',
                         alt: '',
                         loading: 'lazy',
                         decoding: 'async'
@@ -27516,7 +28762,7 @@ const main = {
                         tag: 'img',
                         display: 'block',
                         maxWidth: '100%',
-                        src: './IMAGE/luka2.webp',
+                        src: 'luka2.webp',
                         alt: '',
                         loading: 'lazy',
                         decoding: 'async'
@@ -27526,24 +28772,76 @@ const main = {
             NavArrows: {
                 extends: 'NavArrows',
                 class: 'navArrows',
-                zIndex: '100',
-                flow: 'column',
-                gap: '-',
+                margin: '3em 13em 0 auto',
+                gap: '1em',
+                zIndex: '5',
+                maxWidth: 'fit-content',
+                '@media (max-width: 860px)': {
+                    margin: '3em 6em 0 auto'
+                },
+                '@media (max-width: 560px)': {
+                    margin: '1em 3em 0 auto'
+                },
+                '@media (max-width: 480px)': {
+                    margin: '0.5em auto 0 auto'
+                },
+                '@media (max-width: 350px)': {
+                    margin: '-1.5em auto 0 auto'
+                },
                 Button: {
                     class: 'prev',
                     'aria-label': 'Previous team member',
-                    extends: 'Button4'
+                    extends: 'Button4',
+                    '@media (max-width: 560px)': {
+                        width: '3em',
+                        height: '3em'
+                    }
                 },
                 Button_1: {
                     class: 'next',
                     'aria-label': 'Next team member',
-                    extends: 'Button4'
+                    extends: 'Button4',
+                    '@media (max-width: 560px)': {
+                        width: '3.6em',
+                        height: '3.6em'
+                    }
                 }
             },
             Button: {
                 extends: 'Button',
                 class: 'more',
-                text: 'know us better'
+                text: 'know us better',
+                tag: 'button',
+                font: 'inherit',
+                color: 'rgba(255, 241, 227, 1)',
+                padding: '1.2em 2em',
+                borderRadius: '5em',
+                border: '1px solid rgba(255, 241, 227, 0.2)',
+                margin: '3em auto 0 20em',
+                fontSize: '1em',
+                display: 'block',
+                cursor: 'pointer',
+                fontWeight: '700',
+                background: 'none',
+                transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), padding 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease, border-radius 0.5s ease, border 0.5s ease, opacity 0.5s ease, color 0.5s ease',
+                '&:hover': {
+                    opacity: '1',
+                    backgroundColor: 'rgba(224, 77, 77, 1)',
+                    transform: 'scale(1.05)',
+                    border: '1px solid rgba(255, 241, 227, 0)'
+                },
+                '@media (max-width: 1024px)': {
+                    margin: '3em auto 0 10em'
+                },
+                '@media (max-width: 860px)': {
+                    margin: '3em auto 0 5em'
+                },
+                '@media (max-width: 560px)': {
+                    margin: '3em auto 0 2em'
+                },
+                '@media (max-width: 480px)': {
+                    margin: '8em auto 0 auto'
+                }
             }
         },
         Section_9: {
@@ -27551,32 +28849,110 @@ const main = {
             class: 'testimonial',
             tag: 'section',
             maxWidth: 'fit-content',
-            margin: '-',
+            margin: '0 auto',
             height: 'fit-content',
-            padding: 'Z2',
+            padding: '10em 0 18em 0',
             position: 'relative',
             zIndex: '100',
-            paddingBottom: 'W1',
             width: '100%',
+            '@media (max-width: 860px)': {
+                paddingBottom: '5em'
+            },
+            '@media (max-width: 350px)': {
+                width: '100%'
+            },
             Title: {
                 extends: 'Title',
                 class: 'title',
+                paddingRight: '30em',
+                opacity: '0.6',
+                transform: 'translateX(var(--swim-x, 0em)) translateY(calc(1.2em + var(--swim-y, 0em))) rotate(var(--swim-r, 0deg))',
+                transition: 'transform 0.75s var(--ease-io)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                '.testimonial.is-active &': {
+                    transform: 'translateX(var(--swim-x, 0em)) translateY(var(--swim-y, 0em)) rotate(var(--swim-r, 0deg))'
+                },
+                '@media (max-width: 1024px)': {
+                    fontSize: '0.9em',
+                    marginLeft: '5em',
+                    maxWidth: 'fit-content',
+                    width: 'fit-content',
+                    minWidth: 'fit-content'
+                },
+                '@media (max-width: 768px)': {
+                    fontSize: '0.8em',
+                    marginLeft: '3em',
+                    marginBottom: '6em'
+                },
+                '@media (max-width: 560px)': {
+                    fontSize: '0.7em'
+                },
                 Img: {
-                    src: './IMAGE/quotation-mark.png',
-                    extends: 'Img2'
+                    src: 'quotation-mark.png',
+                    extends: 'Img2',
+                    height: '7em',
+                    width: 'auto',
+                    maxWidth: 'none',
+                    marginLeft: '10em',
+                    marginBottom: '2em',
+                    transformOrigin: 'center center',
+                    'body[data-lang="ka"] &': {
+                        marginBottom: '3.5em'
+                    },
+                    '.testimonial.is-active &': {
+                        animation: 'none'
+                    },
+                    '.testimonial.is-active.is-scrolling &': {
+                        animation: 'quoteShake 1.8s cubic-bezier(0.2, 0, 0, 1) infinite'
+                    }
                 },
                 H3: {
                     extends: 'H3',
                     tag: 'h3',
-                    text: 'people talks'
+                    text: 'people talks',
+                    fontSize: '5em',
+                    fontWeight: '900',
+                    textTransform: 'capitalize',
+                    maxWidth: '2em',
+                    lineHeight: '1em'
                 }
             },
             TestimonialContent: {
                 extends: 'TestimonialContent',
                 class: 'testimonialContent',
+                width: 'fit-content',
+                marginLeft: 'auto',
+                marginTop: '13em',
+                maxHeight: '45em',
+                position: 'relative',
+                isolation: 'isolate',
+                '::before': {
+                    content: 'none'
+                },
+                '::after': {
+                    content: 'none'
+                },
+                '@media (max-width: 1024px)': {
+                    marginRight: '5em'
+                },
+                '@media (max-width: 768px)': {
+                    margin: '0 auto'
+                },
+                '@media (max-width: 560px)': {
+                    fontSize: '0.8em'
+                },
+                '@media (max-width: 350px)': {
+                    width: '100%'
+                },
                 Messages: {
                     extends: 'Messages',
                     class: 'messages',
+                    '@media (max-width: 350px)': {
+                        width: 'fit-content',
+                        margin: '0 auto'
+                    },
                     P: {
                         extends: 'P',
                         tag: 'p',
@@ -27630,9 +29006,6 @@ const main = {
                 Focus: {
                     extends: 'Focus',
                     class: 'focus',
-                    width: '25em',
-                    height: '15em',
-                    position: 'relative',
                     FocusCorner: {
                         extends: 'FocusCorner'
                     },
@@ -27648,38 +29021,88 @@ const main = {
                     H5: {
                         extends: 'H5',
                         tag: 'h5',
-                        text: 'James harisson'
+                        text: 'James harisson',
+                        '@media (max-width: 768px)': {
+                            right: '-70%',
+                            bottom: '5em',
+                            marginRight: '2em'
+                        },
+                        '@media (max-width: 480px)': {
+                            right: '-50%',
+                            bottom: '5em',
+                            marginRight: '2em'
+                        },
+                        '@media (max-width: 350px)': {
+                            right: '-70%',
+                            bottom: '5em',
+                            marginRight: '2em'
+                        }
                     }
+                },
+                '@media (max-width: 350px)': {
+                    width: '90%'
                 }
             }
         },
         Footer: {
             extends: 'Footer',
             tag: 'footer',
-            width: '100%',
-            zIndex: '10',
-            position: 'relative',
-            paddingLeft: 'W2',
-            minHeight: 'fit-content',
+            paddingLeft: '7em',
             paddingBottom: 'calc(6em + var(--app-fixed-bottom-clearance, 0px))',
             '--footerGlow': '0',
-            paddingRight: 'W2',
+            '@media (max-width: 1280px)': {
+                paddingLeft: '5.5em'
+            },
+            '@media (max-width: 768px)': {
+                paddingLeft: '3.5em'
+            },
+            '@media (max-width: 620px)': {
+                paddingRight: '3.5em'
+            },
+            '@media (max-width: 480px)': {
+                paddingLeft: '2em',
+                paddingRight: '2em'
+            },
             H2: {
                 extends: 'H2',
                 tag: 'h2',
-                text: 'focus agency'
+                text: 'focus agency',
+                fontSize: '6em',
+                fontWeight: '900',
+                color: 'rgba(255, 241, 227, 0.5)',
+                textAlign: 'center',
+                maxWidth: '3em',
+                lineHeight: '0.8em',
+                margin: '0 4em 2em auto',
+                textTransform: 'capitalize',
+                transform: 'translateX(var(--swim-x, 0em)) translateY(var(--swim-y, 0em)) rotate(var(--swim-r, 0deg))',
+                transition: 'text-shadow 0.25s ease',
+                willChange: 'transform',
+                'body[data-lang="ka"] &': {
+                    fontFamily: "'Exo 2', sans-serif"
+                },
+                '@media (max-width: 1366px)': {
+                    fontSize: '5em',
+                    margin: '0 2em 2em auto'
+                },
+                '@media (max-width: 860px)': {
+                    fontSize: '3.5em'
+                },
+                '@media (max-width: 620px)': {
+                    margin: '0 0.5em 3.5em auto'
+                }
             },
             Form: {
                 extends: 'Form',
                 tag: 'form',
-                flow: 'column',
+                display: 'flex',
                 flexFlow: 'column',
-                maxWidth: '100%',
+                maxWidth: 'fit-content',
                 maxHeight: 'fit-content',
                 position: 'relative',
-                gap: '-',
-                minWidth: '100%',
-                padding: '-',
+                gap: '1em',
+                padding: '0',
+                marginBottom: '5em',
                 action: 'https://formspree.io/f/xqeypeyg',
                 method: 'POST',
                 id: 'contact',
@@ -27689,9 +29112,8 @@ const main = {
                     text: 'have a question?',
                     fontSize: '1.2em',
                     color: 'rgba(255, 241, 227, .7)',
-                    marginBottom: '.5em',
                     fontWeight: '300',
-                    margin: '-'
+                    margin: '0 0 2em .5em'
                 },
                 Input: {
                     extends: 'Input',
@@ -27700,15 +29122,21 @@ const main = {
                     border: '1px solid rgba(255, 241, 227, .1)',
                     fontSize: '1em',
                     round: '2em',
-                    padding: '-',
+                    padding: '1em 1.5em',
                     color: 'cream',
-                    margin: '-',
+                    margin: '0',
                     background: 'transparent',
+                    minWidth: '15em',
+                    maxWidth: '15em',
                     id: 'name',
                     name: 'name',
                     type: 'text',
                     autocomplete: 'name',
-                    placeholder: 'name'
+                    placeholder: 'name',
+                    '@media (max-width: 480px)': {
+                        minWidth: '100%',
+                        maxWidth: '100%'
+                    }
                 },
                 Input_2: {
                     extends: 'Input',
@@ -27717,16 +29145,22 @@ const main = {
                     border: '1px solid rgba(255, 241, 227, .1)',
                     fontSize: '1em',
                     round: '2em',
-                    padding: '-',
+                    padding: '1em 1.5em',
                     color: 'cream',
-                    margin: '-',
+                    margin: '0',
                     background: 'transparent',
+                    minWidth: '19em',
+                    maxWidth: '19em',
                     id: 'email',
                     name: 'email',
                     type: 'email',
                     autocomplete: 'email',
                     placeholder: 'email',
-                    required: ''
+                    required: '',
+                    '@media (max-width: 480px)': {
+                        minWidth: '100%',
+                        maxWidth: '100%'
+                    }
                 },
                 Textarea: {
                     extends: 'Textarea',
@@ -27734,7 +29168,7 @@ const main = {
                     font: 'inherit',
                     minWidth: '28em',
                     maxWidth: '28em',
-                    padding: '-',
+                    padding: '1.2em 1.5em',
                     background: 'transparent',
                     border: '1px solid rgba(255, 241, 227, .1)',
                     round: '2em',
@@ -27744,17 +29178,36 @@ const main = {
                     name: 'message',
                     rows: '6',
                     placeholder: 'shoot a message',
-                    required: ''
+                    required: '',
+                    '@media (max-width: 620px)': {
+                        minWidth: '100%'
+                    }
                 },
                 Button: {
                     extends: 'Button',
                     tag: 'button',
                     text: 'send',
                     font: 'inherit',
-                    background: 'none',
+                    width: 'fit-content',
+                    padding: '.75em 1.5em',
+                    background: 'rgba(224, 77, 77, 0.75)',
+                    color: 'white',
+                    fontSize: '1.1em',
+                    borderRadius: '3em',
                     border: 'none',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    position: 'absolute',
+                    bottom: '.75em',
+                    right: '.75em',
                     cursor: 'pointer',
-                    type: 'submit'
+                    type: 'submit',
+                    transition: 'background 0.5s ease, transform 0.5s ease',
+                    ':hover': {
+                        background: 'rgba(224, 77, 77, 1)',
+                        transform: 'scale(1.05)'
+                    }
                 },
                 P: {
                     extends: 'P',
@@ -27776,51 +29229,77 @@ const main = {
             Contact: {
                 extends: 'Contact',
                 class: 'contact',
-                marginLeft: '-',
+                marginLeft: '1em',
                 H5: {
                     extends: 'H5',
                     tag: 'h5',
-                    text: 'call us any time'
+                    text: 'call us any time',
+                    color: 'rgba(255, 241, 227, 0.5)',
+                    marginBottom: '0.5em',
+                    fontWeight: '300',
+                    fontSize: '1.1em'
                 },
                 P: {
                     extends: 'P',
                     tag: 'p',
                     text: '+995 595 893 399',
-                    margin: '-'
+                    margin: '0',
+                    fontSize: '1.2em',
+                    color: 'rgba(255, 241, 227, 0.85)',
+                    marginBottom: '2em'
                 },
                 H5_2: {
                     extends: 'H5',
                     tag: 'h5',
-                    text: 'connect with us by email'
+                    text: 'connect with us by email',
+                    color: 'rgba(255, 241, 227, 0.5)',
+                    marginBottom: '0.5em',
+                    fontWeight: '300',
+                    fontSize: '1.1em'
                 },
                 P_3: {
                     extends: 'P',
                     tag: 'p',
                     text: 'gamarjoba@focusagency.ge',
-                    margin: '-'
+                    margin: '0',
+                    fontSize: '1.2em',
+                    color: 'rgba(255, 241, 227, 0.85)',
+                    marginBottom: '2em'
                 },
                 H5_4: {
                     extends: 'H5',
                     tag: 'h5',
-                    text: 'Follow us'
+                    text: 'Follow us',
+                    color: 'rgba(255, 241, 227, 0.5)',
+                    marginBottom: '0.5em',
+                    fontWeight: '300',
+                    fontSize: '1.1em'
                 },
                 Nav: {
                     extends: 'Nav',
                     class: 'socialLinks',
                     tag: 'nav',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: '1em',
+                    marginTop: '1em',
                     Link: {
+                        extends: 'Link3',
                         Img: {
-                            src: './IMAGE/facebook.png',
-                            extends: 'Img2'
-                        },
-                        extends: 'Link3'
+                            src: 'facebook.png',
+                            extends: 'Img2',
+                            height: '2em',
+                            maxWidth: 'none'
+                        }
                     },
                     Link_1: {
+                        extends: 'Link3',
                         Img: {
-                            src: './IMAGE/instagram.png',
-                            extends: 'Img2'
-                        },
-                        extends: 'Link3'
+                            src: 'instagram.png',
+                            extends: 'Img2',
+                            height: '2em',
+                            maxWidth: 'none'
+                        }
                     }
                 }
             },
@@ -27828,44 +29307,144 @@ const main = {
                 extends: 'Address',
                 class: 'address',
                 position: 'relative',
-                maxWidth: '100%',
-                padding: 'Z2',
+                maxWidth: 'fit-content',
+                padding: '10em',
                 marginLeft: 'auto',
-                marginRight: 'W2',
-                marginTop: '-',
-                paddingRight: '-',
-                marginBottom: 'W1',
-                paddingTop: 'X2',
-                paddingBottom: '-',
-                paddingLeft: '-',
-                minWidth: '100%',
+                marginRight: '7em',
+                '@media (max-width: 1366px)': {
+                    marginRight: '0em'
+                },
+                '@media (max-width: 1280px)': {
+                    marginRight: '-3em',
+                    marginTop: '-15em'
+                },
+                '@media (max-width: 1135px)': {
+                    marginRight: '0',
+                    marginTop: '0',
+                    paddingRight: '3em',
+                    marginBottom: '5em'
+                },
+                '@media (max-width: 860px)': {
+                    paddingTop: '6em',
+                    marginRight: '3em',
+                    paddingBottom: '0'
+                },
+                '@media (max-width: 620px)': {
+                    paddingLeft: '0',
+                    paddingRight: '0',
+                    minWidth: '100%',
+                    maxWidth: '100%'
+                },
                 Hgroup: {
                     extends: 'Hgroup',
                     tag: 'hgroup',
+                    '@media (max-width: 860px)': {
+                        paddingBottom: '4em'
+                    },
+                    '@media (max-width: 620px)': {
+                        paddingLeft: '1em'
+                    },
                     H5: {
                         extends: 'H5',
                         tag: 'h5',
-                        text: `you're welcome to visit us`
+                        text: `you're welcome to visit us`,
+                        color: 'rgba(255, 241, 227, 0.5)',
+                        marginBottom: '1em',
+                        fontWeight: '300',
+                        fontSize: '1.1em'
                     },
                     P: {
                         extends: 'P',
                         tag: 'p',
                         margin: '-',
+                        fontSize: '1.2em',
+                        color: 'rgba(255, 241, 227, 0.85)',
+                        maxWidth: '17em',
                         Span: {
-                            text: 'Tbilisi, Saburtalo'
+                            tag: 'span',
+                            text: 'Tbilisi, Saburtalo',
+                            display: 'block',
+                            marginTop: '0.2em'
                         },
                         Span_1: {
-                            text: 'Alexandre Khazbegi street N24 g'
+                            tag: 'span',
+                            text: 'Alexandre Khazbegi street N24 g',
+                            display: 'block',
+                            marginTop: '0.2em'
                         }
                     }
                 },
                 Img: {
-                    src: './IMAGE/street.webp',
-                    extends: 'Img2'
+                    src: 'street.webp',
+                    extends: 'Img2',
+                    minWidth: '25em',
+                    height: '15em',
+                    borderRadius: '2em',
+                    position: 'absolute',
+                    boxSizing: 'content-box',
+                    border: '1px solid rgba(255, 241, 227, 0.1)',
+                    padding: '1em',
+                    willChange: 'transform, filter',
+                    top: '-10em',
+                    left: '-10em',
+                    objectFit: 'cover',
+                    maxWidth: 'none',
+                    '@media (max-width: 1280px)': {
+                        minWidth: '20em',
+                        top: '-10em',
+                        left: '0em'
+                    },
+                    '@media (max-width: 860px)': {
+                        margin: '0',
+                        top: 'initial',
+                        position: 'initial'
+                    },
+                    '@media (max-width: 480px)': {
+                        minWidth: '80%',
+                        maxWidth: '80%',
+                        height: '13em'
+                    },
+                    '@media (max-width: 375px)': {
+                        height: '10em'
+                    },
+                    '@media (max-width: 620px)': {
+                        right: '0'
+                    }
                 },
                 Img_2: {
-                    src: './IMAGE/street2.webp',
-                    extends: 'Img2'
+                    src: 'street2.webp',
+                    extends: 'Img2',
+                    minWidth: '25em',
+                    height: '15em',
+                    borderRadius: '2em',
+                    position: 'absolute',
+                    boxSizing: 'content-box',
+                    border: '1px solid rgba(255, 241, 227, 0.1)',
+                    padding: '1em',
+                    willChange: 'transform, filter',
+                    marginTop: '3em',
+                    marginLeft: '-5em',
+                    objectFit: 'cover',
+                    maxWidth: 'none',
+                    '@media (max-width: 1280px)': {
+                        minWidth: '20em'
+                    },
+                    '@media (max-width: 860px)': {
+                        margin: '0',
+                        top: 'initial',
+                        position: 'initial'
+                    },
+                    '@media (max-width: 480px)': {
+                        minWidth: '80%',
+                        maxWidth: '80%',
+                        height: '13em'
+                    },
+                    '@media (max-width: 375px)': {
+                        height: '10em'
+                    },
+                    '@media (max-width: 620px)': {
+                        marginLeft: 'auto'
+                    }
                 }
             },
             P: {
@@ -27874,7 +29453,44 @@ const main = {
                 text: `Our agency was founded with one main purpose \u{2014} to support growth and success of businesses. Every client is
         unique to us, which is why we always listen carefully to your needs and create strategies that deliver real
         results.`,
-                margin: '-'
+                margin: '-',
+                display: 'block',
+                width: '100%',
+                maxWidth: 'min(100%, 28em)',
+                paddingRight: '1em',
+                paddingBottom: '3em',
+                marginTop: '8em',
+                fontWeight: '300',
+                fontSize: '3.5em',
+                lineHeight: '0.84',
+                color: 'rgba(255, 241, 227, 0.75)',
+                overflowWrap: 'normal',
+                wordBreak: 'normal',
+                hyphens: 'none',
+                '& .wave-char': {
+                    display: 'inline-block',
+                    opacity: '0.25',
+                    transition: 'opacity 0.25s ease'
+                },
+                '& .wave-word': {
+                    display: 'inline-block',
+                    whiteSpace: 'nowrap'
+                },
+                '&.is-wave-active .wave-char': {
+                    animation: 'footerTextWave 2.4s linear infinite',
+                    animationDelay: 'calc(var(--char-index) * 0.035s)'
+                },
+                '@media (max-width: 620px)': {
+                    maxWidth: '100%',
+                    margin: '1.1em 0 0',
+                    paddingRight: '0.2em'
+                },
+                '@media (max-width: 480px)': {
+                    paddingRight: '0'
+                },
+                '@media (max-width: 350px)': {
+                    paddingLeft: '0.2em'
+                }
             }
         }
     }
@@ -27915,6 +29531,8 @@ var _mediaJs = require("./media.js");
 var _mediaJsDefault = parcelHelpers.interopDefault(_mediaJs);
 var _casesJs = require("./cases.js");
 var _casesJsDefault = parcelHelpers.interopDefault(_casesJs);
+var _varsJs = require("./vars.js");
+var _varsJsDefault = parcelHelpers.interopDefault(_varsJs);
 exports.default = {
     color: (0, _colorJsDefault.default),
     gradient: (0, _gradientJsDefault.default),
@@ -27924,17 +29542,18 @@ exports.default = {
     typography: (0, _typographyJsDefault.default),
     spacing: (0, _spacingJsDefault.default),
     timing: (0, _timingJsDefault.default),
-    "class": (0, _classJsDefault.default),
+    class: (0, _classJsDefault.default),
     grid: (0, _gridJsDefault.default),
     icons: (0, _iconsJsDefault.default),
     shape: (0, _shapeJsDefault.default),
     reset: (0, _resetJsDefault.default),
     animation: (0, _animationJsDefault.default),
     media: (0, _mediaJsDefault.default),
-    cases: (0, _casesJsDefault.default)
+    cases: (0, _casesJsDefault.default),
+    vars: (0, _varsJsDefault.default)
 };
 
-},{"./color.js":"cx3Bd","./gradient.js":"lCziZ","./theme.js":"i04IX","./font.js":"dXLy5","./font_family.js":"dO2AO","./typography.js":"bdU1s","./spacing.js":"GYkAY","./timing.js":"4xkTu","./class.js":"cB8Wo","./grid.js":"1u4Rd","./icons.js":"c9R4W","./shape.js":"jK9Hw","./reset.js":"72Za9","./animation.js":"19HD1","./media.js":"fU9ei","./cases.js":"9Kinn","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"cx3Bd":[function(require,module,exports,__globalThis) {
+},{"./color.js":"cx3Bd","./gradient.js":"lCziZ","./theme.js":"i04IX","./font.js":"dXLy5","./font_family.js":"dO2AO","./typography.js":"bdU1s","./spacing.js":"GYkAY","./timing.js":"4xkTu","./class.js":"cB8Wo","./grid.js":"1u4Rd","./icons.js":"c9R4W","./shape.js":"jK9Hw","./reset.js":"72Za9","./animation.js":"19HD1","./media.js":"fU9ei","./cases.js":"9Kinn","./vars.js":"lofKF","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"cx3Bd":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 exports.default = {
@@ -27966,81 +29585,62 @@ parcelHelpers.defineInteropFlag(exports);
 exports.default = {
     'Exo 2': [
         {
-            url: './FONT/Exo2-Thin.woff2',
-            fontWeight: '100',
-            fontStyle: 'normal',
+            url: 'Exo2-Thin.woff2',
+            fontWeight: 100,
             fontDisplay: 'swap'
         },
         {
-            url: './FONT/Exo2-ExtraLight.woff2',
-            fontWeight: '200',
-            fontStyle: 'normal',
+            url: 'Exo2-ExtraLight.woff2',
+            fontWeight: 200,
             fontDisplay: 'swap'
         },
         {
-            url: './FONT/Exo2-Light.woff2',
-            fontWeight: '300',
-            fontStyle: 'normal',
+            url: 'Exo2-Light.woff2',
+            fontWeight: 300,
             fontDisplay: 'swap'
         },
         {
-            url: './FONT/Exo2-Regular.woff2',
-            fontWeight: '400',
-            fontStyle: 'normal',
+            url: 'Exo2-Regular.woff2',
+            fontWeight: 400,
             fontDisplay: 'swap'
         },
         {
-            url: './FONT/Exo2-Medium.woff2',
-            fontWeight: '500',
-            fontStyle: 'normal',
+            url: 'Exo2-Medium.woff2',
+            fontWeight: 500,
             fontDisplay: 'swap'
         },
         {
-            url: './FONT/Exo2-SemiBold.woff2',
-            fontWeight: '600',
-            fontStyle: 'normal',
+            url: 'Exo2-SemiBold.woff2',
+            fontWeight: 600,
             fontDisplay: 'swap'
         },
         {
-            url: './FONT/Exo2-Bold.woff2',
-            fontWeight: '700',
-            fontStyle: 'normal',
+            url: 'Exo2-Bold.woff2',
+            fontWeight: 700,
             fontDisplay: 'swap'
         },
         {
-            url: './FONT/Exo2-ExtraBold.woff2',
-            fontWeight: '800',
-            fontStyle: 'normal',
+            url: 'Exo2-ExtraBold.woff2',
+            fontWeight: 800,
             fontDisplay: 'swap'
         },
         {
-            url: './FONT/Exo2-Black.woff2',
-            fontWeight: '900',
-            fontStyle: 'normal',
+            url: 'Exo2-Black.woff2',
+            fontWeight: 900,
             fontDisplay: 'swap'
         }
     ],
     'BPG Square Banner Caps 2013': [
         {
-            url: './FONT/bpg-square-banner-caps-2013-webfont.woff2',
-            fontWeight: '400',
-            fontStyle: 'normal',
-            fontDisplay: 'swap'
-        }
-    ],
-    'BPG Square Banner Caps 2013 Safari': [
-        {
-            url: './FONT/bpg-square-banner-caps-2013-webfont.ttf',
-            fontWeight: '400',
-            fontStyle: 'normal',
+            url: 'bpg-square-banner-caps-2013-webfont.woff2',
+            fontWeight: 400,
             fontDisplay: 'swap'
         }
     ],
     'BPG Square Banner 2013': [
         {
-            url: './FONT/bpg-square-banner-2013-webfont.woff2',
-            fontWeight: '400',
-            fontStyle: 'normal',
+            url: 'bpg-square-banner-2013-webfont.woff2',
+            fontWeight: 400,
             fontDisplay: 'swap'
         }
     ]
@@ -28162,7 +29762,140 @@ exports.default = {
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"72Za9":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-exports.default = {};
+exports.default = {
+    // === @supports ===
+    '@supports (height: 100svh)': {
+        ':root': {
+            '--app-viewport-height': '100svh'
+        }
+    },
+    '@supports (height: 100dvh)': {
+        ':root': {
+            '--app-visual-viewport-height': '100dvh'
+        }
+    },
+    // === BASE reset ===
+    '*, *::before, *::after': {
+        boxSizing: 'border-box'
+    },
+    '[class*="smbls-"]::before, [class*="smbls-"]::after': {
+        content: "''"
+    },
+    'html': {
+        minHeight: '100vh',
+        width: '100%',
+        maxWidth: '100%',
+        margin: '0',
+        overflowY: 'scroll',
+        overflowX: 'hidden',
+        scrollbarGutter: 'stable',
+        boxSizing: 'border-box'
+    },
+    'html.page-scroll-locked, body.page-scroll-locked': {
+        overflow: 'hidden',
+        overscrollBehavior: 'none'
+    },
+    'a[href=""]': {
+        pointerEvents: 'none',
+        cursor: 'default'
+    },
+    'body': {
+        position: 'relative',
+        width: '100%',
+        minHeight: 'var(--app-viewport-height, 100vh)',
+        lineHeight: '1.4em',
+        letterSpacing: '-0.01em',
+        WebkitFontSmoothing: 'antialiased',
+        textRendering: 'optimizeLegibility',
+        fontSize: '18px',
+        margin: '0',
+        background: '#000',
+        color: 'rgba(255, 241, 227, 1)',
+        fontFamily: 'var(--font-en)',
+        '--corner-final-offset': '20px',
+        '--corner-left-offset': 'var(--corner-final-offset)',
+        '--corner-right-offset': 'var(--corner-final-offset)',
+        '--corner-top-offset': 'var(--corner-final-offset)',
+        '--corner-bottom-offset': 'var(--corner-final-offset)',
+        '--logo-final-top-offset': '0.5em',
+        '--logo-final-left-offset': '0.5em'
+    },
+    'body[data-lang="en"]': {
+        fontFamily: 'var(--font-en)'
+    },
+    'body[data-lang="ka"]': {
+        fontFamily: 'var(--font-ka-body)'
+    },
+    // === INTRO animation STATES (body-level only) ===
+    'body.intro-active:not(.intro-finished)': {
+        overflow: 'hidden !important'
+    },
+    'body::before': {
+        content: "''",
+        position: 'fixed',
+        inset: '0',
+        zIndex: '1500',
+        pointerEvents: 'none',
+        opacity: '0',
+        transition: 'opacity 1s ease',
+        background: 'rgba(0, 0, 0, 1)'
+    },
+    'body::after': {
+        content: "''",
+        position: 'fixed',
+        inset: '0',
+        zIndex: '1500',
+        pointerEvents: 'none',
+        opacity: '0',
+        transition: 'opacity 1s ease',
+        background: 'radial-gradient(circle at center, rgba(0,0,0,0.16) 0%, rgba(0,0,0,0.42) 100%)'
+    },
+    'body.intro-overlay::before': {
+        opacity: '1'
+    },
+    'body.intro-overlay::after': {
+        opacity: '1'
+    },
+    'body.intro-fade::before': {
+        opacity: '0'
+    },
+    'body.intro-fade::after': {
+        opacity: '0'
+    },
+    // === RESPONSIVE: 1680px ===
+    '@media (max-width: 1680px)': {
+        'body': {
+            fontSize: '16px'
+        }
+    },
+    // === RESPONSIVE: 1180px / touch (html/body only) ===
+    '@media (max-width: 1180px), (hover: none) and (pointer: coarse)': {
+        'html': {
+            height: 'auto',
+            minHeight: '100%',
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch'
+        },
+        'body': {
+            minHeight: 'var(--app-viewport-height, 100%)'
+        },
+        'html.page-scroll-locked, body.page-scroll-locked': {
+            height: 'var(--app-viewport-height, 100%)',
+            minHeight: 'var(--app-viewport-height, 100%)',
+            WebkitOverflowScrolling: 'auto'
+        }
+    },
+    // === RESPONSIVE: 560px (body vars only) ===
+    '@media (max-width: 560px)': {
+        'body': {
+            '--corner-final-offset': '20px',
+            '--corner-left-offset': '12px',
+            '--corner-bottom-offset': '12px',
+            '--logo-final-top-offset': '0.3214em',
+            '--logo-final-left-offset': '0.2857em'
+        }
+    }
+};
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"19HD1":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -28320,7 +30053,7 @@ exports.default = {
         '0%': {
             opacity: '1',
             filter: 'drop-shadow(0 0 0 rgba(224, 77, 77, 0))',
-            background: 'red'
+            background: 'var(--red)'
         },
         '40%': {
             opacity: '1',
@@ -28330,7 +30063,7 @@ exports.default = {
         '100%': {
             opacity: '1',
             filter: 'drop-shadow(0 0 0 rgba(224, 77, 77, 0))',
-            background: 'red'
+            background: 'var(--red)'
         }
     },
     focusNamePulse: {
@@ -28559,6 +30292,2423 @@ exports.default = {
     }
 };
 
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"lofKF":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    '--app-viewport-width': '100vw',
+    '--app-viewport-height': '100vh',
+    '--app-visual-viewport-height': '100vh',
+    '--app-safe-top': 'env(safe-area-inset-top, 0px)',
+    '--app-safe-right': 'env(safe-area-inset-right, 0px)',
+    '--app-safe-bottom': 'env(safe-area-inset-bottom, 0px)',
+    '--app-safe-bottom-stable': 'env(safe-area-max-inset-bottom, 0px)',
+    '--app-safe-left': 'env(safe-area-inset-left, 0px)',
+    '--app-fixed-bottom-clearance': 'max(var(--app-safe-bottom-stable), var(--app-safe-bottom))',
+    '--black': 'rgba(0,0,0,1)',
+    '--cream': 'rgba(255,241,227,1)',
+    '--red': 'rgba(224,77,77,1)',
+    '--radius-s': '0.8em',
+    '--radius-m': '1.6em',
+    '--radius-l': '2.6em',
+    '--ease-io': 'cubic-bezier(0.4, 0, 0.2, 1)',
+    '--ease-out': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+    '--ease-soft': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+    '--dur-fast': '0.2s',
+    '--dur-med': '0.45s',
+    '--dur-slow': '0.9s',
+    '--lh-tight': '0.9em',
+    '--lh-compact': '1.1em',
+    '--lh-body': '1.4em',
+    '--tracking-tight': '-0.02em',
+    '--tracking-wide': '0.06em',
+    '--font-en': "'Exo 2', sans-serif",
+    '--font-ka-body': "'BPG Square Banner 2013', sans-serif",
+    '--font-ka-cap': "'BPG Square Banner Caps 2013', sans-serif"
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dTkK6":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _bpgSquareBanner2013WebfontWoff2Js = require("./bpg-square-banner-2013-webfont.woff2.js");
+var _bpgSquareBanner2013WebfontWoff2JsDefault = parcelHelpers.interopDefault(_bpgSquareBanner2013WebfontWoff2Js);
+var _bpgSquareBannerCaps2013WebfontWoff2Js = require("./bpg-square-banner-caps-2013-webfont.woff2.js");
+var _bpgSquareBannerCaps2013WebfontWoff2JsDefault = parcelHelpers.interopDefault(_bpgSquareBannerCaps2013WebfontWoff2Js);
+var _exo2BlackWoff2Js = require("./exo2-black.woff2.js");
+var _exo2BlackWoff2JsDefault = parcelHelpers.interopDefault(_exo2BlackWoff2Js);
+var _exo2BoldWoff2Js = require("./exo2-bold.woff2.js");
+var _exo2BoldWoff2JsDefault = parcelHelpers.interopDefault(_exo2BoldWoff2Js);
+var _exo2ExtraboldWoff2Js = require("./exo2-extrabold.woff2.js");
+var _exo2ExtraboldWoff2JsDefault = parcelHelpers.interopDefault(_exo2ExtraboldWoff2Js);
+var _exo2ExtralightWoff2Js = require("./exo2-extralight.woff2.js");
+var _exo2ExtralightWoff2JsDefault = parcelHelpers.interopDefault(_exo2ExtralightWoff2Js);
+var _exo2LightWoff2Js = require("./exo2-light.woff2.js");
+var _exo2LightWoff2JsDefault = parcelHelpers.interopDefault(_exo2LightWoff2Js);
+var _exo2MediumWoff2Js = require("./exo2-medium.woff2.js");
+var _exo2MediumWoff2JsDefault = parcelHelpers.interopDefault(_exo2MediumWoff2Js);
+var _exo2RegularWoff2Js = require("./exo2-regular.woff2.js");
+var _exo2RegularWoff2JsDefault = parcelHelpers.interopDefault(_exo2RegularWoff2Js);
+var _exo2SemiboldWoff2Js = require("./exo2-semibold.woff2.js");
+var _exo2SemiboldWoff2JsDefault = parcelHelpers.interopDefault(_exo2SemiboldWoff2Js);
+var _exo2ThinWoff2Js = require("./exo2-thin.woff2.js");
+var _exo2ThinWoff2JsDefault = parcelHelpers.interopDefault(_exo2ThinWoff2Js);
+var _bpgSquareBanner2013WebfontWoffJs = require("./bpg-square-banner-2013-webfont.woff.js");
+var _bpgSquareBanner2013WebfontWoffJsDefault = parcelHelpers.interopDefault(_bpgSquareBanner2013WebfontWoffJs);
+var _bpgSquareBannerCaps2013WebfontWoffJs = require("./bpg-square-banner-caps-2013-webfont.woff.js");
+var _bpgSquareBannerCaps2013WebfontWoffJsDefault = parcelHelpers.interopDefault(_bpgSquareBannerCaps2013WebfontWoffJs);
+var _exo2BlackWoffJs = require("./exo2-black.woff.js");
+var _exo2BlackWoffJsDefault = parcelHelpers.interopDefault(_exo2BlackWoffJs);
+var _exo2BoldWoffJs = require("./exo2-bold.woff.js");
+var _exo2BoldWoffJsDefault = parcelHelpers.interopDefault(_exo2BoldWoffJs);
+var _exo2ExtralightWoffJs = require("./exo2-extralight.woff.js");
+var _exo2ExtralightWoffJsDefault = parcelHelpers.interopDefault(_exo2ExtralightWoffJs);
+var _exo2LightWoffJs = require("./exo2-light.woff.js");
+var _exo2LightWoffJsDefault = parcelHelpers.interopDefault(_exo2LightWoffJs);
+var _exo2MediumWoffJs = require("./exo2-medium.woff.js");
+var _exo2MediumWoffJsDefault = parcelHelpers.interopDefault(_exo2MediumWoffJs);
+var _exo2RegularWoffJs = require("./exo2-regular.woff.js");
+var _exo2RegularWoffJsDefault = parcelHelpers.interopDefault(_exo2RegularWoffJs);
+var _exo2SemiboldWoffJs = require("./exo2-semibold.woff.js");
+var _exo2SemiboldWoffJsDefault = parcelHelpers.interopDefault(_exo2SemiboldWoffJs);
+var _exo2ThinWoffJs = require("./exo2-thin.woff.js");
+var _exo2ThinWoffJsDefault = parcelHelpers.interopDefault(_exo2ThinWoffJs);
+var _bpgSquareBanner2013WebfontTtfJs = require("./bpg-square-banner-2013-webfont.ttf.js");
+var _bpgSquareBanner2013WebfontTtfJsDefault = parcelHelpers.interopDefault(_bpgSquareBanner2013WebfontTtfJs);
+var _bpgSquareBannerCaps2013WebfontTtfJs = require("./bpg-square-banner-caps-2013-webfont.ttf.js");
+var _bpgSquareBannerCaps2013WebfontTtfJsDefault = parcelHelpers.interopDefault(_bpgSquareBannerCaps2013WebfontTtfJs);
+var _analyticsWebpJs = require("./analytics.webp.js");
+var _analyticsWebpJsDefault = parcelHelpers.interopDefault(_analyticsWebpJs);
+var _arrowPngJs = require("./arrow.png.js");
+var _arrowPngJsDefault = parcelHelpers.interopDefault(_arrowPngJs);
+var _arrowleftPngJs = require("./arrowleft.png.js");
+var _arrowleftPngJsDefault = parcelHelpers.interopDefault(_arrowleftPngJs);
+var _arrowrightPngJs = require("./arrowright.png.js");
+var _arrowrightPngJsDefault = parcelHelpers.interopDefault(_arrowrightPngJs);
+var _choni2WebpJs = require("./choni2.webp.js");
+var _choni2WebpJsDefault = parcelHelpers.interopDefault(_choni2WebpJs);
+var _closePngJs = require("./close.png.js");
+var _closePngJsDefault = parcelHelpers.interopDefault(_closePngJs);
+var _facebookPngJs = require("./facebook.png.js");
+var _facebookPngJsDefault = parcelHelpers.interopDefault(_facebookPngJs);
+var _globeWebpJs = require("./globe.webp.js");
+var _globeWebpJsDefault = parcelHelpers.interopDefault(_globeWebpJs);
+var _instagramPngJs = require("./instagram.png.js");
+var _instagramPngJsDefault = parcelHelpers.interopDefault(_instagramPngJs);
+var _linkedinPngJs = require("./linkedin.png.js");
+var _linkedinPngJsDefault = parcelHelpers.interopDefault(_linkedinPngJs);
+var _liza2WebpJs = require("./liza2.webp.js");
+var _liza2WebpJsDefault = parcelHelpers.interopDefault(_liza2WebpJs);
+var _luka2WebpJs = require("./luka2.webp.js");
+var _luka2WebpJsDefault = parcelHelpers.interopDefault(_luka2WebpJs);
+var _mariami2WebpJs = require("./mariami2.webp.js");
+var _mariami2WebpJsDefault = parcelHelpers.interopDefault(_mariami2WebpJs);
+var _mediaWebpJs = require("./media.webp.js");
+var _mediaWebpJsDefault = parcelHelpers.interopDefault(_mediaWebpJs);
+var _quotationMarkPngJs = require("./quotation-mark.png.js");
+var _quotationMarkPngJsDefault = parcelHelpers.interopDefault(_quotationMarkPngJs);
+var _sendPngJs = require("./send.png.js");
+var _sendPngJsDefault = parcelHelpers.interopDefault(_sendPngJs);
+var _stars5WebpJs = require("./stars5.webp.js");
+var _stars5WebpJsDefault = parcelHelpers.interopDefault(_stars5WebpJs);
+var _streetWebpJs = require("./street.webp.js");
+var _streetWebpJsDefault = parcelHelpers.interopDefault(_streetWebpJs);
+var _street2WebpJs = require("./street2.webp.js");
+var _street2WebpJsDefault = parcelHelpers.interopDefault(_street2WebpJs);
+var _videoWebpJs = require("./video.webp.js");
+var _videoWebpJsDefault = parcelHelpers.interopDefault(_videoWebpJs);
+var _webWebpJs = require("./web.webp.js");
+var _webWebpJsDefault = parcelHelpers.interopDefault(_webWebpJs);
+exports.default = {
+    "bpg-square-banner-2013-webfont.woff2": (0, _bpgSquareBanner2013WebfontWoff2JsDefault.default),
+    "bpg-square-banner-caps-2013-webfont.woff2": (0, _bpgSquareBannerCaps2013WebfontWoff2JsDefault.default),
+    "Exo2-Black.woff2": (0, _exo2BlackWoff2JsDefault.default),
+    "Exo2-Bold.woff2": (0, _exo2BoldWoff2JsDefault.default),
+    "Exo2-ExtraBold.woff2": (0, _exo2ExtraboldWoff2JsDefault.default),
+    "Exo2-ExtraLight.woff2": (0, _exo2ExtralightWoff2JsDefault.default),
+    "Exo2-Light.woff2": (0, _exo2LightWoff2JsDefault.default),
+    "Exo2-Medium.woff2": (0, _exo2MediumWoff2JsDefault.default),
+    "Exo2-Regular.woff2": (0, _exo2RegularWoff2JsDefault.default),
+    "Exo2-SemiBold.woff2": (0, _exo2SemiboldWoff2JsDefault.default),
+    "Exo2-Thin.woff2": (0, _exo2ThinWoff2JsDefault.default),
+    "bpg-square-banner-2013-webfont.woff": (0, _bpgSquareBanner2013WebfontWoffJsDefault.default),
+    "bpg-square-banner-caps-2013-webfont.woff": (0, _bpgSquareBannerCaps2013WebfontWoffJsDefault.default),
+    "Exo2-Black.woff": (0, _exo2BlackWoffJsDefault.default),
+    "Exo2-Bold.woff": (0, _exo2BoldWoffJsDefault.default),
+    "Exo2-ExtraLight.woff": (0, _exo2ExtralightWoffJsDefault.default),
+    "Exo2-Light.woff": (0, _exo2LightWoffJsDefault.default),
+    "Exo2-Medium.woff": (0, _exo2MediumWoffJsDefault.default),
+    "Exo2-Regular.woff": (0, _exo2RegularWoffJsDefault.default),
+    "Exo2-SemiBold.woff": (0, _exo2SemiboldWoffJsDefault.default),
+    "Exo2-Thin.woff": (0, _exo2ThinWoffJsDefault.default),
+    "bpg-square-banner-2013-webfont.ttf": (0, _bpgSquareBanner2013WebfontTtfJsDefault.default),
+    "bpg-square-banner-caps-2013-webfont.ttf": (0, _bpgSquareBannerCaps2013WebfontTtfJsDefault.default),
+    "analytics.webp": (0, _analyticsWebpJsDefault.default),
+    "arrow.png": (0, _arrowPngJsDefault.default),
+    "arrowLeft.png": (0, _arrowleftPngJsDefault.default),
+    "arrowRight.png": (0, _arrowrightPngJsDefault.default),
+    "choni2.webp": (0, _choni2WebpJsDefault.default),
+    "close.png": (0, _closePngJsDefault.default),
+    "facebook.png": (0, _facebookPngJsDefault.default),
+    "globe.webp": (0, _globeWebpJsDefault.default),
+    "instagram.png": (0, _instagramPngJsDefault.default),
+    "linkedin.png": (0, _linkedinPngJsDefault.default),
+    "liza2.webp": (0, _liza2WebpJsDefault.default),
+    "luka2.webp": (0, _luka2WebpJsDefault.default),
+    "mariami2.webp": (0, _mariami2WebpJsDefault.default),
+    "media.webp": (0, _mediaWebpJsDefault.default),
+    "quotation-mark.png": (0, _quotationMarkPngJsDefault.default),
+    "send.png": (0, _sendPngJsDefault.default),
+    "stars5.webp": (0, _stars5WebpJsDefault.default),
+    "street.webp": (0, _streetWebpJsDefault.default),
+    "street2.webp": (0, _street2WebpJsDefault.default),
+    "video.webp": (0, _videoWebpJsDefault.default),
+    "web.webp": (0, _webWebpJsDefault.default)
+};
+
+},{"./bpg-square-banner-2013-webfont.woff2.js":"2FfXZ","./bpg-square-banner-caps-2013-webfont.woff2.js":"dcUVR","./exo2-black.woff2.js":"jyTSD","./exo2-bold.woff2.js":"kgTIP","./exo2-extrabold.woff2.js":"72rDh","./exo2-extralight.woff2.js":"4OQGJ","./exo2-light.woff2.js":"42R8u","./exo2-medium.woff2.js":"aulNH","./exo2-regular.woff2.js":"ft5lw","./exo2-semibold.woff2.js":"7PUEc","./exo2-thin.woff2.js":"buKxf","./bpg-square-banner-2013-webfont.woff.js":"MNDmk","./bpg-square-banner-caps-2013-webfont.woff.js":"exHDO","./exo2-black.woff.js":"lgVqx","./exo2-bold.woff.js":"8V646","./exo2-extralight.woff.js":"1Rjo3","./exo2-light.woff.js":"cEbB8","./exo2-medium.woff.js":"kuCGr","./exo2-regular.woff.js":"4yc4s","./exo2-semibold.woff.js":"l3j6w","./exo2-thin.woff.js":"hQCFC","./bpg-square-banner-2013-webfont.ttf.js":"pYLzP","./bpg-square-banner-caps-2013-webfont.ttf.js":"dhs83","./analytics.webp.js":"1VkP9","./arrow.png.js":"o8lzn","./arrowleft.png.js":"vNqZ3","./arrowright.png.js":"eNL7p","./choni2.webp.js":"9Madz","./close.png.js":"idjbw","./facebook.png.js":"4Zikj","./globe.webp.js":"2tFYN","./instagram.png.js":"euXbz","./linkedin.png.js":"gVX7m","./liza2.webp.js":"kLU96","./luka2.webp.js":"7pgKc","./mariami2.webp.js":"8VT6K","./media.webp.js":"8qmcz","./quotation-mark.png.js":"hrpK1","./send.png.js":"8RlDw","./stars5.webp.js":"2Bkzv","./street.webp.js":"jf1m8","./street2.webp.js":"51TDf","./video.webp.js":"2qBZi","./web.webp.js":"ha7vh","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"2FfXZ":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'nXm8ODnIAm1ImgGbDFXJT.woff2',
+        originalName: 'bpg-square-banner-2013-webfont.woff2',
+        mimeType: 'font/woff2',
+        size: 20328,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/nXm8ODnIAm1ImgGbDFXJT.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e4d0eebab7ab3f37862',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:33.893Z',
+        updatedAt: '2026-03-21T11:17:33.893Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '19.85 KB',
+        age: 14,
+        id: '69be7e4d0eebab7ab3f37862',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e4d0eebab7ab3f37862',
+                download: '/core/files/public/69be7e4d0eebab7ab3f37862/download',
+                publicDownload: '/core/files/public/69be7e4d0eebab7ab3f37862/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e4d0eebab7ab3f37862',
+                download: 'https://api.symbols.app/core/files/public/69be7e4d0eebab7ab3f37862/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e4d0eebab7ab3f37862/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/nXm8ODnIAm1ImgGbDFXJT.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e4d0eebab7ab3f37862/download'
+    },
+    code: '',
+    key: 'bpg-square-banner-2013-webfont.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dcUVR":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '8qw4UmYk23fpXSq7oOeaY.woff2',
+        originalName: 'bpg-square-banner-caps-2013-webfont.woff2',
+        mimeType: 'font/woff2',
+        size: 18288,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/8qw4UmYk23fpXSq7oOeaY.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e4e0eebab7ab3f37884',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:34.240Z',
+        updatedAt: '2026-03-21T11:17:34.240Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '17.86 KB',
+        age: 15,
+        id: '69be7e4e0eebab7ab3f37884',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e4e0eebab7ab3f37884',
+                download: '/core/files/public/69be7e4e0eebab7ab3f37884/download',
+                publicDownload: '/core/files/public/69be7e4e0eebab7ab3f37884/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e4e0eebab7ab3f37884',
+                download: 'https://api.symbols.app/core/files/public/69be7e4e0eebab7ab3f37884/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e4e0eebab7ab3f37884/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/8qw4UmYk23fpXSq7oOeaY.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e4e0eebab7ab3f37884/download'
+    },
+    code: '',
+    key: 'bpg-square-banner-caps-2013-webfont.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jyTSD":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'B-CAqH8ZoRbyFikixg-gD.woff2',
+        originalName: 'Exo2-Black.woff2',
+        mimeType: 'font/woff2',
+        size: 43720,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/B-CAqH8ZoRbyFikixg-gD.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e4e0eebab7ab3f378a5',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:34.651Z',
+        updatedAt: '2026-03-21T11:17:34.651Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '42.7 KB',
+        age: 13,
+        id: '69be7e4e0eebab7ab3f378a5',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e4e0eebab7ab3f378a5',
+                download: '/core/files/public/69be7e4e0eebab7ab3f378a5/download',
+                publicDownload: '/core/files/public/69be7e4e0eebab7ab3f378a5/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e4e0eebab7ab3f378a5',
+                download: 'https://api.symbols.app/core/files/public/69be7e4e0eebab7ab3f378a5/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e4e0eebab7ab3f378a5/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/B-CAqH8ZoRbyFikixg-gD.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e4e0eebab7ab3f378a5/download'
+    },
+    code: '',
+    key: 'Exo2-Black.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"kgTIP":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '541wNX2ma_2GpA4k7a2QJ.woff2',
+        originalName: 'Exo2-Bold.woff2',
+        mimeType: 'font/woff2',
+        size: 46320,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/541wNX2ma_2GpA4k7a2QJ.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e4f0eebab7ab3f378c7',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:35.041Z',
+        updatedAt: '2026-03-21T11:17:35.041Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '45.23 KB',
+        age: 15,
+        id: '69be7e4f0eebab7ab3f378c7',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e4f0eebab7ab3f378c7',
+                download: '/core/files/public/69be7e4f0eebab7ab3f378c7/download',
+                publicDownload: '/core/files/public/69be7e4f0eebab7ab3f378c7/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e4f0eebab7ab3f378c7',
+                download: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f378c7/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f378c7/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/541wNX2ma_2GpA4k7a2QJ.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f378c7/download'
+    },
+    code: '',
+    key: 'Exo2-Bold.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"72rDh":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'AzTj9aaqY78asFvgmtGui.woff2',
+        originalName: 'Exo2-ExtraBold.woff2',
+        mimeType: 'font/woff2',
+        size: 46236,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/AzTj9aaqY78asFvgmtGui.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e4f0eebab7ab3f378e9',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:35.359Z',
+        updatedAt: '2026-03-21T11:17:35.359Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '45.15 KB',
+        age: 14,
+        id: '69be7e4f0eebab7ab3f378e9',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e4f0eebab7ab3f378e9',
+                download: '/core/files/public/69be7e4f0eebab7ab3f378e9/download',
+                publicDownload: '/core/files/public/69be7e4f0eebab7ab3f378e9/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e4f0eebab7ab3f378e9',
+                download: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f378e9/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f378e9/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/AzTj9aaqY78asFvgmtGui.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f378e9/download'
+    },
+    code: '',
+    key: 'Exo2-ExtraBold.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4OQGJ":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '0wykrZguMFjS7KEXjQHp7.woff2',
+        originalName: 'Exo2-ExtraLight.woff2',
+        mimeType: 'font/woff2',
+        size: 44388,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/0wykrZguMFjS7KEXjQHp7.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e4f0eebab7ab3f3790a',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:35.648Z',
+        updatedAt: '2026-03-21T11:17:35.648Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '43.35 KB',
+        age: 15,
+        id: '69be7e4f0eebab7ab3f3790a',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e4f0eebab7ab3f3790a',
+                download: '/core/files/public/69be7e4f0eebab7ab3f3790a/download',
+                publicDownload: '/core/files/public/69be7e4f0eebab7ab3f3790a/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e4f0eebab7ab3f3790a',
+                download: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f3790a/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f3790a/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/0wykrZguMFjS7KEXjQHp7.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f3790a/download'
+    },
+    code: '',
+    key: 'Exo2-ExtraLight.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"42R8u":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'rOhImZASArYzyJJlXRI9U.woff2',
+        originalName: 'Exo2-Light.woff2',
+        mimeType: 'font/woff2',
+        size: 45124,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/rOhImZASArYzyJJlXRI9U.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e4f0eebab7ab3f3792c',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:35.953Z',
+        updatedAt: '2026-03-21T11:17:35.953Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '44.07 KB',
+        age: 13,
+        id: '69be7e4f0eebab7ab3f3792c',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e4f0eebab7ab3f3792c',
+                download: '/core/files/public/69be7e4f0eebab7ab3f3792c/download',
+                publicDownload: '/core/files/public/69be7e4f0eebab7ab3f3792c/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e4f0eebab7ab3f3792c',
+                download: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f3792c/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f3792c/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/rOhImZASArYzyJJlXRI9U.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e4f0eebab7ab3f3792c/download'
+    },
+    code: '',
+    key: 'Exo2-Light.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"aulNH":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'K9rAZU-xGygVq3R13BuPv.woff2',
+        originalName: 'Exo2-Medium.woff2',
+        mimeType: 'font/woff2',
+        size: 46328,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/K9rAZU-xGygVq3R13BuPv.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e500eebab7ab3f3794e',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:36.276Z',
+        updatedAt: '2026-03-21T11:17:36.276Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '45.24 KB',
+        age: 13,
+        id: '69be7e500eebab7ab3f3794e',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e500eebab7ab3f3794e',
+                download: '/core/files/public/69be7e500eebab7ab3f3794e/download',
+                publicDownload: '/core/files/public/69be7e500eebab7ab3f3794e/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e500eebab7ab3f3794e',
+                download: 'https://api.symbols.app/core/files/public/69be7e500eebab7ab3f3794e/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e500eebab7ab3f3794e/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/K9rAZU-xGygVq3R13BuPv.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e500eebab7ab3f3794e/download'
+    },
+    code: '',
+    key: 'Exo2-Medium.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"ft5lw":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'v1_TaKej4ux747mTQJesH.woff2',
+        originalName: 'Exo2-Regular.woff2',
+        mimeType: 'font/woff2',
+        size: 44372,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/v1_TaKej4ux747mTQJesH.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e500eebab7ab3f3796f',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:36.594Z',
+        updatedAt: '2026-03-21T11:17:36.594Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '43.33 KB',
+        age: 21,
+        id: '69be7e500eebab7ab3f3796f',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e500eebab7ab3f3796f',
+                download: '/core/files/public/69be7e500eebab7ab3f3796f/download',
+                publicDownload: '/core/files/public/69be7e500eebab7ab3f3796f/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e500eebab7ab3f3796f',
+                download: 'https://api.symbols.app/core/files/public/69be7e500eebab7ab3f3796f/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e500eebab7ab3f3796f/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/v1_TaKej4ux747mTQJesH.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e500eebab7ab3f3796f/download'
+    },
+    code: '',
+    key: 'Exo2-Regular.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"7PUEc":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'E9PObkDFmpSFm17xa5L2c.woff2',
+        originalName: 'Exo2-SemiBold.woff2',
+        mimeType: 'font/woff2',
+        size: 46420,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/E9PObkDFmpSFm17xa5L2c.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e500eebab7ab3f37991',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:36.909Z',
+        updatedAt: '2026-03-21T11:17:36.909Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '45.33 KB',
+        age: 18,
+        id: '69be7e500eebab7ab3f37991',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e500eebab7ab3f37991',
+                download: '/core/files/public/69be7e500eebab7ab3f37991/download',
+                publicDownload: '/core/files/public/69be7e500eebab7ab3f37991/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e500eebab7ab3f37991',
+                download: 'https://api.symbols.app/core/files/public/69be7e500eebab7ab3f37991/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e500eebab7ab3f37991/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/E9PObkDFmpSFm17xa5L2c.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e500eebab7ab3f37991/download'
+    },
+    code: '',
+    key: 'Exo2-SemiBold.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"buKxf":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '_YX-rSQ8nBtQvCoB-YCDX.woff2',
+        originalName: 'Exo2-Thin.woff2',
+        mimeType: 'font/woff2',
+        size: 41456,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/_YX-rSQ8nBtQvCoB-YCDX.woff2',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e510eebab7ab3f379b2',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:37.195Z',
+        updatedAt: '2026-03-21T11:17:37.195Z',
+        __v: 0,
+        extension: 'woff2',
+        humanSize: '40.48 KB',
+        age: 14,
+        id: '69be7e510eebab7ab3f379b2',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e510eebab7ab3f379b2',
+                download: '/core/files/public/69be7e510eebab7ab3f379b2/download',
+                publicDownload: '/core/files/public/69be7e510eebab7ab3f379b2/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e510eebab7ab3f379b2',
+                download: 'https://api.symbols.app/core/files/public/69be7e510eebab7ab3f379b2/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e510eebab7ab3f379b2/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/_YX-rSQ8nBtQvCoB-YCDX.woff2'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e510eebab7ab3f379b2/download'
+    },
+    code: '',
+    key: 'Exo2-Thin.woff2',
+    type: 'files',
+    format: 'woff2'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"MNDmk":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'L8g4E1l-5ZM4v0pifqKuq.woff',
+        originalName: 'bpg-square-banner-2013-webfont.woff',
+        mimeType: 'font/woff',
+        size: 26096,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/L8g4E1l-5ZM4v0pifqKuq.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5b0eebab7ab3f37a93',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:47.994Z',
+        updatedAt: '2026-03-21T11:17:47.994Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '25.48 KB',
+        age: 16,
+        id: '69be7e5b0eebab7ab3f37a93',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5b0eebab7ab3f37a93',
+                download: '/core/files/public/69be7e5b0eebab7ab3f37a93/download',
+                publicDownload: '/core/files/public/69be7e5b0eebab7ab3f37a93/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5b0eebab7ab3f37a93',
+                download: 'https://api.symbols.app/core/files/public/69be7e5b0eebab7ab3f37a93/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5b0eebab7ab3f37a93/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/L8g4E1l-5ZM4v0pifqKuq.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5b0eebab7ab3f37a93/download'
+    },
+    code: '',
+    key: 'bpg-square-banner-2013-webfont.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"exHDO":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'i5GGyI0DZCOFj1wguem2W.woff',
+        originalName: 'bpg-square-banner-caps-2013-webfont.woff',
+        mimeType: 'font/woff',
+        size: 23332,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/i5GGyI0DZCOFj1wguem2W.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5c0eebab7ab3f37ab5',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:48.265Z',
+        updatedAt: '2026-03-21T11:17:48.265Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '22.79 KB',
+        age: 13,
+        id: '69be7e5c0eebab7ab3f37ab5',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5c0eebab7ab3f37ab5',
+                download: '/core/files/public/69be7e5c0eebab7ab3f37ab5/download',
+                publicDownload: '/core/files/public/69be7e5c0eebab7ab3f37ab5/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5c0eebab7ab3f37ab5',
+                download: 'https://api.symbols.app/core/files/public/69be7e5c0eebab7ab3f37ab5/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5c0eebab7ab3f37ab5/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/i5GGyI0DZCOFj1wguem2W.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5c0eebab7ab3f37ab5/download'
+    },
+    code: '',
+    key: 'bpg-square-banner-caps-2013-webfont.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"lgVqx":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'l2Sh4OFF32gKsnodBJ8Pq.woff',
+        originalName: 'Exo2-Black.woff',
+        mimeType: 'font/woff',
+        size: 60584,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/l2Sh4OFF32gKsnodBJ8Pq.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5c0eebab7ab3f37ad6',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:48.545Z',
+        updatedAt: '2026-03-21T11:17:48.545Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '59.16 KB',
+        age: 14,
+        id: '69be7e5c0eebab7ab3f37ad6',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5c0eebab7ab3f37ad6',
+                download: '/core/files/public/69be7e5c0eebab7ab3f37ad6/download',
+                publicDownload: '/core/files/public/69be7e5c0eebab7ab3f37ad6/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5c0eebab7ab3f37ad6',
+                download: 'https://api.symbols.app/core/files/public/69be7e5c0eebab7ab3f37ad6/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5c0eebab7ab3f37ad6/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/l2Sh4OFF32gKsnodBJ8Pq.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5c0eebab7ab3f37ad6/download'
+    },
+    code: '',
+    key: 'Exo2-Black.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8V646":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'HzN83grZqoHD9QO8iRlXk.woff',
+        originalName: 'Exo2-Bold.woff',
+        mimeType: 'font/woff',
+        size: 63500,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/HzN83grZqoHD9QO8iRlXk.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5c0eebab7ab3f37af8',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:48.823Z',
+        updatedAt: '2026-03-21T11:17:48.823Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '62.01 KB',
+        age: 19,
+        id: '69be7e5c0eebab7ab3f37af8',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5c0eebab7ab3f37af8',
+                download: '/core/files/public/69be7e5c0eebab7ab3f37af8/download',
+                publicDownload: '/core/files/public/69be7e5c0eebab7ab3f37af8/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5c0eebab7ab3f37af8',
+                download: 'https://api.symbols.app/core/files/public/69be7e5c0eebab7ab3f37af8/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5c0eebab7ab3f37af8/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/HzN83grZqoHD9QO8iRlXk.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5c0eebab7ab3f37af8/download'
+    },
+    code: '',
+    key: 'Exo2-Bold.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"1Rjo3":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '2La1fQJBnQp1wBIJluv7F.woff',
+        originalName: 'Exo2-ExtraLight.woff',
+        mimeType: 'font/woff',
+        size: 61428,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/2La1fQJBnQp1wBIJluv7F.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5d0eebab7ab3f37b19',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:49.082Z',
+        updatedAt: '2026-03-21T11:17:49.082Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '59.99 KB',
+        age: 14,
+        id: '69be7e5d0eebab7ab3f37b19',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5d0eebab7ab3f37b19',
+                download: '/core/files/public/69be7e5d0eebab7ab3f37b19/download',
+                publicDownload: '/core/files/public/69be7e5d0eebab7ab3f37b19/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5d0eebab7ab3f37b19',
+                download: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b19/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b19/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/2La1fQJBnQp1wBIJluv7F.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b19/download'
+    },
+    code: '',
+    key: 'Exo2-ExtraLight.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"cEbB8":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'NFC5IqzXcMNFnbqUol_g-.woff',
+        originalName: 'Exo2-Light.woff',
+        mimeType: 'font/woff',
+        size: 62168,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/NFC5IqzXcMNFnbqUol_g-.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5d0eebab7ab3f37b3b',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:49.334Z',
+        updatedAt: '2026-03-21T11:17:49.334Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '60.71 KB',
+        age: 13,
+        id: '69be7e5d0eebab7ab3f37b3b',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5d0eebab7ab3f37b3b',
+                download: '/core/files/public/69be7e5d0eebab7ab3f37b3b/download',
+                publicDownload: '/core/files/public/69be7e5d0eebab7ab3f37b3b/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5d0eebab7ab3f37b3b',
+                download: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b3b/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b3b/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/NFC5IqzXcMNFnbqUol_g-.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b3b/download'
+    },
+    code: '',
+    key: 'Exo2-Light.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"kuCGr":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '7mBoZUd0EI-PVVNbEYo1_.woff',
+        originalName: 'Exo2-Medium.woff',
+        mimeType: 'font/woff',
+        size: 63580,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/7mBoZUd0EI-PVVNbEYo1_.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5d0eebab7ab3f37b5c',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:49.578Z',
+        updatedAt: '2026-03-21T11:17:49.578Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '62.09 KB',
+        age: 14,
+        id: '69be7e5d0eebab7ab3f37b5c',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5d0eebab7ab3f37b5c',
+                download: '/core/files/public/69be7e5d0eebab7ab3f37b5c/download',
+                publicDownload: '/core/files/public/69be7e5d0eebab7ab3f37b5c/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5d0eebab7ab3f37b5c',
+                download: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b5c/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b5c/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/7mBoZUd0EI-PVVNbEYo1_.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b5c/download'
+    },
+    code: '',
+    key: 'Exo2-Medium.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4yc4s":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'Z0nrra78WOgSl5mLUA8Hs.woff',
+        originalName: 'Exo2-Regular.woff',
+        mimeType: 'font/woff',
+        size: 61648,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/Z0nrra78WOgSl5mLUA8Hs.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5d0eebab7ab3f37b7e',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:49.917Z',
+        updatedAt: '2026-03-21T11:17:49.917Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '60.2 KB',
+        age: 17,
+        id: '69be7e5d0eebab7ab3f37b7e',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5d0eebab7ab3f37b7e',
+                download: '/core/files/public/69be7e5d0eebab7ab3f37b7e/download',
+                publicDownload: '/core/files/public/69be7e5d0eebab7ab3f37b7e/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5d0eebab7ab3f37b7e',
+                download: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b7e/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b7e/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/Z0nrra78WOgSl5mLUA8Hs.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5d0eebab7ab3f37b7e/download'
+    },
+    code: '',
+    key: 'Exo2-Regular.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"l3j6w":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'iigcfqTfsg6x7aWoJTyoI.woff',
+        originalName: 'Exo2-SemiBold.woff',
+        mimeType: 'font/woff',
+        size: 63696,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/iigcfqTfsg6x7aWoJTyoI.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5e0eebab7ab3f37ba0',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:50.255Z',
+        updatedAt: '2026-03-21T11:17:50.255Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '62.2 KB',
+        age: 17,
+        id: '69be7e5e0eebab7ab3f37ba0',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5e0eebab7ab3f37ba0',
+                download: '/core/files/public/69be7e5e0eebab7ab3f37ba0/download',
+                publicDownload: '/core/files/public/69be7e5e0eebab7ab3f37ba0/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5e0eebab7ab3f37ba0',
+                download: 'https://api.symbols.app/core/files/public/69be7e5e0eebab7ab3f37ba0/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5e0eebab7ab3f37ba0/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/iigcfqTfsg6x7aWoJTyoI.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5e0eebab7ab3f37ba0/download'
+    },
+    code: '',
+    key: 'Exo2-SemiBold.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hQCFC":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'ijJUOpkG0ldQJAN9RWxrm.woff',
+        originalName: 'Exo2-Thin.woff',
+        mimeType: 'font/woff',
+        size: 58348,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/ijJUOpkG0ldQJAN9RWxrm.woff',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e5e0eebab7ab3f37bc1',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:17:50.541Z',
+        updatedAt: '2026-03-21T11:17:50.541Z',
+        __v: 0,
+        extension: 'woff',
+        humanSize: '56.98 KB',
+        age: 14,
+        id: '69be7e5e0eebab7ab3f37bc1',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e5e0eebab7ab3f37bc1',
+                download: '/core/files/public/69be7e5e0eebab7ab3f37bc1/download',
+                publicDownload: '/core/files/public/69be7e5e0eebab7ab3f37bc1/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e5e0eebab7ab3f37bc1',
+                download: 'https://api.symbols.app/core/files/public/69be7e5e0eebab7ab3f37bc1/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e5e0eebab7ab3f37bc1/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/ijJUOpkG0ldQJAN9RWxrm.woff'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e5e0eebab7ab3f37bc1/download'
+    },
+    code: '',
+    key: 'Exo2-Thin.woff',
+    type: 'files',
+    format: 'woff'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"pYLzP":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'jLSH1bub4MIf-OgYtTuKs.ttf',
+        originalName: 'bpg-square-banner-2013-webfont.ttf',
+        mimeType: 'font/ttf',
+        size: 44428,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/jLSH1bub4MIf-OgYtTuKs.ttf',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e6c0eebab7ab3f37cab',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:04.153Z',
+        updatedAt: '2026-03-21T11:18:04.153Z',
+        __v: 0,
+        extension: 'ttf',
+        humanSize: '43.39 KB',
+        age: 14,
+        id: '69be7e6c0eebab7ab3f37cab',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e6c0eebab7ab3f37cab',
+                download: '/core/files/public/69be7e6c0eebab7ab3f37cab/download',
+                publicDownload: '/core/files/public/69be7e6c0eebab7ab3f37cab/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e6c0eebab7ab3f37cab',
+                download: 'https://api.symbols.app/core/files/public/69be7e6c0eebab7ab3f37cab/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e6c0eebab7ab3f37cab/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/jLSH1bub4MIf-OgYtTuKs.ttf'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e6c0eebab7ab3f37cab/download'
+    },
+    code: '',
+    key: 'bpg-square-banner-2013-webfont.ttf',
+    type: 'files',
+    format: 'ttf'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dhs83":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'atzbdU9rHL5JsE_3fUb3e.ttf',
+        originalName: 'bpg-square-banner-caps-2013-webfont.ttf',
+        mimeType: 'font/ttf',
+        size: 44344,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/atzbdU9rHL5JsE_3fUb3e.ttf',
+        bucket: 'smbls-api-media',
+        category: 'other',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e6c0eebab7ab3f37ccd',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:04.443Z',
+        updatedAt: '2026-03-21T11:18:04.443Z',
+        __v: 0,
+        extension: 'ttf',
+        humanSize: '43.3 KB',
+        age: 14,
+        id: '69be7e6c0eebab7ab3f37ccd',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e6c0eebab7ab3f37ccd',
+                download: '/core/files/public/69be7e6c0eebab7ab3f37ccd/download',
+                publicDownload: '/core/files/public/69be7e6c0eebab7ab3f37ccd/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e6c0eebab7ab3f37ccd',
+                download: 'https://api.symbols.app/core/files/public/69be7e6c0eebab7ab3f37ccd/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e6c0eebab7ab3f37ccd/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/atzbdU9rHL5JsE_3fUb3e.ttf'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e6c0eebab7ab3f37ccd/download'
+    },
+    code: '',
+    key: 'bpg-square-banner-caps-2013-webfont.ttf',
+    type: 'files',
+    format: 'ttf'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"1VkP9":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'VRmjuKoRpFPLuJgpeevzR.webp',
+        originalName: 'analytics.webp',
+        mimeType: 'image/webp',
+        size: 55074,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/VRmjuKoRpFPLuJgpeevzR.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7c0eebab7ab3f37e17',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:20.851Z',
+        updatedAt: '2026-03-21T11:18:20.851Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '53.78 KB',
+        age: 13,
+        id: '69be7e7c0eebab7ab3f37e17',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7c0eebab7ab3f37e17',
+                download: '/core/files/public/69be7e7c0eebab7ab3f37e17/download',
+                publicDownload: '/core/files/public/69be7e7c0eebab7ab3f37e17/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7c0eebab7ab3f37e17',
+                download: 'https://api.symbols.app/core/files/public/69be7e7c0eebab7ab3f37e17/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7c0eebab7ab3f37e17/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/VRmjuKoRpFPLuJgpeevzR.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7c0eebab7ab3f37e17/download'
+    },
+    code: '',
+    key: 'analytics.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"o8lzn":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'OLD9WusBohAbD4dLAB96k.png',
+        originalName: 'arrow.png',
+        mimeType: 'image/png',
+        size: 5436,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/OLD9WusBohAbD4dLAB96k.png',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7d0eebab7ab3f37e38',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:21.150Z',
+        updatedAt: '2026-03-21T11:18:21.150Z',
+        __v: 0,
+        extension: 'png',
+        humanSize: '5.31 KB',
+        age: 14,
+        id: '69be7e7d0eebab7ab3f37e38',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7d0eebab7ab3f37e38',
+                download: '/core/files/public/69be7e7d0eebab7ab3f37e38/download',
+                publicDownload: '/core/files/public/69be7e7d0eebab7ab3f37e38/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7d0eebab7ab3f37e38',
+                download: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e38/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e38/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/OLD9WusBohAbD4dLAB96k.png'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e38/download'
+    },
+    code: '',
+    key: 'arrow.png',
+    type: 'files',
+    format: 'png'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"vNqZ3":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'RtNV0ukJHFRP7Sv-fKGxp.png',
+        originalName: 'arrowLeft.png',
+        mimeType: 'image/png',
+        size: 12264,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/RtNV0ukJHFRP7Sv-fKGxp.png',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7d0eebab7ab3f37e5a',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:21.454Z',
+        updatedAt: '2026-03-21T11:18:21.454Z',
+        __v: 0,
+        extension: 'png',
+        humanSize: '11.98 KB',
+        age: 13,
+        id: '69be7e7d0eebab7ab3f37e5a',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7d0eebab7ab3f37e5a',
+                download: '/core/files/public/69be7e7d0eebab7ab3f37e5a/download',
+                publicDownload: '/core/files/public/69be7e7d0eebab7ab3f37e5a/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7d0eebab7ab3f37e5a',
+                download: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e5a/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e5a/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/RtNV0ukJHFRP7Sv-fKGxp.png'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e5a/download'
+    },
+    code: '',
+    key: 'arrowLeft.png',
+    type: 'files',
+    format: 'png'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"eNL7p":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'RlmxFkLagRUGkA54Ds4Be.png',
+        originalName: 'arrowRight.png',
+        mimeType: 'image/png',
+        size: 12400,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/RlmxFkLagRUGkA54Ds4Be.png',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7d0eebab7ab3f37e7b',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:21.703Z',
+        updatedAt: '2026-03-21T11:18:21.703Z',
+        __v: 0,
+        extension: 'png',
+        humanSize: '12.11 KB',
+        age: 13,
+        id: '69be7e7d0eebab7ab3f37e7b',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7d0eebab7ab3f37e7b',
+                download: '/core/files/public/69be7e7d0eebab7ab3f37e7b/download',
+                publicDownload: '/core/files/public/69be7e7d0eebab7ab3f37e7b/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7d0eebab7ab3f37e7b',
+                download: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e7b/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e7b/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/RlmxFkLagRUGkA54Ds4Be.png'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e7b/download'
+    },
+    code: '',
+    key: 'arrowRight.png',
+    type: 'files',
+    format: 'png'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"9Madz":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'CfdY7If5H2R82VEywQ729.webp',
+        originalName: 'choni2.webp',
+        mimeType: 'image/webp',
+        size: 26962,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/CfdY7If5H2R82VEywQ729.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7d0eebab7ab3f37e9d',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:21.994Z',
+        updatedAt: '2026-03-21T11:18:21.994Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '26.33 KB',
+        age: 15,
+        id: '69be7e7d0eebab7ab3f37e9d',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7d0eebab7ab3f37e9d',
+                download: '/core/files/public/69be7e7d0eebab7ab3f37e9d/download',
+                publicDownload: '/core/files/public/69be7e7d0eebab7ab3f37e9d/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7d0eebab7ab3f37e9d',
+                download: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e9d/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e9d/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/CfdY7If5H2R82VEywQ729.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7d0eebab7ab3f37e9d/download'
+    },
+    code: '',
+    key: 'choni2.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"idjbw":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'OWqrM_4ToEvZlMFoa0gDG.png',
+        originalName: 'close.png',
+        mimeType: 'image/png',
+        size: 4469,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/OWqrM_4ToEvZlMFoa0gDG.png',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7e0eebab7ab3f37ebf',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:22.252Z',
+        updatedAt: '2026-03-21T11:18:22.252Z',
+        __v: 0,
+        extension: 'png',
+        humanSize: '4.36 KB',
+        age: 13,
+        id: '69be7e7e0eebab7ab3f37ebf',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7e0eebab7ab3f37ebf',
+                download: '/core/files/public/69be7e7e0eebab7ab3f37ebf/download',
+                publicDownload: '/core/files/public/69be7e7e0eebab7ab3f37ebf/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7e0eebab7ab3f37ebf',
+                download: 'https://api.symbols.app/core/files/public/69be7e7e0eebab7ab3f37ebf/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7e0eebab7ab3f37ebf/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/OWqrM_4ToEvZlMFoa0gDG.png'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7e0eebab7ab3f37ebf/download'
+    },
+    code: '',
+    key: 'close.png',
+    type: 'files',
+    format: 'png'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4Zikj":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'x4BNTVVnnxV7bS41-SJKD.png',
+        originalName: 'facebook.png',
+        mimeType: 'image/png',
+        size: 10030,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/x4BNTVVnnxV7bS41-SJKD.png',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7e0eebab7ab3f37ee0',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:22.567Z',
+        updatedAt: '2026-03-21T11:18:22.567Z',
+        __v: 0,
+        extension: 'png',
+        humanSize: '9.79 KB',
+        age: 13,
+        id: '69be7e7e0eebab7ab3f37ee0',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7e0eebab7ab3f37ee0',
+                download: '/core/files/public/69be7e7e0eebab7ab3f37ee0/download',
+                publicDownload: '/core/files/public/69be7e7e0eebab7ab3f37ee0/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7e0eebab7ab3f37ee0',
+                download: 'https://api.symbols.app/core/files/public/69be7e7e0eebab7ab3f37ee0/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7e0eebab7ab3f37ee0/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/x4BNTVVnnxV7bS41-SJKD.png'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7e0eebab7ab3f37ee0/download'
+    },
+    code: '',
+    key: 'facebook.png',
+    type: 'files',
+    format: 'png'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"2tFYN":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '5fuLrttVcgM1scoKhbwcs.webp',
+        originalName: 'globe.webp',
+        mimeType: 'image/webp',
+        size: 98084,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/5fuLrttVcgM1scoKhbwcs.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7e0eebab7ab3f37f02',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:22.828Z',
+        updatedAt: '2026-03-21T11:18:22.828Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '95.79 KB',
+        age: 12,
+        id: '69be7e7e0eebab7ab3f37f02',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7e0eebab7ab3f37f02',
+                download: '/core/files/public/69be7e7e0eebab7ab3f37f02/download',
+                publicDownload: '/core/files/public/69be7e7e0eebab7ab3f37f02/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7e0eebab7ab3f37f02',
+                download: 'https://api.symbols.app/core/files/public/69be7e7e0eebab7ab3f37f02/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7e0eebab7ab3f37f02/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/5fuLrttVcgM1scoKhbwcs.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7e0eebab7ab3f37f02/download'
+    },
+    code: '',
+    key: 'globe.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"euXbz":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'UE7Un7qTbTwncsH7e1icV.png',
+        originalName: 'instagram.png',
+        mimeType: 'image/png',
+        size: 39758,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/UE7Un7qTbTwncsH7e1icV.png',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7f0eebab7ab3f37f23',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:23.215Z',
+        updatedAt: '2026-03-21T11:18:23.215Z',
+        __v: 0,
+        extension: 'png',
+        humanSize: '38.83 KB',
+        age: 13,
+        id: '69be7e7f0eebab7ab3f37f23',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7f0eebab7ab3f37f23',
+                download: '/core/files/public/69be7e7f0eebab7ab3f37f23/download',
+                publicDownload: '/core/files/public/69be7e7f0eebab7ab3f37f23/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7f0eebab7ab3f37f23',
+                download: 'https://api.symbols.app/core/files/public/69be7e7f0eebab7ab3f37f23/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7f0eebab7ab3f37f23/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/UE7Un7qTbTwncsH7e1icV.png'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7f0eebab7ab3f37f23/download'
+    },
+    code: '',
+    key: 'instagram.png',
+    type: 'files',
+    format: 'png'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"gVX7m":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'ietXl8QMsIAh0iiN60UlU.png',
+        originalName: 'linkedin.png',
+        mimeType: 'image/png',
+        size: 17991,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/ietXl8QMsIAh0iiN60UlU.png',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7f0eebab7ab3f37f45',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:23.500Z',
+        updatedAt: '2026-03-21T11:18:23.500Z',
+        __v: 0,
+        extension: 'png',
+        humanSize: '17.57 KB',
+        age: 13,
+        id: '69be7e7f0eebab7ab3f37f45',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7f0eebab7ab3f37f45',
+                download: '/core/files/public/69be7e7f0eebab7ab3f37f45/download',
+                publicDownload: '/core/files/public/69be7e7f0eebab7ab3f37f45/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7f0eebab7ab3f37f45',
+                download: 'https://api.symbols.app/core/files/public/69be7e7f0eebab7ab3f37f45/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7f0eebab7ab3f37f45/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/ietXl8QMsIAh0iiN60UlU.png'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7f0eebab7ab3f37f45/download'
+    },
+    code: '',
+    key: 'linkedin.png',
+    type: 'files',
+    format: 'png'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"kLU96":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'HVPmMpJaswqHV1DZeIXYS.webp',
+        originalName: 'liza2.webp',
+        mimeType: 'image/webp',
+        size: 41770,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/HVPmMpJaswqHV1DZeIXYS.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e7f0eebab7ab3f37f67',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:23.759Z',
+        updatedAt: '2026-03-21T11:18:23.759Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '40.79 KB',
+        age: 12,
+        id: '69be7e7f0eebab7ab3f37f67',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e7f0eebab7ab3f37f67',
+                download: '/core/files/public/69be7e7f0eebab7ab3f37f67/download',
+                publicDownload: '/core/files/public/69be7e7f0eebab7ab3f37f67/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e7f0eebab7ab3f37f67',
+                download: 'https://api.symbols.app/core/files/public/69be7e7f0eebab7ab3f37f67/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e7f0eebab7ab3f37f67/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/HVPmMpJaswqHV1DZeIXYS.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e7f0eebab7ab3f37f67/download'
+    },
+    code: '',
+    key: 'liza2.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"7pgKc":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '48m94u74Nr5n9AfCf6j0z.webp',
+        originalName: 'luka2.webp',
+        mimeType: 'image/webp',
+        size: 30466,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/48m94u74Nr5n9AfCf6j0z.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e800eebab7ab3f37f88',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:24.001Z',
+        updatedAt: '2026-03-21T11:18:24.001Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '29.75 KB',
+        age: 16,
+        id: '69be7e800eebab7ab3f37f88',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e800eebab7ab3f37f88',
+                download: '/core/files/public/69be7e800eebab7ab3f37f88/download',
+                publicDownload: '/core/files/public/69be7e800eebab7ab3f37f88/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e800eebab7ab3f37f88',
+                download: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37f88/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37f88/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/48m94u74Nr5n9AfCf6j0z.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37f88/download'
+    },
+    code: '',
+    key: 'luka2.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8VT6K":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'IZQ_QUD7mmPzaeDhWg2_f.webp',
+        originalName: 'mariami2.webp',
+        mimeType: 'image/webp',
+        size: 34334,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/IZQ_QUD7mmPzaeDhWg2_f.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e800eebab7ab3f37faa',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:24.317Z',
+        updatedAt: '2026-03-21T11:18:24.317Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '33.53 KB',
+        age: 13,
+        id: '69be7e800eebab7ab3f37faa',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e800eebab7ab3f37faa',
+                download: '/core/files/public/69be7e800eebab7ab3f37faa/download',
+                publicDownload: '/core/files/public/69be7e800eebab7ab3f37faa/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e800eebab7ab3f37faa',
+                download: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37faa/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37faa/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/IZQ_QUD7mmPzaeDhWg2_f.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37faa/download'
+    },
+    code: '',
+    key: 'mariami2.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8qmcz":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'BbBFCVxcDh4LAxRoYGizQ.webp',
+        originalName: 'media.webp',
+        mimeType: 'image/webp',
+        size: 69898,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/BbBFCVxcDh4LAxRoYGizQ.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e800eebab7ab3f37fcb',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:24.592Z',
+        updatedAt: '2026-03-21T11:18:24.592Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '68.26 KB',
+        age: 14,
+        id: '69be7e800eebab7ab3f37fcb',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e800eebab7ab3f37fcb',
+                download: '/core/files/public/69be7e800eebab7ab3f37fcb/download',
+                publicDownload: '/core/files/public/69be7e800eebab7ab3f37fcb/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e800eebab7ab3f37fcb',
+                download: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37fcb/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37fcb/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/BbBFCVxcDh4LAxRoYGizQ.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37fcb/download'
+    },
+    code: '',
+    key: 'media.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hrpK1":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'G_twQoxuA3NI3B4SNFoVm.png',
+        originalName: 'quotation-mark.png',
+        mimeType: 'image/png',
+        size: 12290,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/G_twQoxuA3NI3B4SNFoVm.png',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e800eebab7ab3f37fed',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:24.851Z',
+        updatedAt: '2026-03-21T11:18:24.851Z',
+        __v: 0,
+        extension: 'png',
+        humanSize: '12 KB',
+        age: 14,
+        id: '69be7e800eebab7ab3f37fed',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e800eebab7ab3f37fed',
+                download: '/core/files/public/69be7e800eebab7ab3f37fed/download',
+                publicDownload: '/core/files/public/69be7e800eebab7ab3f37fed/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e800eebab7ab3f37fed',
+                download: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37fed/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37fed/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/G_twQoxuA3NI3B4SNFoVm.png'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e800eebab7ab3f37fed/download'
+    },
+    code: '',
+    key: 'quotation-mark.png',
+    type: 'files',
+    format: 'png'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8RlDw":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'fKXYtX83MqTG4IGaADkk7.png',
+        originalName: 'send.png',
+        mimeType: 'image/png',
+        size: 9048,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/fKXYtX83MqTG4IGaADkk7.png',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e810eebab7ab3f3800e',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:25.115Z',
+        updatedAt: '2026-03-21T11:18:25.115Z',
+        __v: 0,
+        extension: 'png',
+        humanSize: '8.84 KB',
+        age: 12,
+        id: '69be7e810eebab7ab3f3800e',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e810eebab7ab3f3800e',
+                download: '/core/files/public/69be7e810eebab7ab3f3800e/download',
+                publicDownload: '/core/files/public/69be7e810eebab7ab3f3800e/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e810eebab7ab3f3800e',
+                download: 'https://api.symbols.app/core/files/public/69be7e810eebab7ab3f3800e/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e810eebab7ab3f3800e/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/fKXYtX83MqTG4IGaADkk7.png'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e810eebab7ab3f3800e/download'
+    },
+    code: '',
+    key: 'send.png',
+    type: 'files',
+    format: 'png'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"2Bkzv":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'sSSOlxve8Z5gP_fgiRpDY.webp',
+        originalName: 'stars5.webp',
+        mimeType: 'image/webp',
+        size: 606512,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/sSSOlxve8Z5gP_fgiRpDY.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e810eebab7ab3f38030',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:25.552Z',
+        updatedAt: '2026-03-21T11:18:25.552Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '592.3 KB',
+        age: 14,
+        id: '69be7e810eebab7ab3f38030',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e810eebab7ab3f38030',
+                download: '/core/files/public/69be7e810eebab7ab3f38030/download',
+                publicDownload: '/core/files/public/69be7e810eebab7ab3f38030/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e810eebab7ab3f38030',
+                download: 'https://api.symbols.app/core/files/public/69be7e810eebab7ab3f38030/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e810eebab7ab3f38030/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/sSSOlxve8Z5gP_fgiRpDY.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e810eebab7ab3f38030/download'
+    },
+    code: '',
+    key: 'stars5.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jf1m8":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'uRPl6oLBySUs5DGFpPqOG.webp',
+        originalName: 'street.webp',
+        mimeType: 'image/webp',
+        size: 261974,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/uRPl6oLBySUs5DGFpPqOG.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e810eebab7ab3f38052',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:25.822Z',
+        updatedAt: '2026-03-21T11:18:25.822Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '255.83 KB',
+        age: 12,
+        id: '69be7e810eebab7ab3f38052',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e810eebab7ab3f38052',
+                download: '/core/files/public/69be7e810eebab7ab3f38052/download',
+                publicDownload: '/core/files/public/69be7e810eebab7ab3f38052/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e810eebab7ab3f38052',
+                download: 'https://api.symbols.app/core/files/public/69be7e810eebab7ab3f38052/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e810eebab7ab3f38052/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/uRPl6oLBySUs5DGFpPqOG.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e810eebab7ab3f38052/download'
+    },
+    code: '',
+    key: 'street.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"51TDf":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: 'mboAXLjoOJKlRXCcYaqOQ.webp',
+        originalName: 'street2.webp',
+        mimeType: 'image/webp',
+        size: 189054,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/mboAXLjoOJKlRXCcYaqOQ.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e820eebab7ab3f38073',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:26.209Z',
+        updatedAt: '2026-03-21T11:18:26.209Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '184.62 KB',
+        age: 13,
+        id: '69be7e820eebab7ab3f38073',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e820eebab7ab3f38073',
+                download: '/core/files/public/69be7e820eebab7ab3f38073/download',
+                publicDownload: '/core/files/public/69be7e820eebab7ab3f38073/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e820eebab7ab3f38073',
+                download: 'https://api.symbols.app/core/files/public/69be7e820eebab7ab3f38073/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e820eebab7ab3f38073/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/mboAXLjoOJKlRXCcYaqOQ.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e820eebab7ab3f38073/download'
+    },
+    code: '',
+    key: 'street2.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"2qBZi":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '5Y5LbS5PamsrZK7aheSbE.webp',
+        originalName: 'video.webp',
+        mimeType: 'image/webp',
+        size: 95300,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/5Y5LbS5PamsrZK7aheSbE.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e820eebab7ab3f38095',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:26.441Z',
+        updatedAt: '2026-03-21T11:18:26.441Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '93.07 KB',
+        age: 13,
+        id: '69be7e820eebab7ab3f38095',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e820eebab7ab3f38095',
+                download: '/core/files/public/69be7e820eebab7ab3f38095/download',
+                publicDownload: '/core/files/public/69be7e820eebab7ab3f38095/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e820eebab7ab3f38095',
+                download: 'https://api.symbols.app/core/files/public/69be7e820eebab7ab3f38095/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e820eebab7ab3f38095/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/5Y5LbS5PamsrZK7aheSbE.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e820eebab7ab3f38095/download'
+    },
+    code: '',
+    key: 'video.webp',
+    type: 'files',
+    format: 'webp'
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"ha7vh":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+exports.default = {
+    content: {
+        filename: '8wF7EAbcVTGesGllNLjy0.webp',
+        originalName: 'web.webp',
+        mimeType: 'image/webp',
+        size: 131542,
+        storageUrl: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/8wF7EAbcVTGesGllNLjy0.webp',
+        bucket: 'smbls-api-media',
+        category: 'image',
+        tags: [],
+        uploadedBy: '6868484c0cf470c5890933cc',
+        project: '69be7e370eebab7ab3f3747d',
+        visibility: 'public',
+        status: 'active',
+        version: 1,
+        downloadCount: 0,
+        _id: '69be7e820eebab7ab3f380b6',
+        previousVersions: [],
+        createdAt: '2026-03-21T11:18:26.711Z',
+        updatedAt: '2026-03-21T11:18:26.711Z',
+        __v: 0,
+        extension: 'webp',
+        humanSize: '128.46 KB',
+        age: 14,
+        id: '69be7e820eebab7ab3f380b6',
+        urls: {
+            api: {
+                base: '/core/files',
+                file: '/core/files/69be7e820eebab7ab3f380b6',
+                download: '/core/files/public/69be7e820eebab7ab3f380b6/download',
+                publicDownload: '/core/files/public/69be7e820eebab7ab3f380b6/download'
+            },
+            absolute: {
+                base: 'https://api.symbols.app/core/files',
+                file: 'https://api.symbols.app/core/files/69be7e820eebab7ab3f380b6',
+                download: 'https://api.symbols.app/core/files/public/69be7e820eebab7ab3f380b6/download',
+                publicDownload: 'https://api.symbols.app/core/files/public/69be7e820eebab7ab3f380b6/download'
+            },
+            storage: 'https://storage.googleapis.com/smbls-api-media/media/projects/69be7e370eebab7ab3f3747d/users/6868484c0cf470c5890933cc/8wF7EAbcVTGesGllNLjy0.webp'
+        },
+        src: 'https://api.symbols.app/core/files/public/69be7e820eebab7ab3f380b6/download'
+    },
+    code: '',
+    key: 'web.webp',
+    type: 'files',
+    format: 'webp'
+};
+
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jNdS5":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -28571,6 +32721,6 @@ exports.default = {
     globalTheme: "dark"
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}]},["cKkju","8PF7q"], "8PF7q", "parcelRequirea44a", {}, "./", "/")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}]},["g1Fy0","8PF7q"], "8PF7q", "parcelRequirea44a", {})
 
 //# sourceMappingURL=focusAgency.e6fab586.js.map

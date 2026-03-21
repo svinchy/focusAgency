@@ -14,22 +14,24 @@ import reset from './reset.js'
 import animation from './animation.js'
 import media from './media.js'
 import cases from './cases.js'
+import vars from './vars.js'
 
 export default {
-  color,
-  gradient,
-  theme,
-  font,
-  font_family,
-  typography,
-  spacing,
-  timing,
-  "class": _class,
-  grid,
-  icons,
-  shape,
-  reset,
-  animation,
-  media,
-  cases,
+  color: color,
+  gradient: gradient,
+  theme: theme,
+  font: font,
+  font_family: font_family,
+  typography: typography,
+  spacing: spacing,
+  timing: timing,
+  class: _class,
+  grid: grid,
+  icons: icons,
+  shape: shape,
+  reset: reset,
+  animation: animation,
+  media: media,
+  cases: cases,
+  vars: vars
 }

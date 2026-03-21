@@ -1,8 +1,7 @@
 export const NavArrows = {
   tag: 'div',
   display: 'flex',
-  flexDirection: 'column',
+  flexDirection: 'row',
   gap: '0',
-  position: 'absolute',
   zIndex: '100',
 };
