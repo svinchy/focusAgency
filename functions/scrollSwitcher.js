@@ -351,7 +351,8 @@ export const scrollSwitcher = function scrollSwitcher() {
     dotsEl.forEach((dot, i) => { dot.classList.toggle('active', i === index); });
   };
 
-  window.__refreshServiceContent = () => { renderService(activeIndex); };
+  window.__renderService = renderService;
+  window.__refreshServiceContent = () => { window.__renderService(activeIndex); };
 
   if (service) {
     service.addEventListener('click', (e) => {
