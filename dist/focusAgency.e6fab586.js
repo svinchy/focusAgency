@@ -18440,159 +18440,7 @@ const DefaultSyncApp = {
     ]
 };
 
-},{"@domql/router":"cQMCg","smbls/src/init.js":"8CwKt","socket.io-client":"dWovI","@domql/utils":"1zA6L","./SyncNotifications":"6P6Yl","./Inspect":"ikRK5","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"8CwKt":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "init", ()=>init);
-parcelHelpers.export(exports, "reinit", ()=>reinit);
-parcelHelpers.export(exports, "applyCSS", ()=>applyCSS);
-parcelHelpers.export(exports, "updateVars", ()=>updateVars);
-parcelHelpers.export(exports, "changeGlobalTheme", ()=>changeGlobalTheme);
-parcelHelpers.export(exports, "setClass", ()=>setClass);
-var _scratch = require("@symbo.ls/scratch");
-var _utils = require("@domql/utils");
-var _emotion = require("@symbo.ls/emotion");
-'use strict';
-const CONFIG = (0, _scratch.getActiveConfig)();
-const mergeWithLocalFile = (config = CONFIG, options)=>{
-    const rcfile = (0, _utils.isObject)(options.localFile) ? options.localFile : {};
-    const clonedFile = (0, _utils.deepClone)(rcfile.designSystem || {});
-    return (0, _utils.deepMerge)(config, clonedFile);
-};
-const SET_OPTIONS = {
-    emotion: (0, _emotion.emotion),
-    useVariable: true,
-    useReset: true,
-    useFontImport: true,
-    useIconSprite: true,
-    useDocumentTheme: true,
-    useSvgSprite: true
-};
-const init = (config, options = SET_OPTIONS)=>{
-    const emotion = options.emotion || (0, _emotion.emotion);
-    const resultConfig = mergeWithLocalFile(config || {}, options);
-    const conf = (0, _scratch.set)({
-        verbose: options.verbose,
-        useReset: options.useReset,
-        useFontImport: options.useFontImport,
-        useVariable: options.useVariable,
-        useSvgSprite: options.useSvgSprite,
-        useDocumentTheme: options.useDocumentTheme,
-        useIconSprite: options.useIconSprite,
-        useDefaultConfig: options.useDefaultConfig,
-        globalTheme: options.globalTheme,
-        files: options.files,
-        ...resultConfig
-    }, {
-        newConfig: options.newConfig
-    });
-    const FontFace = (0, _scratch.getFontFaceString)(conf.font, conf.files);
-    const useReset = conf.useReset;
-    const useVariable = conf.useVariable;
-    const useFontImport = conf.useFontImport;
-    const useSvgSprite = conf.useSvgSprite;
-    const hasSvgs = config.svg;
-    const useIconSprite = conf.useIconSprite;
-    const hasIcons = config.icons;
-    if (useFontImport) emotion.injectGlobal(FontFace);
-    if (useVariable) {
-        emotion.injectGlobal({
-            ':root': conf.CSS_VARS
-        });
-        // Inject theme-switching CSS vars (media queries + data-theme selectors)
-        if (conf.CSS_MEDIA_VARS) {
-            const themeStyles = {};
-            for(const key in conf.CSS_MEDIA_VARS)if (key.startsWith('@media')) // Media query — only apply when no data-theme forces a theme
-            themeStyles[key] = {
-                ':root:not([data-theme])': conf.CSS_MEDIA_VARS[key]
-            };
-            else // Selector ([data-theme="..."]) — apply directly
-            themeStyles[key] = conf.CSS_MEDIA_VARS[key];
-            emotion.injectGlobal(themeStyles);
-        }
-    }
-    if (useReset) emotion.injectGlobal(conf.reset);
-    // Register all ANIMATION entries as global @keyframes
-    const animations = conf.animation;
-    if (animations) {
-        const keyframesCSS = {};
-        for(const name in animations)keyframesCSS[`@keyframes ${name}`] = animations[name];
-        emotion.injectGlobal(keyframesCSS);
-    }
-    if (hasSvgs || useSvgSprite) (0, _scratch.appendSVGSprite)(conf.svg, {
-        document: options.document
-    });
-    if (hasIcons || useIconSprite) (0, _scratch.appendSvgIconsSprite)(conf.icons, {
-        document: options.document
-    });
-    return conf;
-};
-const UPDATE_OPTIONS = {
-    emotion: (0, _emotion.emotion)
-};
-const reinit = (config, options = UPDATE_OPTIONS)=>{
-    const emotion = options.emotion || (0, _emotion.emotion);
-    const resultConfig = mergeWithLocalFile(config || {}, options);
-    const conf = (0, _scratch.set)({
-        verbose: false,
-        ...resultConfig
-    });
-    if (!options.preventInject) {
-        emotion.injectGlobal({
-            ':root': conf.CSS_VARS
-        });
-        if (conf.CSS_MEDIA_VARS) {
-            const themeStyles = {};
-            for(const key in conf.CSS_MEDIA_VARS)if (key.startsWith('@media')) themeStyles[key] = {
-                ':root:not([data-theme])': conf.CSS_MEDIA_VARS[key]
-            };
-            else themeStyles[key] = conf.CSS_MEDIA_VARS[key];
-            emotion.injectGlobal(themeStyles);
-        }
-        emotion.injectGlobal(conf.reset);
-    }
-    return conf;
-};
-const applyCSS = (styles, options = UPDATE_OPTIONS)=>{
-    const emotion = options.emotion || (0, _emotion.emotion);
-    emotion.injectGlobal(styles);
-};
-const updateVars = (config, options = UPDATE_OPTIONS)=>{
-    const emotion = options.emotion || (0, _emotion.emotion);
-    emotion.injectGlobal({
-        ':root': config.CSS_VARS
-    });
-    if (config.CSS_MEDIA_VARS) {
-        const themeStyles = {};
-        for(const key in config.CSS_MEDIA_VARS)if (key.startsWith('@media')) themeStyles[key] = {
-            ':root:not([data-theme])': config.CSS_MEDIA_VARS[key]
-        };
-        else themeStyles[key] = config.CSS_MEDIA_VARS[key];
-        emotion.injectGlobal(themeStyles);
-    }
-};
-const changeGlobalTheme = (newTheme, options = UPDATE_OPTIONS)=>{
-    const emotion = options.emotion || (0, _emotion.emotion);
-    const conf = (0, _scratch.changeGlobalTheme)(newTheme);
-    // Re-inject root CSS vars
-    emotion.injectGlobal({
-        ':root': conf.CSS_VARS
-    });
-    // Re-inject theme-switching media queries + data-theme selectors
-    if (conf.CSS_MEDIA_VARS) {
-        const themeStyles = {};
-        for(const key in conf.CSS_MEDIA_VARS)if (key.startsWith('@media')) themeStyles[key] = {
-            ':root:not([data-theme])': conf.CSS_MEDIA_VARS[key]
-        };
-        else themeStyles[key] = conf.CSS_MEDIA_VARS[key];
-        emotion.injectGlobal(themeStyles);
-    }
-    return conf;
-};
-const setClass = (props, options = UPDATE_OPTIONS)=>{} // setClassname(props, options.emotion.css)
-;
-
-},{"@symbo.ls/scratch":"9OGuV","@domql/utils":"1zA6L","@symbo.ls/emotion":"bXh2A","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dWovI":[function(require,module,exports,__globalThis) {
+},{"@domql/router":"cQMCg","smbls/src/init.js":"2DBLK","socket.io-client":"dWovI","@domql/utils":"1zA6L","./SyncNotifications":"6P6Yl","./Inspect":"ikRK5","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"dWovI":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 /**
@@ -21856,11 +21704,14 @@ class Encoder {
 class Decoder extends (0, _componentEmitter.Emitter) {
     /**
      * Decoder constructor
-     *
-     * @param {function} reviver - custom reviver to pass down to JSON.stringify
-     */ constructor(reviver){
+     */ constructor(opts){
         super();
-        this.reviver = reviver;
+        this.opts = Object.assign({
+            reviver: undefined,
+            maxAttachments: 10
+        }, typeof opts === "function" ? {
+            reviver: opts
+        } : opts);
     }
     /**
      * Decodes an encoded packet string into packet JSON.
@@ -21911,7 +21762,10 @@ class Decoder extends (0, _componentEmitter.Emitter) {
             while(str.charAt(++i) !== "-" && i != str.length);
             const buf = str.substring(start, i);
             if (buf != Number(buf) || str.charAt(i) !== "-") throw new Error("Illegal attachments");
-            p.attachments = Number(buf);
+            const n = Number(buf);
+            if (!isInteger(n) || n < 0) throw new Error("Illegal attachments");
+            else if (n > this.opts.maxAttachments) throw new Error("too many attachments");
+            p.attachments = n;
         }
         // look up namespace (if any)
         if ("/" === str.charAt(i + 1)) {
@@ -21947,7 +21801,7 @@ class Decoder extends (0, _componentEmitter.Emitter) {
     }
     tryParse(str) {
         try {
-            return JSON.parse(str, this.reviver);
+            return JSON.parse(str, this.opts.reviver);
         } catch (e) {
             return false;
         }
@@ -22883,94 +22737,7 @@ const initEmotion = (key, options = {})=>{
     ];
 };
 
-},{"./index.js":"bXh2A","smbls/src/init.js":"8CwKt","smbls/src/options.js":"lnMm7","@domql/utils":"1zA6L","@symbo.ls/default-config":"jdbrS","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"lnMm7":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "DESIGN_SYSTEM_OPTIONS", ()=>DESIGN_SYSTEM_OPTIONS);
-parcelHelpers.export(exports, "ROUTER_OPTIONS", ()=>ROUTER_OPTIONS);
-parcelHelpers.export(exports, "DEFAULT_CONTEXT", ()=>DEFAULT_CONTEXT);
-parcelHelpers.export(exports, "CREATE_OPTIONS", ()=>CREATE_OPTIONS);
-var _defineJs = require("./define.js");
-'use strict';
-const DESIGN_SYSTEM_OPTIONS = {
-    useReset: true,
-    useVariable: true,
-    useIconSprite: true,
-    useSvgSprite: true,
-    useDocumentTheme: true,
-    useDefaultIcons: true,
-    useFontImport: true,
-    useDefaultConfig: true
-};
-const ROUTER_OPTIONS = {
-    initRouter: true,
-    popState: true,
-    injectRouterInLinkComponent: true
-};
-const DEFAULT_CONTEXT = {
-    ...DESIGN_SYSTEM_OPTIONS,
-    router: ROUTER_OPTIONS
-};
-const CREATE_OPTIONS = {
-    state: {},
-    pages: {},
-    components: {},
-    router: ROUTER_OPTIONS,
-    define: (0, _defineJs.defaultDefine)
-};
-exports.default = CREATE_OPTIONS;
-
-},{"./define.js":"71Evq","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"71Evq":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "defaultDefine", ()=>defaultDefine);
-parcelHelpers.export(exports, "createDefine", ()=>createDefine);
-var _helmet = require("@symbo.ls/helmet");
-var _fetch = require("@symbo.ls/fetch");
-'use strict';
-const fetchHandler = (param, el, state, context)=>{
-    if (!param) return;
-    (0, _fetch.executeFetch)(param, el, state, context);
-};
-const metadataHandler = (param, el, state)=>{
-    if (!param) return;
-    const doc = el.context?.document || typeof document !== 'undefined' && document;
-    if (!doc) return;
-    const resolved = (0, _helmet.resolveMetadata)(param, el, state);
-    (0, _helmet.applyMetadata)(resolved, doc);
-};
-const routerHandler = async (param, el)=>{
-    if (!param) return;
-    const obj = {
-        tag: 'fragment',
-        ...param
-    };
-    const set = async ()=>{
-        await el.set(obj, {
-            preventDefineUpdate: '$router'
-        });
-    };
-    if (el.props && el.props.lazyLoad) window.requestAnimationFrame(set);
-    else await set();
-    return obj;
-};
-const defaultDefine = {
-    routes: (param)=>param,
-    metadata: metadataHandler,
-    fetch: fetchHandler,
-    $router: routerHandler
-};
-const createDefine = (opts = {})=>{
-    const define = {
-        routes: (param)=>param
-    };
-    if (opts.metadata !== false) define.metadata = metadataHandler;
-    if (opts.fetch !== false) define.fetch = fetchHandler;
-    if (opts.router !== false) define.$router = routerHandler;
-    return define;
-};
-
-},{"@symbo.ls/helmet":"d5YJv","@symbo.ls/fetch":"3KaUQ","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"fNg9c":[function(require,module,exports,__globalThis) {
+},{"./index.js":"bXh2A","smbls/src/init.js":"2DBLK","smbls/src/options.js":"7agmZ","@domql/utils":"1zA6L","@symbo.ls/default-config":"jdbrS","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"fNg9c":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 // --- Core API ---
