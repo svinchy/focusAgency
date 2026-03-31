@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "symbols-mcp": {
-      "command": "/Users/svinchy/Library/Python/3.9/bin/uvx",
+      "command": "uvx",
       "args": ["symbols-mcp"]
     }
   }
