@@ -55,7 +55,7 @@ export default { '/': main }
 
 ### 8. Icon rendering — use `Svg` atom with `html` prop, NEVER `Icon` inside `Button`
 
-### 9. Use `flexAlign` not `align` for Flex shorthand
+### 9. Use `align` not `flexAlign` for Flex shorthand (v3 rule)
 
 ### 10. State — use `s.update()`, never mutate directly
 
