@@ -7,6 +7,7 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.101.0",
     "smbls": "^3.8.8"
   },
   "devDependencies": {
