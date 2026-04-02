@@ -1,0 +1,16 @@
+{
+  "name": "focusagency",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "parcel index.html --port 1234",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.0",
+    "smbls": "^3.8.8"
+  },
+  "devDependencies": {
+    "parcel": "^2.12.0"
+  }
+}
